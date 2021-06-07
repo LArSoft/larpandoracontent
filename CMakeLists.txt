@@ -74,7 +74,7 @@ else()
     if(NOT LAR_CONTENT_LIBRARY_NAME STREQUAL "LArPandoraContent")
         set(LAR_CONTENT_LIBRARY_NAME "LArContent")
     endif()
-    project(${LAR_CONTENT_LIBRARY_NAME})
+    project(${LAR_CONTENT_LIBRARY_NAME} VERSION 3.22.12 LANGUAGES CXX )
 
     # DL Content
     option(PANDORA_LIBTORCH "Flag for building against LibTorch" OFF)
