@@ -1,5 +1,5 @@
 # use cmake 2.8 or later
-cmake_minimum_required (VERSION 2.8)
+cmake_minimum_required (VERSION 3.19)
 
 # if the CETBUILDTOOLS_VERSION environmental variable is defined, use cetbuildtools
 if(DEFINED ENV{CETBUILDTOOLS_VERSION})
@@ -16,11 +16,11 @@ if(DEFINED ENV{CETBUILDTOOLS_VERSION})
     #  make install
     #  make package (builds distribution tarfile)
     # ======================================================================
-    project(larpandoracontent)
+    project(larpandoracontent VERSION 3.22.12 LANGUAGES CXX )
 
     # cetbuildtools contains our cmake modules
     # Note that find package will add cetbuildtools Modules to CMAKE_MODULE_PATH
-    find_package(cetbuildtools REQUIRED)
+    find_package(cetmodules REQUIRED)
     ##message(STATUS "larpandoracontent: CMAKE_MODULE_PATH is ${CMAKE_MODULE_PATH}")
 
     include(CetCMakeEnv)
