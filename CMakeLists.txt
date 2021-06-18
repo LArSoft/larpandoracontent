@@ -59,7 +59,9 @@ if(DEFINED ENV{CETBUILDTOOLS_VERSION})
     #add_subdirectory(test)
 
     # ups - table and config files
+    if(WANT_UPS)
     add_subdirectory(ups)
+    endif()
 
     # packaging utility
     include(UseCPack)
