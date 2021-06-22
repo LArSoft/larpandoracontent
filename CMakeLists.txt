@@ -56,7 +56,7 @@ if(DEFINED ENV{CETBUILDTOOLS_VERSION})
     endif()
 
     # tests
-    #add_subdirectory(test)
+    add_subdirectory(test)
 
     # ups - table and config files
     if(WANT_UPS)
