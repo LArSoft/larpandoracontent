@@ -1,4 +1,5 @@
-include_directories( $ENV{EIGEN_INC} )
+include_directories( ${EIGEN3_INCLUDE_DIRS} )
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-shadow")
 
 set( subdir_list LArCheating
                  LArControlFlow
