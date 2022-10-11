@@ -21,7 +21,7 @@ namespace lar_content {
   class LArDiscreteProbabilityHelper {
   public:
     /**
-     *  @brief  Calculate P value for measured correlation coefficient between two datasets via a permutation test 
+     *  @brief  Calculate P value for measured correlation coefficient between two datasets via a permutation test
      *
      *  @param  t1 the first input dataset
      *  @param  t2 the second input dataset
@@ -55,7 +55,7 @@ namespace lar_content {
       const float upperLimit);
 
     /**
-     *  @brief  Calculate the correlation coefficient between two datasets 
+     *  @brief  Calculate the correlation coefficient between two datasets
      *
      *  @param  t1 the first input dataset
      *  @param  t2 the second input dataset
@@ -66,7 +66,7 @@ namespace lar_content {
     static float CalculateCorrelationCoefficient(const T& t1, const T& t2);
 
     /**
-     *  @brief  Calculate the mean of a dataset 
+     *  @brief  Calculate the mean of a dataset
      *
      *  @param  t the dataset
      *
@@ -120,7 +120,7 @@ namespace lar_content {
     static unsigned int GetSize(const std::vector<T>& t);
 
     /**
-     *  @brief  Get an element in a dataset 
+     *  @brief  Get an element in a dataset
      *
      *  @param  t the dataset
      *  @param  index the index of the element
