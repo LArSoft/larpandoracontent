@@ -15,55 +15,56 @@
 
 using namespace pandora;
 
-namespace lar_content
-{
+namespace lar_content {
 
-void CheatingNeutrinoIdTool::SelectOutputPfos(const pandora::Algorithm *const /*pAlgorithm*/, const SliceHypotheses &nuSliceHypotheses,
-    const SliceHypotheses &crSliceHypotheses, PfoList &selectedPfos)
-{
+  void CheatingNeutrinoIdTool::SelectOutputPfos(const pandora::Algorithm* const /*pAlgorithm*/,
+                                                const SliceHypotheses& nuSliceHypotheses,
+                                                const SliceHypotheses& crSliceHypotheses,
+                                                PfoList& selectedPfos)
+  {
     if (nuSliceHypotheses.size() != crSliceHypotheses.size())
-        throw StatusCodeException(STATUS_CODE_INVALID_PARAMETER);
+      throw StatusCodeException(STATUS_CODE_INVALID_PARAMETER);
 
     float bestNeutrinoWeight(0.f);
     unsigned int bestSliceIndex(std::numeric_limits<unsigned int>::max());
 
-    for (unsigned int sliceIndex = 0, nSlices = nuSliceHypotheses.size(); sliceIndex < nSlices; ++sliceIndex)
-    {
-        float neutrinoWeight(0.f);
-        const PfoList &neutrinoPfoList(nuSliceHypotheses.at(sliceIndex));
+    for (unsigned int sliceIndex = 0, nSlices = nuSliceHypotheses.size(); sliceIndex < nSlices;
+         ++sliceIndex) {
+      float neutrinoWeight(0.f);
+      const PfoList& neutrinoPfoList(nuSliceHypotheses.at(sliceIndex));
 
-        for (const Pfo *const pNeutrinoPfo : neutrinoPfoList)
-        {
-            if (!LArPfoHelper::IsNeutrino(pNeutrinoPfo))
-                throw StatusCodeException(STATUS_CODE_INVALID_PARAMETER);
+      for (const Pfo* const pNeutrinoPfo : neutrinoPfoList) {
+        if (!LArPfoHelper::IsNeutrino(pNeutrinoPfo))
+          throw StatusCodeException(STATUS_CODE_INVALID_PARAMETER);
 
-            PfoList downstreamPfos;
-            LArPfoHelper::GetAllDownstreamPfos(pNeutrinoPfo, downstreamPfos);
+        PfoList downstreamPfos;
+        LArPfoHelper::GetAllDownstreamPfos(pNeutrinoPfo, downstreamPfos);
 
-            float thisNeutrinoWeight(0.f), thisTotalWeight(0.f);
-            CheatingSliceIdBaseTool::GetTargetParticleWeight(&downstreamPfos, thisNeutrinoWeight, thisTotalWeight, LArMCParticleHelper::IsNeutrino);
-            neutrinoWeight += thisNeutrinoWeight;
-        }
+        float thisNeutrinoWeight(0.f), thisTotalWeight(0.f);
+        CheatingSliceIdBaseTool::GetTargetParticleWeight(
+          &downstreamPfos, thisNeutrinoWeight, thisTotalWeight, LArMCParticleHelper::IsNeutrino);
+        neutrinoWeight += thisNeutrinoWeight;
+      }
 
-        if (neutrinoWeight > bestNeutrinoWeight)
-        {
-            bestNeutrinoWeight = neutrinoWeight;
-            bestSliceIndex = sliceIndex;
-        }
+      if (neutrinoWeight > bestNeutrinoWeight) {
+        bestNeutrinoWeight = neutrinoWeight;
+        bestSliceIndex = sliceIndex;
+      }
     }
 
-    for (unsigned int sliceIndex = 0, nSlices = nuSliceHypotheses.size(); sliceIndex < nSlices; ++sliceIndex)
-    {
-        const PfoList &sliceOutput((bestSliceIndex == sliceIndex) ? nuSliceHypotheses.at(sliceIndex) : crSliceHypotheses.at(sliceIndex));
-        selectedPfos.insert(selectedPfos.end(), sliceOutput.begin(), sliceOutput.end());
+    for (unsigned int sliceIndex = 0, nSlices = nuSliceHypotheses.size(); sliceIndex < nSlices;
+         ++sliceIndex) {
+      const PfoList& sliceOutput((bestSliceIndex == sliceIndex) ? nuSliceHypotheses.at(sliceIndex) :
+                                                                  crSliceHypotheses.at(sliceIndex));
+      selectedPfos.insert(selectedPfos.end(), sliceOutput.begin(), sliceOutput.end());
     }
-}
+  }
 
-//------------------------------------------------------------------------------------------------------------------------------------------
+  //------------------------------------------------------------------------------------------------------------------------------------------
 
-StatusCode CheatingNeutrinoIdTool::ReadSettings(const TiXmlHandle /*xmlHandle*/)
-{
+  StatusCode CheatingNeutrinoIdTool::ReadSettings(const TiXmlHandle /*xmlHandle*/)
+  {
     return STATUS_CODE_SUCCESS;
-}
+  }
 
 } // namespace lar_content

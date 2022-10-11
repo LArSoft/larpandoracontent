@@ -14,24 +14,25 @@
 
 #include "larpandoracontent/LArTwoDReco/LArClusterAssociation/ClusterExtensionAlgorithm.h"
 
-namespace lar_content
-{
+namespace lar_content {
 
-/**
+  /**
  *  @brief  CosmicRayExtensionAlgorithm class
  */
-class CosmicRayExtensionAlgorithm : public ClusterExtensionAlgorithm
-{
-public:
+  class CosmicRayExtensionAlgorithm : public ClusterExtensionAlgorithm {
+  public:
     /**
      *  @brief  Default constructor
      */
     CosmicRayExtensionAlgorithm();
 
-private:
-    void GetListOfCleanClusters(const pandora::ClusterList *const pClusterList, pandora::ClusterVector &clusterVector) const;
-    void FillClusterAssociationMatrix(const pandora::ClusterVector &clusterVector, ClusterAssociationMatrix &clusterAssociationMatrix) const;
-    void FillClusterMergeMap(const ClusterAssociationMatrix &clusterAssociationMatrix, ClusterMergeMap &clusterMergeMap) const;
+  private:
+    void GetListOfCleanClusters(const pandora::ClusterList* const pClusterList,
+                                pandora::ClusterVector& clusterVector) const;
+    void FillClusterAssociationMatrix(const pandora::ClusterVector& clusterVector,
+                                      ClusterAssociationMatrix& clusterAssociationMatrix) const;
+    void FillClusterMergeMap(const ClusterAssociationMatrix& clusterAssociationMatrix,
+                             ClusterMergeMap& clusterMergeMap) const;
 
     /**
      *  @brief  Form association between two pointing clusters
@@ -40,8 +41,9 @@ private:
      *  @param  clusterJ the second pointing cluster
      *  @param  clusterAssociationMatrix the matrix of cluster associations
      */
-    void FillClusterAssociationMatrix(
-        const LArPointingCluster &clusterI, const LArPointingCluster &clusterJ, ClusterAssociationMatrix &clusterAssociationMatrix) const;
+    void FillClusterAssociationMatrix(const LArPointingCluster& clusterI,
+                                      const LArPointingCluster& clusterJ,
+                                      ClusterAssociationMatrix& clusterAssociationMatrix) const;
 
     /**
      *  @brief  Calculate RMS deviation of a cluster with respect to the reference line
@@ -50,7 +52,9 @@ private:
      *  @param  position the intercept of the reference line
      *  @param  direction the direction of the reference line
      */
-    float CalculateRms(const pandora::Cluster *const pCluster, const pandora::CartesianVector &position, const pandora::CartesianVector &direction) const;
+    float CalculateRms(const pandora::Cluster* const pCluster,
+                       const pandora::CartesianVector& position,
+                       const pandora::CartesianVector& direction) const;
 
     pandora::StatusCode ReadSettings(const pandora::TiXmlHandle xmlHandle);
 
@@ -60,7 +64,7 @@ private:
     float m_maxTransverseDisplacement;   ///<
     float m_minCosRelativeAngle;         ///<
     float m_maxAverageRms;               ///<
-};
+  };
 
 } // namespace lar_content
 

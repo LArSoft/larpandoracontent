@@ -16,15 +16,13 @@
 #include <cmath>
 #include <vector>
 
-namespace lar_content
-{
+namespace lar_content {
 
-/**
+  /**
  *  @brief  TrackOverlapResult class
  */
-class TrackOverlapResult
-{
-public:
+  class TrackOverlapResult {
+  public:
     /**
      *  @brief  Default constructor
      */
@@ -37,14 +35,16 @@ public:
      *  @param  nSamplingPoints
      *  @param  chi2
      */
-    TrackOverlapResult(const unsigned int nMatchedSamplingPoints, const unsigned int nSamplingPoints, const float chi2);
+    TrackOverlapResult(const unsigned int nMatchedSamplingPoints,
+                       const unsigned int nSamplingPoints,
+                       const float chi2);
 
     /**
      *  @brief  Copy constructor
      *
      *  @param  rhs
      */
-    TrackOverlapResult(const TrackOverlapResult &rhs);
+    TrackOverlapResult(const TrackOverlapResult& rhs);
 
     /**
      *  @brief  Destructor
@@ -98,39 +98,38 @@ public:
      *
      *  @param  rhs the track overlap result for comparison
      */
-    bool operator<(const TrackOverlapResult &rhs) const;
+    bool operator<(const TrackOverlapResult& rhs) const;
 
     /**
      *  @brief  Track overlap result greater than operator
      *
      *  @param  rhs the track overlap result for comparison
      */
-    bool operator>(const TrackOverlapResult &rhs) const;
+    bool operator>(const TrackOverlapResult& rhs) const;
 
     /**
      *  @brief  Track overlap result assigment operator
      *
      *  @param  rhs the track overlap result to assign
      */
-    TrackOverlapResult &operator=(const TrackOverlapResult &rhs);
+    TrackOverlapResult& operator=(const TrackOverlapResult& rhs);
 
-protected:
-    bool m_isInitialized;                  ///< Whether the track overlap result has been initialized
+  protected:
+    bool m_isInitialized; ///< Whether the track overlap result has been initialized
     unsigned int m_nMatchedSamplingPoints; ///< The number of matched sampling points
     unsigned int m_nSamplingPoints;        ///< The number of sampling points
     float m_matchedFraction;               ///< The fraction of sampling points resulting in a match
     float m_chi2;                          ///< The absolute chi2 value
     float m_reducedChi2;                   ///< The chi2 per samping point value
-};
+  };
 
-//------------------------------------------------------------------------------------------------------------------------------------------
+  //------------------------------------------------------------------------------------------------------------------------------------------
 
-/**
+  /**
  *  @brief  TransverseOverlapResult class
  */
-class TransverseOverlapResult : public TrackOverlapResult
-{
-public:
+  class TransverseOverlapResult : public TrackOverlapResult {
+  public:
     /**
      *  @brief  Default constructor
      */
@@ -144,14 +143,17 @@ public:
      *  @param  chi2
      *  @param  xOverlap
      */
-    TransverseOverlapResult(const unsigned int nMatchedSamplingPoints, const unsigned int nSamplingPoints, const float chi2, const XOverlap &xOverlap);
+    TransverseOverlapResult(const unsigned int nMatchedSamplingPoints,
+                            const unsigned int nSamplingPoints,
+                            const float chi2,
+                            const XOverlap& xOverlap);
 
     /**
      *  @brief  Copy constructor
      *
      *  @param  rhs
      */
-    TransverseOverlapResult(const TransverseOverlapResult &rhs);
+    TransverseOverlapResult(const TransverseOverlapResult& rhs);
 
     /**
      *  @brief  Destructor
@@ -163,37 +165,37 @@ public:
      *
      *  @return the x overlap object
      */
-    const XOverlap &GetXOverlap() const;
+    const XOverlap& GetXOverlap() const;
 
     /**
      *  @brief  Track overlap result assigment operator
      *
      *  @param  rhs the track overlap result to assign
      */
-    TransverseOverlapResult &operator=(const TransverseOverlapResult &rhs);
+    TransverseOverlapResult& operator=(const TransverseOverlapResult& rhs);
 
-private:
+  private:
     XOverlap m_xOverlap; ///< The x overlap object
-};
+  };
 
-typedef std::vector<TransverseOverlapResult> TransverseOverlapResultVector;
+  typedef std::vector<TransverseOverlapResult> TransverseOverlapResultVector;
 
-/**
+  /**
  *  @brief  Transverse overlap result + operator
  *
  *  @param  lhs the first transverse overlap result to add
  *  @param  rhs the second transverse overlap result to add
  */
-TransverseOverlapResult operator+(const TransverseOverlapResult &lhs, const TransverseOverlapResult &rhs);
+  TransverseOverlapResult operator+(const TransverseOverlapResult& lhs,
+                                    const TransverseOverlapResult& rhs);
 
-//------------------------------------------------------------------------------------------------------------------------------------------
+  //------------------------------------------------------------------------------------------------------------------------------------------
 
-/**
+  /**
  *  @brief  LongitudinalOverlapResult class
  */
-class LongitudinalOverlapResult : public TrackOverlapResult
-{
-public:
+  class LongitudinalOverlapResult : public TrackOverlapResult {
+  public:
     /**
      *  @brief  Default constructor
      */
@@ -206,7 +208,9 @@ public:
      *  @param  innerChi2
      *  @param  outerChi2
      */
-    LongitudinalOverlapResult(const TrackOverlapResult trackOverlapResult, const float innerChi2, const float outerChi2);
+    LongitudinalOverlapResult(const TrackOverlapResult trackOverlapResult,
+                              const float innerChi2,
+                              const float outerChi2);
 
     /**
      *  @brief  Constructor
@@ -217,15 +221,18 @@ public:
      *  @param  innerChi2
      *  @param  outerChi2
      */
-    LongitudinalOverlapResult(const unsigned int nMatchedSamplingPoints, const unsigned int nSamplingPoints, const float chi2,
-        const float innerChi2, const float outerChi2);
+    LongitudinalOverlapResult(const unsigned int nMatchedSamplingPoints,
+                              const unsigned int nSamplingPoints,
+                              const float chi2,
+                              const float innerChi2,
+                              const float outerChi2);
 
     /**
      *  @brief  Copy constructor
      *
      *  @param  rhs
      */
-    LongitudinalOverlapResult(const LongitudinalOverlapResult &rhs);
+    LongitudinalOverlapResult(const LongitudinalOverlapResult& rhs);
 
     /**
      *  @brief  Destructor
@@ -251,23 +258,22 @@ public:
      *
      *  @param  rhs the track overlap result to assign
      */
-    LongitudinalOverlapResult &operator=(const LongitudinalOverlapResult &rhs);
+    LongitudinalOverlapResult& operator=(const LongitudinalOverlapResult& rhs);
 
-private:
+  private:
     float m_innerChi2; ///< The inner chi squared
     float m_outerChi2; ///< The outer chi squared
-};
+  };
 
-typedef std::vector<LongitudinalOverlapResult> LongitudinalOverlapResultVector;
+  typedef std::vector<LongitudinalOverlapResult> LongitudinalOverlapResultVector;
 
-//------------------------------------------------------------------------------------------------------------------------------------------
+  //------------------------------------------------------------------------------------------------------------------------------------------
 
-/**
+  /**
  *  @brief  FragmentOverlapResult class
  */
-class FragmentOverlapResult : public TrackOverlapResult
-{
-public:
+  class FragmentOverlapResult : public TrackOverlapResult {
+  public:
     /**
      *  @brief  Default constructor
      */
@@ -280,7 +286,9 @@ public:
      *  @param  caloHitList
      *  @param  clusterList
      */
-    FragmentOverlapResult(const TrackOverlapResult trackOverlapResult, const pandora::CaloHitList &caloHitList, const pandora::ClusterList &clusterList);
+    FragmentOverlapResult(const TrackOverlapResult trackOverlapResult,
+                          const pandora::CaloHitList& caloHitList,
+                          const pandora::ClusterList& clusterList);
 
     /**
      *  @brief  Constructor
@@ -291,15 +299,18 @@ public:
      *  @param  caloHitList
      *  @param  clusterList
      */
-    FragmentOverlapResult(const unsigned int nMatchedSamplingPoints, const unsigned int nSamplingPoints, const float chi2,
-        const pandora::CaloHitList &caloHitList, const pandora::ClusterList &clusterList);
+    FragmentOverlapResult(const unsigned int nMatchedSamplingPoints,
+                          const unsigned int nSamplingPoints,
+                          const float chi2,
+                          const pandora::CaloHitList& caloHitList,
+                          const pandora::ClusterList& clusterList);
 
     /**
      *  @brief  Copy constructor
      *
      *  @param  rhs
      */
-    FragmentOverlapResult(const FragmentOverlapResult &rhs);
+    FragmentOverlapResult(const FragmentOverlapResult& rhs);
 
     /**
      *  @brief  Destructor
@@ -311,14 +322,14 @@ public:
      *
      *  @return the list of fragment-associated hits
      */
-    const pandora::CaloHitList &GetFragmentCaloHitList() const;
+    const pandora::CaloHitList& GetFragmentCaloHitList() const;
 
     /**
      *  @brief  Get the list of fragment-associated clusters
      *
      *  @return the list of fragment-associated clusters
      */
-    const pandora::ClusterList &GetFragmentClusterList() const;
+    const pandora::ClusterList& GetFragmentClusterList() const;
 
     /**
      *  @brief  Get the fragment hit type
@@ -332,23 +343,22 @@ public:
      *
      *  @param  rhs the track overlap result to assign
      */
-    FragmentOverlapResult &operator=(const FragmentOverlapResult &rhs);
+    FragmentOverlapResult& operator=(const FragmentOverlapResult& rhs);
 
-private:
+  private:
     pandora::CaloHitList m_caloHitList; ///< The list of fragment-associated hits
     pandora::ClusterList m_clusterList; ///< The list of fragment-associated clusters
-};
+  };
 
-typedef std::vector<FragmentOverlapResult> FragmentOverlapResultVector;
+  typedef std::vector<FragmentOverlapResult> FragmentOverlapResultVector;
 
-//------------------------------------------------------------------------------------------------------------------------------------------
+  //------------------------------------------------------------------------------------------------------------------------------------------
 
-/**
+  /**
  *  @brief  DeltaRayOverlapResult class
  */
-class DeltaRayOverlapResult : public TransverseOverlapResult
-{
-public:
+  class DeltaRayOverlapResult : public TransverseOverlapResult {
+  public:
     /**
      *  @brief  Default constructor
      */
@@ -363,15 +373,18 @@ public:
      *  @param  xOverlap
      *  @param  commonMuonPfoList the list of cosmic ray pfos that, in each view, lie close to the clusters of the tensor element
      */
-    DeltaRayOverlapResult(const unsigned int nMatchedSamplingPoints, const unsigned int nSamplingPoints, const float chi2,
-        const XOverlap &xOverlap, const pandora::PfoList &commonMuonPfoList);
+    DeltaRayOverlapResult(const unsigned int nMatchedSamplingPoints,
+                          const unsigned int nSamplingPoints,
+                          const float chi2,
+                          const XOverlap& xOverlap,
+                          const pandora::PfoList& commonMuonPfoList);
 
     /**
      *  @brief  Copy constructor
      *
      *  @param  rhs
      */
-    DeltaRayOverlapResult(const DeltaRayOverlapResult &rhs);
+    DeltaRayOverlapResult(const DeltaRayOverlapResult& rhs);
 
     /**
      *  @brief  Destructor
@@ -383,127 +396,113 @@ public:
      *
      *  @return the common muon pfo list
      */
-    const pandora::PfoList &GetCommonMuonPfoList() const;
+    const pandora::PfoList& GetCommonMuonPfoList() const;
 
     /**
      *  @brief  Track overlap result assigment operator
      *
      *  @param  rhs the track overlap result to assign
      */
-    DeltaRayOverlapResult &operator=(const DeltaRayOverlapResult &rhs);
+    DeltaRayOverlapResult& operator=(const DeltaRayOverlapResult& rhs);
 
-private:
-    pandora::PfoList m_commonMuonPfoList; ///< The list of cosmic ray pfos that, in each view, lie close to the clusters of the tensor element
-};
+  private:
+    pandora::PfoList
+      m_commonMuonPfoList; ///< The list of cosmic ray pfos that, in each view, lie close to the clusters of the tensor element
+  };
 
-typedef std::vector<DeltaRayOverlapResult> DeltaRayOverlapResultVector;
+  typedef std::vector<DeltaRayOverlapResult> DeltaRayOverlapResultVector;
 
-//------------------------------------------------------------------------------------------------------------------------------------------
-//------------------------------------------------------------------------------------------------------------------------------------------
+  //------------------------------------------------------------------------------------------------------------------------------------------
+  //------------------------------------------------------------------------------------------------------------------------------------------
 
-inline bool TrackOverlapResult::IsInitialized() const
-{
-    return m_isInitialized;
-}
+  inline bool TrackOverlapResult::IsInitialized() const { return m_isInitialized; }
 
-//------------------------------------------------------------------------------------------------------------------------------------------
+  //------------------------------------------------------------------------------------------------------------------------------------------
 
-inline unsigned int TrackOverlapResult::GetNMatchedSamplingPoints() const
-{
-    if (m_isInitialized)
-        return m_nMatchedSamplingPoints;
+  inline unsigned int TrackOverlapResult::GetNMatchedSamplingPoints() const
+  {
+    if (m_isInitialized) return m_nMatchedSamplingPoints;
 
     throw pandora::StatusCodeException(pandora::STATUS_CODE_NOT_INITIALIZED);
-}
+  }
 
-//------------------------------------------------------------------------------------------------------------------------------------------
+  //------------------------------------------------------------------------------------------------------------------------------------------
 
-inline unsigned int TrackOverlapResult::GetNSamplingPoints() const
-{
-    if (m_isInitialized)
-        return m_nSamplingPoints;
-
-    throw pandora::StatusCodeException(pandora::STATUS_CODE_NOT_INITIALIZED);
-}
-
-//------------------------------------------------------------------------------------------------------------------------------------------
-
-inline float TrackOverlapResult::GetMatchedFraction() const
-{
-    if (m_isInitialized)
-        return m_matchedFraction;
+  inline unsigned int TrackOverlapResult::GetNSamplingPoints() const
+  {
+    if (m_isInitialized) return m_nSamplingPoints;
 
     throw pandora::StatusCodeException(pandora::STATUS_CODE_NOT_INITIALIZED);
-}
+  }
 
-//------------------------------------------------------------------------------------------------------------------------------------------
+  //------------------------------------------------------------------------------------------------------------------------------------------
 
-inline float TrackOverlapResult::GetChi2() const
-{
-    if (m_isInitialized)
-        return m_chi2;
-
-    throw pandora::StatusCodeException(pandora::STATUS_CODE_NOT_INITIALIZED);
-}
-
-//------------------------------------------------------------------------------------------------------------------------------------------
-
-inline float TrackOverlapResult::GetReducedChi2() const
-{
-    if (m_isInitialized)
-        return m_reducedChi2;
+  inline float TrackOverlapResult::GetMatchedFraction() const
+  {
+    if (m_isInitialized) return m_matchedFraction;
 
     throw pandora::StatusCodeException(pandora::STATUS_CODE_NOT_INITIALIZED);
-}
+  }
 
-//------------------------------------------------------------------------------------------------------------------------------------------
-//------------------------------------------------------------------------------------------------------------------------------------------
+  //------------------------------------------------------------------------------------------------------------------------------------------
 
-inline const XOverlap &TransverseOverlapResult::GetXOverlap() const
-{
-    if (m_isInitialized)
-        return m_xOverlap;
+  inline float TrackOverlapResult::GetChi2() const
+  {
+    if (m_isInitialized) return m_chi2;
 
     throw pandora::StatusCodeException(pandora::STATUS_CODE_NOT_INITIALIZED);
-}
+  }
 
-//------------------------------------------------------------------------------------------------------------------------------------------
-//------------------------------------------------------------------------------------------------------------------------------------------
+  //------------------------------------------------------------------------------------------------------------------------------------------
 
-inline float LongitudinalOverlapResult::GetInnerChi2() const
-{
-    return m_innerChi2;
-}
+  inline float TrackOverlapResult::GetReducedChi2() const
+  {
+    if (m_isInitialized) return m_reducedChi2;
 
-//------------------------------------------------------------------------------------------------------------------------------------------
+    throw pandora::StatusCodeException(pandora::STATUS_CODE_NOT_INITIALIZED);
+  }
 
-inline float LongitudinalOverlapResult::GetOuterChi2() const
-{
-    return m_outerChi2;
-}
+  //------------------------------------------------------------------------------------------------------------------------------------------
+  //------------------------------------------------------------------------------------------------------------------------------------------
 
-//------------------------------------------------------------------------------------------------------------------------------------------
-//------------------------------------------------------------------------------------------------------------------------------------------
+  inline const XOverlap& TransverseOverlapResult::GetXOverlap() const
+  {
+    if (m_isInitialized) return m_xOverlap;
 
-inline const pandora::CaloHitList &FragmentOverlapResult::GetFragmentCaloHitList() const
-{
+    throw pandora::StatusCodeException(pandora::STATUS_CODE_NOT_INITIALIZED);
+  }
+
+  //------------------------------------------------------------------------------------------------------------------------------------------
+  //------------------------------------------------------------------------------------------------------------------------------------------
+
+  inline float LongitudinalOverlapResult::GetInnerChi2() const { return m_innerChi2; }
+
+  //------------------------------------------------------------------------------------------------------------------------------------------
+
+  inline float LongitudinalOverlapResult::GetOuterChi2() const { return m_outerChi2; }
+
+  //------------------------------------------------------------------------------------------------------------------------------------------
+  //------------------------------------------------------------------------------------------------------------------------------------------
+
+  inline const pandora::CaloHitList& FragmentOverlapResult::GetFragmentCaloHitList() const
+  {
     return m_caloHitList;
-}
+  }
 
-//------------------------------------------------------------------------------------------------------------------------------------------
+  //------------------------------------------------------------------------------------------------------------------------------------------
 
-inline const pandora::ClusterList &FragmentOverlapResult::GetFragmentClusterList() const
-{
+  inline const pandora::ClusterList& FragmentOverlapResult::GetFragmentClusterList() const
+  {
     return m_clusterList;
-}
+  }
 
-//------------------------------------------------------------------------------------------------------------------------------------------
-//------------------------------------------------------------------------------------------------------------------------------------------
+  //------------------------------------------------------------------------------------------------------------------------------------------
+  //------------------------------------------------------------------------------------------------------------------------------------------
 
-inline const pandora::PfoList &DeltaRayOverlapResult::GetCommonMuonPfoList() const
-{
+  inline const pandora::PfoList& DeltaRayOverlapResult::GetCommonMuonPfoList() const
+  {
     return m_commonMuonPfoList;
-}
+  }
 
 } // namespace lar_content
 

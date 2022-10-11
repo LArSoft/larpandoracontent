@@ -12,24 +12,25 @@
 
 #include "larpandoracontent/LArTwoDReco/LArClusterAssociation/ClusterExtensionAlgorithm.h"
 
-namespace lar_content
-{
+namespace lar_content {
 
-/**
+  /**
  *  @brief  CrossGapsExtensionAlgorithm class
  */
-class CrossGapsExtensionAlgorithm : public ClusterExtensionAlgorithm
-{
-public:
+  class CrossGapsExtensionAlgorithm : public ClusterExtensionAlgorithm {
+  public:
     /**
      *  @brief  Default constructor
      */
     CrossGapsExtensionAlgorithm();
 
-private:
-    void GetListOfCleanClusters(const pandora::ClusterList *const pClusterList, pandora::ClusterVector &clusterVector) const;
-    void FillClusterAssociationMatrix(const pandora::ClusterVector &clusterVector, ClusterAssociationMatrix &clusterAssociationMatrix) const;
-    void FillClusterMergeMap(const ClusterAssociationMatrix &clusterAssociationMatrix, ClusterMergeMap &clusterMergeMap) const;
+  private:
+    void GetListOfCleanClusters(const pandora::ClusterList* const pClusterList,
+                                pandora::ClusterVector& clusterVector) const;
+    void FillClusterAssociationMatrix(const pandora::ClusterVector& clusterVector,
+                                      ClusterAssociationMatrix& clusterAssociationMatrix) const;
+    void FillClusterMergeMap(const ClusterAssociationMatrix& clusterAssociationMatrix,
+                             ClusterMergeMap& clusterMergeMap) const;
 
     /**
      *  @brief Build lists of pointing clusters that are adjacent to a detector gap
@@ -38,8 +39,9 @@ private:
      *  @param innerPointingClusterList the pointing clusters whose inner vertex is close to a detector gap
      *  @param outerPointingClusterList the pointing clusters whose outer vertex is close to a detector gap
      */
-    void BuildPointingClusterList(const pandora::ClusterVector &clusterVector, LArPointingClusterList &innerPointingClusterList,
-        LArPointingClusterList &outerPointingClusterList) const;
+    void BuildPointingClusterList(const pandora::ClusterVector& clusterVector,
+                                  LArPointingClusterList& innerPointingClusterList,
+                                  LArPointingClusterList& outerPointingClusterList) const;
 
     /**
      *  @brief Build a list of pointing clusters that are adjacent to a detector gap
@@ -48,8 +50,9 @@ private:
      *  @param inputPointingClusterList the input list of pointing clusters
      *  @param outputPointingClusterList the output list of pointing clusters
      */
-    void BuildPointingClusterList(const bool useInner, const LArPointingClusterList &inputPointingClusterList,
-        LArPointingClusterList &outputPointingClusterList) const;
+    void BuildPointingClusterList(const bool useInner,
+                                  const LArPointingClusterList& inputPointingClusterList,
+                                  LArPointingClusterList& outputPointingClusterList) const;
 
     /**
      *  @brief Use pointing information to determine whether two clusters are associated
@@ -57,7 +60,8 @@ private:
      *  @param pointingVertex1 the first pointing vertex
      *  @param pointingVertex2 the second pointing vertex
      */
-    bool IsAssociated(const LArPointingCluster::Vertex &pointingVertex1, const LArPointingCluster::Vertex &pointingVertex2) const;
+    bool IsAssociated(const LArPointingCluster::Vertex& pointingVertex1,
+                      const LArPointingCluster::Vertex& pointingVertex2) const;
 
     /**
      *  @brief Determine whether a start and end position sit either side of a gap
@@ -75,7 +79,7 @@ private:
     float m_maxGapTolerance;           ///<
     float m_maxTransverseDisplacement; ///<
     float m_maxRelativeAngle;          ///<
-};
+  };
 
 } // namespace lar_content
 

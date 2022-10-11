@@ -10,21 +10,19 @@
 
 #include "larpandoracontent/LArThreeDReco/LArCosmicRay/ThreeViewDeltaRayMatchingAlgorithm.h"
 
-namespace lar_content
-{
-/**
+namespace lar_content {
+  /**
  *  @brief  UnambiguousDeltaRayTool class
  */
-class UnambiguousDeltaRayTool : public DeltaRayTensorTool
-{
-public:
+  class UnambiguousDeltaRayTool : public DeltaRayTensorTool {
+  public:
     /**
      *  @brief  Default constructor
      */
     UnambiguousDeltaRayTool();
 
-private:
-    bool Run(ThreeViewDeltaRayMatchingAlgorithm *const pAlgorithm, TensorType &overlapTensor);
+  private:
+    bool Run(ThreeViewDeltaRayMatchingAlgorithm* const pAlgorithm, TensorType& overlapTensor);
     pandora::StatusCode ReadSettings(const pandora::TiXmlHandle xmlHandle);
 
     /**
@@ -34,7 +32,7 @@ private:
      *
      *  @return  whether any delta ray pfos were created
      */
-    bool ExamineUnambiguousElements(TensorType::ElementList &elementList);
+    bool ExamineUnambiguousElements(TensorType::ElementList& elementList);
 
     /**
      *  @brief  Determine whether the clusters of an element are connected to a cosmic ray pfo
@@ -43,11 +41,13 @@ private:
      *
      *  @return  whether the clusters are connected to a cosmic ray pfo
      */
-    bool IsConnected(const TensorType::Element &element) const;
+    bool IsConnected(const TensorType::Element& element) const;
 
-    float m_maxSeparation;                ///< The maximum separation between a connected delta ray cluster and a cosmic ray cluster
-    unsigned int m_minNConnectedClusters; ///< The threshold number of connected delta ray clusters required for particle creation
-};
+    float
+      m_maxSeparation; ///< The maximum separation between a connected delta ray cluster and a cosmic ray cluster
+    unsigned int
+      m_minNConnectedClusters; ///< The threshold number of connected delta ray clusters required for particle creation
+  };
 
 } // namespace lar_content
 

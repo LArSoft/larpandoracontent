@@ -19,15 +19,13 @@
 
 using namespace lar_content;
 
-namespace lar_dl_content
-{
-/**
+namespace lar_dl_content {
+  /**
  *  @brief  DeepLearningTrackShowerIdAlgorithm class
  */
-class DlVertexingAlgorithm : public pandora::Algorithm
-{
-public:
-    typedef std::map<std::pair<int, int>, std::vector<const pandora::CaloHit *>> PixelToCaloHitsMap;
+  class DlVertexingAlgorithm : public pandora::Algorithm {
+  public:
+    typedef std::map<std::pair<int, int>, std::vector<const pandora::CaloHit*>> PixelToCaloHitsMap;
 
     /**
      *  @brief Default constructor
@@ -36,23 +34,27 @@ public:
 
     virtual ~DlVertexingAlgorithm();
 
-private:
-    class VertexTuple
-    {
+  private:
+    class VertexTuple {
     public:
-        VertexTuple(const pandora::Pandora &pandora, const pandora::CartesianVector &vertexU, const pandora::CartesianVector &vertexV,
-            const pandora::CartesianVector &vertexW);
+      VertexTuple(const pandora::Pandora& pandora,
+                  const pandora::CartesianVector& vertexU,
+                  const pandora::CartesianVector& vertexV,
+                  const pandora::CartesianVector& vertexW);
 
-        VertexTuple(const pandora::Pandora &pandora, const pandora::CartesianVector &vertex1, const pandora::CartesianVector &vertex2,
-            const pandora::HitType view1, const pandora::HitType view2);
+      VertexTuple(const pandora::Pandora& pandora,
+                  const pandora::CartesianVector& vertex1,
+                  const pandora::CartesianVector& vertex2,
+                  const pandora::HitType view1,
+                  const pandora::HitType view2);
 
-        const pandora::CartesianVector &GetPosition() const;
-        float GetChi2() const;
-        std::string ToString() const;
+      const pandora::CartesianVector& GetPosition() const;
+      float GetChi2() const;
+      std::string ToString() const;
 
     private:
-        pandora::CartesianVector m_pos; ///< Calculated 3D position
-        float m_chi2;                   ///< Chi squared of calculated position
+      pandora::CartesianVector m_pos; ///< Calculated 3D position
+      float m_chi2;                   ///< Chi squared of calculated position
     };
 
     typedef std::pair<int, int> Pixel; // A Pixel is a row, column pair
@@ -72,8 +74,9 @@ private:
      *
      *  @return The StatusCode resulting from the function
      **/
-    pandora::StatusCode MakeNetworkInputFromHits(
-        const pandora::CaloHitList &caloHits, LArDLHelper::TorchInput &networkInput, PixelVector &pixelVector) const;
+    pandora::StatusCode MakeNetworkInputFromHits(const pandora::CaloHitList& caloHits,
+                                                 LArDLHelper::TorchInput& networkInput,
+                                                 PixelVector& pixelVector) const;
 
     /*
      *  @brief  Create a list of wire plane-space coordinates from a list of Pixels
@@ -85,7 +88,9 @@ private:
      *  @return The StatusCode resulting from the function
      **/
     pandora::StatusCode MakeWirePlaneCoordinatesFromPixels(
-        const pandora::CaloHitList &caloHits, const PixelVector &pixelVector, pandora::CartesianPointVector &positionVector) const;
+      const pandora::CaloHitList& caloHits,
+      const PixelVector& pixelVector,
+      pandora::CartesianPointVector& positionVector) const;
 
     /*
      *  @brief  Create a list of wire plane-space coordinates from a canvas
@@ -100,8 +105,14 @@ private:
      *
      *  @return The StatusCode resulting from the function
      **/
-    pandora::StatusCode MakeWirePlaneCoordinatesFromCanvas(const pandora::CaloHitList &caloHits, float **canvas, const int canvasWidth,
-        const int canvasHeight, const int columnOffset, const int rowOffset, pandora::CartesianPointVector &positionVector) const;
+    pandora::StatusCode MakeWirePlaneCoordinatesFromCanvas(
+      const pandora::CaloHitList& caloHits,
+      float** canvas,
+      const int canvasWidth,
+      const int canvasHeight,
+      const int columnOffset,
+      const int rowOffset,
+      pandora::CartesianPointVector& positionVector) const;
 
     /**
      *  @brief  Determines the parameters of the canvas for extracting the vertex location.
@@ -116,8 +127,12 @@ private:
      *  @param  width The output width for the canvas
      *  @param  height The output height for the canvas
      */
-    void GetCanvasParameters(const LArDLHelper::TorchOutput &networkOutput, const PixelVector &pixelVector, int &columnOffset,
-        int &rowOffset, int &width, int &height) const;
+    void GetCanvasParameters(const LArDLHelper::TorchOutput& networkOutput,
+                             const PixelVector& pixelVector,
+                             int& columnOffset,
+                             int& rowOffset,
+                             int& width,
+                             int& height) const;
 
     /**
      *  @brief  Add a filled ring to the specified canvas.
@@ -139,7 +154,12 @@ private:
      *  @param  width The output width for the canvas
      *  @param  height The output height for the canvas
      */
-    void DrawRing(float **canvas, const int row, const int col, const int inner, const int outer, const float weight) const;
+    void DrawRing(float** canvas,
+                  const int row,
+                  const int col,
+                  const int inner,
+                  const int outer,
+                  const float weight) const;
 
     /**
      *  @brief  Update the coordinates along the loci of a circle.
@@ -152,7 +172,7 @@ private:
      *  @param  col The input/output column position to (potentially) update
      *  @param  row The input/output row position to update
      */
-    void Update(const int radius, int &col, int &row) const;
+    void Update(const int radius, int& col, int& row) const;
 
     /*
      *  @brief  Retrieve the map from MC to calo hits for reconstructable particles
@@ -161,7 +181,7 @@ private:
      *
      *  @return The StatusCode resulting from the function
      **/
-    pandora::StatusCode GetMCToHitsMap(LArMCParticleHelper::MCContributionMap &mcToHitsMap) const;
+    pandora::StatusCode GetMCToHitsMap(LArMCParticleHelper::MCContributionMap& mcToHitsMap) const;
 
     /*
      *  @brief  Construct a list of the MC particles from the MC to calo hits map, completing the interaction hierarchy with the invisible
@@ -172,7 +192,9 @@ private:
      *
      *  @return The StatusCode resulting from the function
      **/
-    pandora::StatusCode CompleteMCHierarchy(const LArMCParticleHelper::MCContributionMap &mcToHitsMap, pandora::MCParticleList &mcHierarchy) const;
+    pandora::StatusCode CompleteMCHierarchy(
+      const LArMCParticleHelper::MCContributionMap& mcToHitsMap,
+      pandora::MCParticleList& mcHierarchy) const;
 
     /*
      *  @brief  Determine the physical bounds associated with a CaloHitList.
@@ -185,7 +207,11 @@ private:
      *
      *  @return The StatusCode resulting from the function
      */
-    void GetHitRegion(const pandora::CaloHitList &caloHitList, float &xMin, float &xMax, float &zMin, float &zMax) const;
+    void GetHitRegion(const pandora::CaloHitList& caloHitList,
+                      float& xMin,
+                      float& xMax,
+                      float& zMin,
+                      float& zMax) const;
 
     /**
      *  @brief Create a vertex list from the candidate vertices.
@@ -194,28 +220,30 @@ private:
      *
      *  @return The StatusCode resulting from the function
      */
-    pandora::StatusCode MakeCandidateVertexList(const pandora::CartesianPointVector &positions);
+    pandora::StatusCode MakeCandidateVertexList(const pandora::CartesianPointVector& positions);
 
     /**
      *  @brief  Retrieve the true neutrino vertex position.
      */
-    void GetTrueVertexPosition(float &x, float &y, float &z) const;
+    void GetTrueVertexPosition(float& x, float& y, float& z) const;
 
     /**
      *  @brief  Retrieve the true neutrino vertex position.
      */
-    void GetTrueVertexPosition(float &x, float &u, float &v, float &w) const;
+    void GetTrueVertexPosition(float& x, float& u, float& v, float& w) const;
 
     /**
      *  @brief  Retrieve the true neutrino vertex.
      */
-    const pandora::CartesianVector &GetTrueVertex() const;
+    const pandora::CartesianVector& GetTrueVertex() const;
 
     /**
      *  @brief  Populate a root true with vertex information.
      */
-    void PopulateRootTree(const std::vector<VertexTuple> &vertexTuples, const pandora::CartesianPointVector &vertexCandidatesU,
-        const pandora::CartesianPointVector &vertexCandidatesV, const pandora::CartesianPointVector &vertexCandidatesW) const;
+    void PopulateRootTree(const std::vector<VertexTuple>& vertexTuples,
+                          const pandora::CartesianPointVector& vertexCandidatesU,
+                          const pandora::CartesianPointVector& vertexCandidatesV,
+                          const pandora::CartesianPointVector& vertexCandidatesW) const;
 
     bool m_trainingMode;                      ///< Training mode
     std::string m_trainingOutputFile;         ///< Output file name for training examples
@@ -231,15 +259,15 @@ private:
     int m_height;                             ///< The height of the images
     int m_width;                              ///< The width of the images
     float m_maxHitAdc;                        ///< Maximum ADC value to allow
-    float m_regionSize;                       ///< The half width/height of the event region to consider in cm
-    bool m_visualise;                         ///< Whether or not to visualise the candidate vertices
-    bool m_writeTree;                         ///< Whether or not to write validation details to a ROOT tree
-    std::string m_rootTreeName;               ///< The ROOT tree name
-    std::string m_rootFileName;               ///< The ROOT file name
-    std::mt19937 m_rng;                       ///< The random number generator
-    std::vector<double> m_thresholds;         ///< Distance class thresholds
-    const double PY_EPSILON{1.1920929e-7};    ///< The value of epsilon in Python
-};
+    float m_regionSize;         ///< The half width/height of the event region to consider in cm
+    bool m_visualise;           ///< Whether or not to visualise the candidate vertices
+    bool m_writeTree;           ///< Whether or not to write validation details to a ROOT tree
+    std::string m_rootTreeName; ///< The ROOT tree name
+    std::string m_rootFileName; ///< The ROOT file name
+    std::mt19937 m_rng;         ///< The random number generator
+    std::vector<double> m_thresholds;      ///< Distance class thresholds
+    const double PY_EPSILON{1.1920929e-7}; ///< The value of epsilon in Python
+  };
 
 } // namespace lar_dl_content
 

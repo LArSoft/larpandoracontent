@@ -10,23 +10,21 @@
 
 #include "larpandoracontent/LArThreeDReco/LArTransverseTrackMatching/ThreeViewTransverseTracksAlgorithm.h"
 
-namespace lar_content
-{
+namespace lar_content {
 
-/**
+  /**
  *  @brief  ClearTracksTool class
  */
-class ClearTracksTool : public TransverseTensorTool
-{
-public:
+  class ClearTracksTool : public TransverseTensorTool {
+  public:
     /**
      *  @brief  Default constructor
      */
     ClearTracksTool();
 
-    bool Run(ThreeViewTransverseTracksAlgorithm *const pAlgorithm, TensorType &overlapTensor);
+    bool Run(ThreeViewTransverseTracksAlgorithm* const pAlgorithm, TensorType& overlapTensor);
 
-private:
+  private:
     pandora::StatusCode ReadSettings(const pandora::TiXmlHandle xmlHandle);
 
     /**
@@ -36,11 +34,14 @@ private:
      *  @param  elementList the tensor element list
      *  @param  particlesMade receive boolean indicating whether particles have been made
      */
-    void CreateThreeDParticles(ThreeViewTransverseTracksAlgorithm *const pAlgorithm, const TensorType::ElementList &elementList, bool &particlesMade) const;
+    void CreateThreeDParticles(ThreeViewTransverseTracksAlgorithm* const pAlgorithm,
+                               const TensorType::ElementList& elementList,
+                               bool& particlesMade) const;
 
-    float m_minMatchedFraction;  ///< The min matched sampling point fraction for particle creation
-    float m_minXOverlapFraction; ///< The min x overlap fraction (in each view) for particle creation
-};
+    float m_minMatchedFraction; ///< The min matched sampling point fraction for particle creation
+    float
+      m_minXOverlapFraction; ///< The min x overlap fraction (in each view) for particle creation
+  };
 
 } // namespace lar_content
 

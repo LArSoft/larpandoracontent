@@ -14,24 +14,22 @@
 
 using namespace pandora;
 
-namespace lar_content
-{
+namespace lar_content {
 
-bool CheatingClusterCharacterisationAlgorithm::IsClearTrack(const Cluster *const pCluster) const
-{
-    try
-    {
-        // ATTN Slightly curious definition of a clear track, but this is most-likely what is needed for shower-growing
-        const MCParticle *const pMCParticle(MCParticleHelper::GetMainMCParticle(pCluster));
+  bool CheatingClusterCharacterisationAlgorithm::IsClearTrack(const Cluster* const pCluster) const
+  {
+    try {
+      // ATTN Slightly curious definition of a clear track, but this is most-likely what is needed for shower-growing
+      const MCParticle* const pMCParticle(MCParticleHelper::GetMainMCParticle(pCluster));
 
-        if ((PHOTON != pMCParticle->GetParticleId()) && (E_MINUS != std::abs(pMCParticle->GetParticleId())))
-            return true;
+      if ((PHOTON != pMCParticle->GetParticleId()) &&
+          (E_MINUS != std::abs(pMCParticle->GetParticleId())))
+        return true;
     }
-    catch (const StatusCodeException &)
-    {
+    catch (const StatusCodeException&) {
     }
 
     return false;
-}
+  }
 
 } // namespace lar_content

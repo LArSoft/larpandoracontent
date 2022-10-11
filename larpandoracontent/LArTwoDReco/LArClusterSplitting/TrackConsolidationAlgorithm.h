@@ -12,21 +12,19 @@
 
 #include "larpandoracontent/LArHelpers/LArClusterHelper.h"
 
-namespace lar_content
-{
+namespace lar_content {
 
-/**
+  /**
  *  @brief  TrackConsolidationAlgorithm class
  */
-class TrackConsolidationAlgorithm : public TwoDSlidingFitConsolidationAlgorithm
-{
-public:
+  class TrackConsolidationAlgorithm : public TwoDSlidingFitConsolidationAlgorithm {
+  public:
     /**
      *  @brief  Default constructor
      */
     TrackConsolidationAlgorithm();
 
-private:
+  private:
     pandora::StatusCode ReadSettings(const pandora::TiXmlHandle xmlHandle);
 
     /**
@@ -37,8 +35,10 @@ private:
      *  @param caloHitsToAdd   the output map of hits to be added to clusters
      *  @param caloHitsToRemove   the output map of hits to be removed from clusters
      */
-    void GetReclusteredHits(const TwoDSlidingFitResultList &slidingFitResultList, const pandora::ClusterVector &showerClusters,
-        ClusterToHitMap &caloHitsToAdd, ClusterToHitMap &caloHitsToRemove) const;
+    void GetReclusteredHits(const TwoDSlidingFitResultList& slidingFitResultList,
+                            const pandora::ClusterVector& showerClusters,
+                            ClusterToHitMap& caloHitsToAdd,
+                            ClusterToHitMap& caloHitsToRemove) const;
 
     /**
      *  @brief Get the list of hits to be added to a track cluster and removed from a shower cluster
@@ -48,13 +48,15 @@ private:
      *  @param caloHitsToAdd  the output map of hits to be added to clusters
      *  @param caloHitsToRemove  the output map of hits to be removed from clusters
      */
-    void GetReclusteredHits(const TwoDSlidingFitResult &slidingFitResult, const pandora::Cluster *const pTargetCluster,
-        ClusterToHitMap &caloHitsToAdd, ClusterToHitMap &caloHitsToRemove) const;
+    void GetReclusteredHits(const TwoDSlidingFitResult& slidingFitResult,
+                            const pandora::Cluster* const pTargetCluster,
+                            ClusterToHitMap& caloHitsToAdd,
+                            ClusterToHitMap& caloHitsToRemove) const;
 
     float m_maxTransverseDisplacement; ///<
     float m_minAssociatedSpan;         ///<
     float m_minAssociatedFraction;     ///<
-};
+  };
 
 } // namespace lar_content
 

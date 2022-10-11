@@ -12,27 +12,26 @@
 
 #include "Pandora/Algorithm.h"
 
-namespace lar_content
-{
+namespace lar_content {
 
-/**
+  /**
  *  @brief  VertexSplittingAlgorithm class
  */
-class VertexSplittingAlgorithm : public TwoDSlidingFitSplittingAlgorithm
-{
-public:
+  class VertexSplittingAlgorithm : public TwoDSlidingFitSplittingAlgorithm {
+  public:
     /**
      *  @brief  Default constructor
      */
     VertexSplittingAlgorithm();
 
-private:
+  private:
     pandora::StatusCode ReadSettings(const pandora::TiXmlHandle xmlHandle);
-    pandora::StatusCode FindBestSplitPosition(const TwoDSlidingFitResult &slidingFitResult, pandora::CartesianVector &splitPosition) const;
+    pandora::StatusCode FindBestSplitPosition(const TwoDSlidingFitResult& slidingFitResult,
+                                              pandora::CartesianVector& splitPosition) const;
 
     float m_splitDisplacementSquared;  ///< Maximum displacement squared
     float m_vertexDisplacementSquared; ///< Maximum displacement squared
-};
+  };
 
 } // namespace lar_content
 

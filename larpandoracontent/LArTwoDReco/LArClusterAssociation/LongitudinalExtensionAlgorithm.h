@@ -12,24 +12,25 @@
 
 #include "larpandoracontent/LArTwoDReco/LArClusterAssociation/ClusterExtensionAlgorithm.h"
 
-namespace lar_content
-{
+namespace lar_content {
 
-/**
+  /**
  *  @brief  LongitudinalExtensionAlgorithm class
  */
-class LongitudinalExtensionAlgorithm : public ClusterExtensionAlgorithm
-{
-public:
+  class LongitudinalExtensionAlgorithm : public ClusterExtensionAlgorithm {
+  public:
     /**
      *  @brief  Default constructor
      */
     LongitudinalExtensionAlgorithm();
 
-private:
-    void GetListOfCleanClusters(const pandora::ClusterList *const pClusterList, pandora::ClusterVector &clusterVector) const;
-    void FillClusterAssociationMatrix(const pandora::ClusterVector &clusterVector, ClusterAssociationMatrix &clusterAssociationMatrix) const;
-    void FillClusterMergeMap(const ClusterAssociationMatrix &clusterAssociationMatrix, ClusterMergeMap &clusterMergeMap) const;
+  private:
+    void GetListOfCleanClusters(const pandora::ClusterList* const pClusterList,
+                                pandora::ClusterVector& clusterVector) const;
+    void FillClusterAssociationMatrix(const pandora::ClusterVector& clusterVector,
+                                      ClusterAssociationMatrix& clusterAssociationMatrix) const;
+    void FillClusterMergeMap(const ClusterAssociationMatrix& clusterAssociationMatrix,
+                             ClusterMergeMap& clusterMergeMap) const;
 
     /**
      *  @brief  Form association between two pointing clusters
@@ -38,8 +39,9 @@ private:
      *  @param  clusterJ the second pointing cluster
      *  @param  clusterAssociationMatrix the matrix of cluster associations
      */
-    void FillClusterAssociationMatrix(
-        const LArPointingCluster &clusterI, const LArPointingCluster &clusterJ, ClusterAssociationMatrix &clusterAssociationMatrix) const;
+    void FillClusterAssociationMatrix(const LArPointingCluster& clusterI,
+                                      const LArPointingCluster& clusterJ,
+                                      ClusterAssociationMatrix& clusterAssociationMatrix) const;
 
     pandora::StatusCode ReadSettings(const pandora::TiXmlHandle xmlHandle);
 
@@ -50,7 +52,7 @@ private:
     float m_emissionMaxLongitudinalDisplacement; ///<
     float m_emissionMaxTransverseDisplacement;   ///<
     float m_emissionMaxCosRelativeAngle;         ///<
-};
+  };
 
 } // namespace lar_content
 

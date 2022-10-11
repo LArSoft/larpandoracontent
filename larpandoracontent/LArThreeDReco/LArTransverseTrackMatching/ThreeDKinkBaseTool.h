@@ -12,15 +12,13 @@
 
 #include "larpandoracontent/LArThreeDReco/LArTransverseTrackMatching/ThreeViewTransverseTracksAlgorithm.h"
 
-namespace lar_content
-{
+namespace lar_content {
 
-/**
+  /**
  *  @brief  ThreeDKinkBaseTool class
  */
-class ThreeDKinkBaseTool : public TransverseTensorTool
-{
-public:
+  class ThreeDKinkBaseTool : public TransverseTensorTool {
+  public:
     /**
      *  @brief  Constructor
      *
@@ -33,18 +31,17 @@ public:
      */
     virtual ~ThreeDKinkBaseTool();
 
-    bool Run(ThreeViewTransverseTracksAlgorithm *const pAlgorithm, TensorType &overlapTensor);
+    bool Run(ThreeViewTransverseTracksAlgorithm* const pAlgorithm, TensorType& overlapTensor);
 
-protected:
+  protected:
     /**
      *  @brief  Modification class
      */
-    class Modification
-    {
+    class Modification {
     public:
-        SplitPositionMap m_splitPositionMap;     ///< The split position map
-        ClusterMergeMap m_clusterMergeMap;       ///< The cluster merge map
-        pandora::ClusterList m_affectedClusters; ///< The list of affected clusters
+      SplitPositionMap m_splitPositionMap;     ///< The split position map
+      ClusterMergeMap m_clusterMergeMap;       ///< The cluster merge map
+      pandora::ClusterList m_affectedClusters; ///< The list of affected clusters
     };
 
     typedef std::vector<Modification> ModificationList;
@@ -55,7 +52,8 @@ protected:
      *  @param  eIter the iterator to the tensor element
      *  @param  usedClusters the list of used clusters
      */
-    virtual bool PassesElementCuts(TensorType::ElementList::const_iterator eIter, const pandora::ClusterSet &usedClusters) const;
+    virtual bool PassesElementCuts(TensorType::ElementList::const_iterator eIter,
+                                   const pandora::ClusterSet& usedClusters) const;
 
     /**
      *  @brief  Get modification objects for a specific elements of the tensor, identifying required splits and merges for clusters
@@ -64,8 +62,9 @@ protected:
      *  @param  iteratorList list of iterators to relevant tensor elements
      *  @param  modificationList to be populated with modifications
      */
-    virtual void GetIteratorListModifications(ThreeViewTransverseTracksAlgorithm *const pAlgorithm, const IteratorList &iteratorList,
-        ModificationList &modificationList) const = 0;
+    virtual void GetIteratorListModifications(ThreeViewTransverseTracksAlgorithm* const pAlgorithm,
+                                              const IteratorList& iteratorList,
+                                              ModificationList& modificationList) const = 0;
 
     /**
      *  @brief  Get a sampling point in x that is common to sliding linear fit objects in three views
@@ -78,8 +77,11 @@ protected:
      *
      *  @return the sampling point
      */
-    float GetXSamplingPoint(const pandora::CartesianVector &splitPosition1, const bool isForwardInX, const TwoDSlidingFitResult &fitResult1,
-        const TwoDSlidingFitResult &fitResult2, const TwoDSlidingFitResult &fitResult3) const;
+    float GetXSamplingPoint(const pandora::CartesianVector& splitPosition1,
+                            const bool isForwardInX,
+                            const TwoDSlidingFitResult& fitResult1,
+                            const TwoDSlidingFitResult& fitResult2,
+                            const TwoDSlidingFitResult& fitResult3) const;
 
     /**
      *  @brief  Whether pointing cluster labelled A extends to lowest x positions (as opposed to that labelled B)
@@ -87,19 +89,25 @@ protected:
      *  @param  pointingClusterA pointing cluster A
      *  @param  pointingClusterB pointing cluster B
      */
-    static bool IsALowestInX(const LArPointingCluster &pointingClusterA, const LArPointingCluster &pointingClusterB);
+    static bool IsALowestInX(const LArPointingCluster& pointingClusterA,
+                             const LArPointingCluster& pointingClusterB);
 
     pandora::StatusCode ReadSettings(const pandora::TiXmlHandle xmlHandle);
 
-    unsigned int m_nCommonClusters;          ///< The number of common clusters
-    bool m_majorityRulesMode;                ///< Whether to run in majority rules mode (always split overshoots, always merge undershoots)
-    float m_minMatchedFraction;              ///< The min matched sampling point fraction for use as a key tensor element
-    unsigned int m_minMatchedSamplingPoints; ///< The min number of matched sampling points for use as a key tensor element
-    float m_minLongitudinalImpactParameter;  ///< The min longitudinal impact parameter for connecting accompanying clusters
-    int m_nLayersForKinkSearch;              ///< The number of sliding fit layers to step in the kink search
-    float m_additionalXStepForKinkSearch;    ///< An additional (safety) step to tack-on when choosing x sampling points
+    unsigned int m_nCommonClusters; ///< The number of common clusters
+    bool
+      m_majorityRulesMode; ///< Whether to run in majority rules mode (always split overshoots, always merge undershoots)
+    float
+      m_minMatchedFraction; ///< The min matched sampling point fraction for use as a key tensor element
+    unsigned int
+      m_minMatchedSamplingPoints; ///< The min number of matched sampling points for use as a key tensor element
+    float
+      m_minLongitudinalImpactParameter; ///< The min longitudinal impact parameter for connecting accompanying clusters
+    int m_nLayersForKinkSearch; ///< The number of sliding fit layers to step in the kink search
+    float
+      m_additionalXStepForKinkSearch; ///< An additional (safety) step to tack-on when choosing x sampling points
 
-private:
+  private:
     /**
      *  @brief  Get modification objects, identifying required splits and merges for clusters
      *
@@ -107,7 +115,9 @@ private:
      *  @param  overlapTensor the overlap tensor
      *  @param  modificationList to be populated with modifications
      */
-    void GetModifications(ThreeViewTransverseTracksAlgorithm *const pAlgorithm, const TensorType &overlapTensor, ModificationList &modificationList) const;
+    void GetModifications(ThreeViewTransverseTracksAlgorithm* const pAlgorithm,
+                          const TensorType& overlapTensor,
+                          ModificationList& modificationList) const;
 
     /**
      *  @brief  Select elements representing possible components of interest due to overshoots or undershoots in clustering
@@ -117,8 +127,10 @@ private:
      *  @param  usedClusters the list of used clusters
      *  @param  iteratorList to receive a list of iterators to relevant elements
      */
-    void SelectTensorElements(TensorType::ElementList::const_iterator eIter, const TensorType::ElementList &elementList,
-        const pandora::ClusterSet &usedClusters, IteratorList &iteratorList) const;
+    void SelectTensorElements(TensorType::ElementList::const_iterator eIter,
+                              const TensorType::ElementList& elementList,
+                              const pandora::ClusterSet& usedClusters,
+                              IteratorList& iteratorList) const;
 
     /**
      *  @brief  Apply the changes cached in a modification list and update the tensor accordingly
@@ -128,8 +140,9 @@ private:
      *
      *  @return whether changes to the tensor have been made
      */
-    bool ApplyChanges(ThreeViewTransverseTracksAlgorithm *const pAlgorithm, const ModificationList &modificationList) const;
-};
+    bool ApplyChanges(ThreeViewTransverseTracksAlgorithm* const pAlgorithm,
+                      const ModificationList& modificationList) const;
+  };
 
 } // namespace lar_content
 

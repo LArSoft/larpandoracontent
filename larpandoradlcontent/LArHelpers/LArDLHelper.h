@@ -13,15 +13,13 @@
 
 #include "Pandora/StatusCodes.h"
 
-namespace lar_dl_content
-{
+namespace lar_dl_content {
 
-/**
+  /**
  *  @brief  LArDLHelper class
  */
-class LArDLHelper
-{
-public:
+  class LArDLHelper {
+  public:
     typedef torch::jit::script::Module TorchModel;
     typedef torch::Tensor TorchInput;
     typedef std::vector<torch::jit::IValue> TorchInputVector;
@@ -35,7 +33,7 @@ public:
      *
      *  @return STATUS_CODE_SUCCESS upon successful loading of the model. STATUS_CODE_FAILURE otherwise.
      */
-    static pandora::StatusCode LoadModel(const std::string &filename, TorchModel &model);
+    static pandora::StatusCode LoadModel(const std::string& filename, TorchModel& model);
 
     /**
      *  @brief  Create a torch input tensor
@@ -43,7 +41,7 @@ public:
      *  @param  dimensions the size of each dimension of the tensor: pass as {a, b, c, d} for example
      *  @param  tensor the tensor to be initialised
      */
-    static void InitialiseInput(const at::IntArrayRef dimensions, TorchInput &tensor);
+    static void InitialiseInput(const at::IntArrayRef dimensions, TorchInput& tensor);
 
     /**
      *  @brief  Run a deep learning model
@@ -52,8 +50,8 @@ public:
      *  @param  input the input to run over
      *  @param  output the tensor to store the output in
      */
-    static void Forward(TorchModel &model, const TorchInputVector &input, TorchOutput &output);
-};
+    static void Forward(TorchModel& model, const TorchInputVector& input, TorchOutput& output);
+  };
 
 } // namespace lar_dl_content
 

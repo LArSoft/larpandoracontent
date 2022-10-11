@@ -10,15 +10,13 @@
 
 #include "Pandora/Algorithm.h"
 
-namespace lar_content
-{
+namespace lar_content {
 
-/**
+  /**
  *  @brief  MopUpBaseAlgorithm class
  */
-class MopUpBaseAlgorithm : public pandora::Algorithm
-{
-public:
+  class MopUpBaseAlgorithm : public pandora::Algorithm {
+  public:
     /**
      *  @brief  Find the name of the list hosting a specific object
      *
@@ -27,13 +25,13 @@ public:
      *  @return the name of the list
      */
     template <typename T>
-    const std::string GetListName(const T *const pT) const;
+    const std::string GetListName(const T* const pT) const;
 
-protected:
+  protected:
     virtual pandora::StatusCode ReadSettings(const pandora::TiXmlHandle xmlHandle);
 
     pandora::StringVector m_daughterListNames; ///< The list of potential daughter object list names
-};
+  };
 
 } // namespace lar_content
 

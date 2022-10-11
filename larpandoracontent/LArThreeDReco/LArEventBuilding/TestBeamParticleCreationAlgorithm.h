@@ -10,15 +10,13 @@
 
 #include "Pandora/Algorithm.h"
 
-namespace lar_content
-{
+namespace lar_content {
 
-/**
+  /**
  *  @brief  TestBeamParticleCreationAlgorithm class
  */
-class TestBeamParticleCreationAlgorithm : public pandora::Algorithm
-{
-private:
+  class TestBeamParticleCreationAlgorithm : public pandora::Algorithm {
+  private:
     pandora::StatusCode Run();
 
     /**
@@ -30,8 +28,9 @@ private:
      *
      *  @return status code
      */
-    pandora::StatusCode SetupTestBeamPfo(
-        const pandora::Pfo *const pNuPfo, const pandora::Pfo *&pTestBeamPfo, pandora::CartesianVector &testBeamStartVertex) const;
+    pandora::StatusCode SetupTestBeamPfo(const pandora::Pfo* const pNuPfo,
+                                         const pandora::Pfo*& pTestBeamPfo,
+                                         pandora::CartesianVector& testBeamStartVertex) const;
 
     /**
      *  @brief  Set up the test beam vertex
@@ -43,7 +42,9 @@ private:
      *  @return status code
      */
     pandora::StatusCode SetupTestBeamVertex(
-        const pandora::Pfo *const pNuPfo, const pandora::Pfo *const pTestBeamPfo, const pandora::CartesianVector &testBeamStartVertex) const;
+      const pandora::Pfo* const pNuPfo,
+      const pandora::Pfo* const pTestBeamPfo,
+      const pandora::CartesianVector& testBeamStartVertex) const;
 
     pandora::StatusCode ReadSettings(const pandora::TiXmlHandle xmlHandle);
 
@@ -53,7 +54,7 @@ private:
 
     std::string m_parentVertexListName;   ///< The parent vertex list name
     std::string m_daughterVertexListName; ///< The daughter vertex list name
-};
+  };
 
 } // namespace lar_content
 

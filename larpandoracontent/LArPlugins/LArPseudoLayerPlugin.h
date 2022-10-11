@@ -10,38 +10,33 @@
 
 #include "Plugins/PseudoLayerPlugin.h"
 
-namespace lar_content
-{
+namespace lar_content {
 
-/**
+  /**
  *  @brief  LarPandoraPseudoLayerPlugin class
  */
-class LArPseudoLayerPlugin : public pandora::PseudoLayerPlugin
-{
-public:
+  class LArPseudoLayerPlugin : public pandora::PseudoLayerPlugin {
+  public:
     /**
      *  @brief  Constructor
      */
     LArPseudoLayerPlugin();
 
-    unsigned int GetPseudoLayer(const pandora::CartesianVector &positionVector) const;
+    unsigned int GetPseudoLayer(const pandora::CartesianVector& positionVector) const;
     unsigned int GetPseudoLayerAtIp() const;
 
-private:
+  private:
     pandora::StatusCode Initialize();
     pandora::StatusCode ReadSettings(const pandora::TiXmlHandle xmlHandle);
 
     float m_zPitch;             ///< The z pitch
     float m_zOffset;            ///< The z offset
     unsigned int m_zerothLayer; ///< The zeroth layer
-};
+  };
 
-//------------------------------------------------------------------------------------------------------------------------------------------
+  //------------------------------------------------------------------------------------------------------------------------------------------
 
-inline unsigned int LArPseudoLayerPlugin::GetPseudoLayerAtIp() const
-{
-    return 0;
-}
+  inline unsigned int LArPseudoLayerPlugin::GetPseudoLayerAtIp() const { return 0; }
 
 } // namespace lar_content
 

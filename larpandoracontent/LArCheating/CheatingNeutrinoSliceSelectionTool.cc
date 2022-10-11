@@ -14,19 +14,18 @@
 
 using namespace pandora;
 
-namespace lar_content
-{
+namespace lar_content {
 
-bool CheatingNeutrinoSliceSelectionTool::IsTarget(const MCParticle *const mcParticle) const
-{
+  bool CheatingNeutrinoSliceSelectionTool::IsTarget(const MCParticle* const mcParticle) const
+  {
     return LArMCParticleHelper::IsNeutrino(mcParticle);
-}
+  }
 
-//------------------------------------------------------------------------------------------------------------------------------------------
+  //------------------------------------------------------------------------------------------------------------------------------------------
 
-StatusCode CheatingNeutrinoSliceSelectionTool::ReadSettings(const TiXmlHandle xmlHandle)
-{
+  StatusCode CheatingNeutrinoSliceSelectionTool::ReadSettings(const TiXmlHandle xmlHandle)
+  {
     return CheatingSliceSelectionTool::ReadSettings(xmlHandle);
-}
+  }
 
 } // namespace lar_content

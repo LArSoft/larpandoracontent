@@ -10,30 +10,30 @@
 
 #include "larpandoracontent/LArThreeDReco/LArTwoViewMatching/TwoViewTransverseTracksAlgorithm.h"
 
-namespace lar_content
-{
+namespace lar_content {
 
-/**
+  /**
  *  @brief  TransverseMatrixVisualizationTool class
  */
-class TransverseMatrixVisualizationTool : public TransverseMatrixTool
-{
-public:
+  class TransverseMatrixVisualizationTool : public TransverseMatrixTool {
+  public:
     /**
      *  @brief  Default constructor
      */
     TransverseMatrixVisualizationTool();
 
-    bool Run(TwoViewTransverseTracksAlgorithm *const pAlgorithm, MatrixType &overlapMatrix);
+    bool Run(TwoViewTransverseTracksAlgorithm* const pAlgorithm, MatrixType& overlapMatrix);
 
-private:
+  private:
     pandora::StatusCode ReadSettings(const pandora::TiXmlHandle xmlHandle);
 
-    unsigned int m_minClusterConnections;       ///< The minimum number of cluster connections for display
-    bool m_ignoreUnavailableClusters;           ///< Whether to ignore (skip-over) unavailable clusters in the matrix
-    bool m_showEachIndividualElement;           ///< Whether to draw each individual matrix element
-    bool m_showOnlyTrueMatchIndividualElements; ///< Whether to draw only truly matching individual matrix elements
-};
+    unsigned int m_minClusterConnections; ///< The minimum number of cluster connections for display
+    bool
+      m_ignoreUnavailableClusters; ///< Whether to ignore (skip-over) unavailable clusters in the matrix
+    bool m_showEachIndividualElement; ///< Whether to draw each individual matrix element
+    bool
+      m_showOnlyTrueMatchIndividualElements; ///< Whether to draw only truly matching individual matrix elements
+  };
 
 } // namespace lar_content
 

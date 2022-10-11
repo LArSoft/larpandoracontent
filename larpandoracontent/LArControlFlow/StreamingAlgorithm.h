@@ -10,15 +10,13 @@
 
 #include "Pandora/Algorithm.h"
 
-namespace lar_content
-{
+namespace lar_content {
 
-/**
+  /**
  *  @brief  StreamingAlgorithm class
  */
-class StreamingAlgorithm : public pandora::Algorithm
-{
-public:
+  class StreamingAlgorithm : public pandora::Algorithm {
+  public:
     /**
      *  @brief  Default constructor
      */
@@ -26,17 +24,19 @@ public:
 
     virtual ~StreamingAlgorithm();
 
-private:
+  private:
     typedef std::map<std::string, pandora::StringVector> StreamAlgorithmMap;
     pandora::StatusCode Run();
     pandora::StatusCode ReadSettings(const pandora::TiXmlHandle xmlHandle);
 
-    std::string m_outputListName;            ///< The name of the output list
-    std::string m_listType;                  ///< The type of the input lists (currently only Cluster is supported)
-    pandora::StringVector m_inputListNames;  ///< The names of the input lists
-    pandora::StringVector m_outputListNames; ///< Names of the output lists if not combining into a single list at the end
-    StreamAlgorithmMap m_streamAlgorithmMap; ///< A map from individual streams to the algorithms that stream should run
-};
+    std::string m_outputListName; ///< The name of the output list
+    std::string m_listType; ///< The type of the input lists (currently only Cluster is supported)
+    pandora::StringVector m_inputListNames; ///< The names of the input lists
+    pandora::StringVector
+      m_outputListNames; ///< Names of the output lists if not combining into a single list at the end
+    StreamAlgorithmMap
+      m_streamAlgorithmMap; ///< A map from individual streams to the algorithms that stream should run
+  };
 
 } // namespace lar_content
 

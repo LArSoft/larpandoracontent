@@ -12,22 +12,21 @@
 
 #include "larpandoracontent/LArObjects/LArTwoDSlidingFitResult.h"
 
-namespace lar_content
-{
+namespace lar_content {
 
-/**
+  /**
  *  @brief  TwoDTrackSplittingAlgorithm class
  */
-class TwoDSlidingFitMultiSplitAlgorithm : public pandora::Algorithm
-{
-public:
+  class TwoDSlidingFitMultiSplitAlgorithm : public pandora::Algorithm {
+  public:
     /**
      *  @brief  Default constructor
      */
     TwoDSlidingFitMultiSplitAlgorithm();
 
-protected:
-    typedef std::unordered_map<const pandora::Cluster *, pandora::CartesianPointVector> ClusterPositionMap;
+  protected:
+    typedef std::unordered_map<const pandora::Cluster*, pandora::CartesianPointVector>
+      ClusterPositionMap;
 
     /**
      *  @brief  Populate cluster vector with subset of cluster list, containing clusters judged to be clean
@@ -35,7 +34,8 @@ protected:
      *  @param  pClusterList address of the cluster list
      *  @param  clusterVector to receive the populated cluster vector
      */
-    virtual void GetListOfCleanClusters(const pandora::ClusterList *const pClusterList, pandora::ClusterVector &clusterVector) const = 0;
+    virtual void GetListOfCleanClusters(const pandora::ClusterList* const pClusterList,
+                                        pandora::ClusterVector& clusterVector) const = 0;
 
     /**
      *  @brief  Determine best split positions based on sliding fit result
@@ -43,11 +43,12 @@ protected:
      *  @param  slidingFitResultMap mapping from clusters to sliding fit results
      *  @param  clusterSplittingMap mapping from clusters to split positions
      */
-    virtual void FindBestSplitPositions(const TwoDSlidingFitResultMap &slidingFitResultMap, ClusterPositionMap &clusterSplittingMap) const = 0;
+    virtual void FindBestSplitPositions(const TwoDSlidingFitResultMap& slidingFitResultMap,
+                                        ClusterPositionMap& clusterSplittingMap) const = 0;
 
     pandora::StatusCode ReadSettings(const pandora::TiXmlHandle xmlHandle);
 
-private:
+  private:
     pandora::StatusCode Run();
 
     /**
@@ -57,8 +58,9 @@ private:
      *  @param  halfWindowLayers the half-window to use for the sliding fits
      *  @param  slidingFitResultMap the sliding fit result map
      */
-    void BuildSlidingFitResultMap(const pandora::ClusterVector &clusterVector, const unsigned int halfWindowLayers,
-        TwoDSlidingFitResultMap &slidingFitResultMap) const;
+    void BuildSlidingFitResultMap(const pandora::ClusterVector& clusterVector,
+                                  const unsigned int halfWindowLayers,
+                                  TwoDSlidingFitResultMap& slidingFitResultMap) const;
 
     /**
      *  @brief  Split clusters
@@ -66,7 +68,8 @@ private:
      *  @param  slidingFitResultMap mapping from clusters to sliding fit results
      *  @param  clusterSplittingMap mapping from clusters to split positions
      */
-    pandora::StatusCode SplitClusters(const TwoDSlidingFitResultMap &slidingFitResultMap, const ClusterPositionMap &clusterSplittingMap) const;
+    pandora::StatusCode SplitClusters(const TwoDSlidingFitResultMap& slidingFitResultMap,
+                                      const ClusterPositionMap& clusterSplittingMap) const;
 
     /**
      *  @brief  Split cluster
@@ -74,11 +77,12 @@ private:
      *  @param  slidingFitResult input sliding fit result
      *  @param  splitPositionList vector of split positions
      */
-    pandora::StatusCode SplitCluster(const TwoDSlidingFitResult &slidingFitResult, const pandora::CartesianPointVector &splitPositionList) const;
+    pandora::StatusCode SplitCluster(const TwoDSlidingFitResult& slidingFitResult,
+                                     const pandora::CartesianPointVector& splitPositionList) const;
 
     unsigned int m_slidingFitHalfWindow; ///<
     std::string m_inputClusterList;      ///<
-};
+  };
 
 } // namespace lar_content
 

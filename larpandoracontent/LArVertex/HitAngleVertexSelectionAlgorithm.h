@@ -10,28 +10,30 @@
 
 #include "larpandoracontent/LArVertex/VertexSelectionBaseAlgorithm.h"
 
-namespace lar_content
-{
+namespace lar_content {
 
-/**
+  /**
  *  @brief  HitAngleVertexSelectionAlgorithm class
  */
-class HitAngleVertexSelectionAlgorithm : public VertexSelectionBaseAlgorithm
-{
-public:
+  class HitAngleVertexSelectionAlgorithm : public VertexSelectionBaseAlgorithm {
+  public:
     /**
      *  @brief  Default constructor
      */
     HitAngleVertexSelectionAlgorithm();
 
-private:
-    void GetVertexScoreList(const pandora::VertexVector &vertexVector, const BeamConstants &beamConstants, HitKDTree2D &kdTreeU,
-        HitKDTree2D &kdTreeV, HitKDTree2D &kdTreeW, VertexScoreList &vertexScoreList) const;
+  private:
+    void GetVertexScoreList(const pandora::VertexVector& vertexVector,
+                            const BeamConstants& beamConstants,
+                            HitKDTree2D& kdTreeU,
+                            HitKDTree2D& kdTreeV,
+                            HitKDTree2D& kdTreeW,
+                            VertexScoreList& vertexScoreList) const;
 
     pandora::StatusCode ReadSettings(const pandora::TiXmlHandle xmlHandle);
 
     VertexFeatureTool::FeatureToolVector m_featureToolVector; ///< The feature tool map
-};
+  };
 
 } // namespace lar_content
 

@@ -12,21 +12,19 @@
 
 #include "larpandoracontent/LArObjects/LArTwoDSlidingFitResult.h"
 
-namespace lar_content
-{
+namespace lar_content {
 
-/**
+  /**
  *  @brief  TwoDSlidingFitSplittingAndSwitchingAlgorithm class
  */
-class TwoDSlidingFitSplittingAndSwitchingAlgorithm : public pandora::Algorithm
-{
-public:
+  class TwoDSlidingFitSplittingAndSwitchingAlgorithm : public pandora::Algorithm {
+  public:
     /**
      *  @brief  Default constructor
      */
     TwoDSlidingFitSplittingAndSwitchingAlgorithm();
 
-protected:
+  protected:
     virtual pandora::StatusCode Run();
     virtual pandora::StatusCode ReadSettings(const pandora::TiXmlHandle xmlHandle);
 
@@ -35,7 +33,7 @@ protected:
      *
      *  @param  clusterVector the cluster vector
      */
-    virtual pandora::StatusCode PreparationStep(const pandora::ClusterVector &clusterVector);
+    virtual pandora::StatusCode PreparationStep(const pandora::ClusterVector& clusterVector);
 
     /**
      *  @brief  Tidy up any information cached in e.g. the preparation step
@@ -51,17 +49,22 @@ protected:
      *  @param  direction1 the output direction of the first new cluster
      *  @param  direction2 the output direction of the second new cluster
      */
-    virtual pandora::StatusCode FindBestSplitPosition(const TwoDSlidingFitResult &slidingFit1, const TwoDSlidingFitResult &slidingFit2,
-        pandora::CartesianVector &splitPosition, pandora::CartesianVector &direction1, pandora::CartesianVector &direction2) const = 0;
+    virtual pandora::StatusCode FindBestSplitPosition(
+      const TwoDSlidingFitResult& slidingFit1,
+      const TwoDSlidingFitResult& slidingFit2,
+      pandora::CartesianVector& splitPosition,
+      pandora::CartesianVector& direction1,
+      pandora::CartesianVector& direction2) const = 0;
 
-private:
+  private:
     /**
      *  @brief  Populate cluster vector with subset of cluster list, containing clusters judged to be clean
      *
      *  @param  pClusterList address of the cluster list
      *  @param  clusterVector to receive the populated cluster vector
      */
-    void GetListOfCleanClusters(const pandora::ClusterList *const pClusterList, pandora::ClusterVector &clusterVector) const;
+    void GetListOfCleanClusters(const pandora::ClusterList* const pClusterList,
+                                pandora::ClusterVector& clusterVector) const;
 
     /**
      *  @brief  Build the map of sliding fit results
@@ -69,7 +72,8 @@ private:
      *  @param  clusterVector the input cluster vector
      *  @param  slidingFitResultMap the output sliding fit result map
      */
-    void BuildSlidingFitResultMap(const pandora::ClusterVector &clusterVector, TwoDSlidingFitResultMap &slidingFitResultMap) const;
+    void BuildSlidingFitResultMap(const pandora::ClusterVector& clusterVector,
+                                  TwoDSlidingFitResultMap& slidingFitResultMap) const;
 
     /**
      *  @brief  Split cluster at a given position and direction
@@ -80,8 +84,11 @@ private:
      *  @param  firstCaloHitList the hits to be added to the first new cluster
      *  @param  secondCaloHitList the hits to be added to the second new cluster
      */
-    void SplitCluster(const pandora::Cluster *const pCluster, const pandora::CartesianVector &splitPosition,
-        const pandora::CartesianVector &splitDirection, pandora::CaloHitList &firstCaloHitList, pandora::CaloHitList &secondCaloHitList) const;
+    void SplitCluster(const pandora::Cluster* const pCluster,
+                      const pandora::CartesianVector& splitPosition,
+                      const pandora::CartesianVector& splitDirection,
+                      pandora::CaloHitList& firstCaloHitList,
+                      pandora::CaloHitList& secondCaloHitList) const;
 
     /**
      *  @brief  Replace crossed clusters with un-crossed clusters
@@ -92,13 +99,15 @@ private:
      *  @param  firstDirection the direction of the first new cluster
      *  @param  secondDirection the direction of the second new cluster
      */
-    pandora::StatusCode ReplaceClusters(const pandora::Cluster *const pCluster1, const pandora::Cluster *const pCluster2,
-        const pandora::CartesianVector &splitPosition, const pandora::CartesianVector &firstDirection,
-        const pandora::CartesianVector &secondDirection) const;
+    pandora::StatusCode ReplaceClusters(const pandora::Cluster* const pCluster1,
+                                        const pandora::Cluster* const pCluster2,
+                                        const pandora::CartesianVector& splitPosition,
+                                        const pandora::CartesianVector& firstDirection,
+                                        const pandora::CartesianVector& secondDirection) const;
 
     unsigned int m_halfWindowLayers; ///< half window layers for sliding linear fot
     float m_minClusterLength;        ///< minimum length of clusters
-};
+  };
 
 } // namespace lar_content
 

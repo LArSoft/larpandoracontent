@@ -10,21 +10,19 @@
 
 #include "Pandora/Algorithm.h"
 
-namespace lar_content
-{
+namespace lar_content {
 
-/**
+  /**
  *  @brief  NeutrinoCreationAlgorithm class
  */
-class NeutrinoCreationAlgorithm : public pandora::Algorithm
-{
-public:
+  class NeutrinoCreationAlgorithm : public pandora::Algorithm {
+  public:
     /**
      *  @brief  Default constructor
      */
     NeutrinoCreationAlgorithm();
 
-private:
+  private:
     pandora::StatusCode Run();
 
     /**
@@ -37,15 +35,17 @@ private:
      *
      *  @param  pfoParameters the pfo parameters
      */
-    void FillDefaultNeutrinoParameters(PandoraContentApi::ParticleFlowObject::Parameters &pfoParameters) const;
+    void FillDefaultNeutrinoParameters(
+      PandoraContentApi::ParticleFlowObject::Parameters& pfoParameters) const;
 
     pandora::StatusCode ReadSettings(const pandora::TiXmlHandle xmlHandle);
 
     std::string m_vertexListName;      ///< The name of the neutrino vertex list
     std::string m_neutrinoPfoListName; ///< The name of the neutrino pfo list
 
-    bool m_forceSingleEmptyNeutrino; ///< Whether to force creation of a single neutrino, with no vertex, regardless of number of input vertices
-};
+    bool
+      m_forceSingleEmptyNeutrino; ///< Whether to force creation of a single neutrino, with no vertex, regardless of number of input vertices
+  };
 
 } // namespace lar_content
 

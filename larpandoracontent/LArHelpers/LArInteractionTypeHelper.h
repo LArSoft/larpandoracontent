@@ -12,8 +12,7 @@
 
 #include "larpandoracontent/LArObjects/LArMCParticle.h"
 
-namespace lar_content
-{
+namespace lar_content {
 
 // clang-format off
 #define INTERACTION_TYPE_TABLE(d)                         \
@@ -231,44 +230,41 @@ namespace lar_content
  */
 #define GET_INTERACTION_TYPE_NAME_SWITCH(a)               \
     case a : return std::string(#a);
-// clang-format on
+  // clang-format on
 
-/**
+  /**
  *  @brief  LArInteractionTypeHelper class
  */
-class LArInteractionTypeHelper
-{
-public:
+  class LArInteractionTypeHelper {
+  public:
     /**
      *  @brief  InteractionType enum
      */
-    enum InteractionType : unsigned int
-    {
-        INTERACTION_TYPE_TABLE(GET_INTERACTION_TYPE_ENTRY) UNKNOWN_INTERACTION_TYPE = 0
+    enum InteractionType : unsigned int {
+      INTERACTION_TYPE_TABLE(GET_INTERACTION_TYPE_ENTRY) UNKNOWN_INTERACTION_TYPE = 0
     };
 
     /**
      *  @brief  Interaction parameters
      */
-    class InteractionParameters
-    {
+    class InteractionParameters {
     public:
-        /**
+      /**
          *  @brief  Constructor
          */
-        InteractionParameters();
+      InteractionParameters();
 
-        unsigned int m_nNonNeutrons;
-        unsigned int m_nMuons;
-        unsigned int m_nElectrons;
-        unsigned int m_nPhotons;
-        unsigned int m_nProtons;
-        unsigned int m_nPiPlus;
-        unsigned int m_nPiMinus;
-        unsigned int m_nPiZero;
-        unsigned int m_nKaonPlus;
-        unsigned int m_nKaonMinus;
-        unsigned int m_nKaon0L;
+      unsigned int m_nNonNeutrons;
+      unsigned int m_nMuons;
+      unsigned int m_nElectrons;
+      unsigned int m_nPhotons;
+      unsigned int m_nProtons;
+      unsigned int m_nPiPlus;
+      unsigned int m_nPiMinus;
+      unsigned int m_nPiZero;
+      unsigned int m_nKaonPlus;
+      unsigned int m_nKaonMinus;
+      unsigned int m_nKaon0L;
     };
 
     /**
@@ -278,7 +274,7 @@ public:
      *
      *  @return interaction type
      */
-    static InteractionType GetInteractionType(const pandora::MCParticleList &mcPrimaryList);
+    static InteractionType GetInteractionType(const pandora::MCParticleList& mcPrimaryList);
 
     /**
      *  @brief  Get the test beam hierarchy interaction type of an event
@@ -287,7 +283,8 @@ public:
      *
      *  @return interaction type
      */
-    static InteractionType GetTestBeamHierarchyInteractionType(const pandora::MCParticleList &mcPrimaryList);
+    static InteractionType GetTestBeamHierarchyInteractionType(
+      const pandora::MCParticleList& mcPrimaryList);
 
     /**
      *  @brief  Set parameters describing the number and species of primary interaction products
@@ -295,7 +292,8 @@ public:
      *  @param  mcPrimaryList the list of primary mc particles
      *  @param  parameters the parameter block to set
      */
-    static void SetInteractionParameters(const pandora::MCParticleList &mcPrimaryList, InteractionParameters &parameters);
+    static void SetInteractionParameters(const pandora::MCParticleList& mcPrimaryList,
+                                         InteractionParameters& parameters);
 
     /**
      *  @brief  Get the interaction type of an event under a cosmic ray hypothesis
@@ -305,7 +303,8 @@ public:
      *
      *  @return interaction type
      */
-    static InteractionType CosmicRayHypothesis(const pandora::MCParticleList &mcPrimaryList, const InteractionParameters &parameters);
+    static InteractionType CosmicRayHypothesis(const pandora::MCParticleList& mcPrimaryList,
+                                               const InteractionParameters& parameters);
 
     /**
      *  @brief  Get a string representation of an interaction type
@@ -315,7 +314,7 @@ public:
      *  @return string
      */
     static std::string ToString(const InteractionType interactionType);
-};
+  };
 
 } // namespace lar_content
 

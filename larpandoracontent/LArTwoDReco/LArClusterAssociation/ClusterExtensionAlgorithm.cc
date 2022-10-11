@@ -12,14 +12,14 @@
 
 using namespace pandora;
 
-namespace lar_content
-{
+namespace lar_content {
 
-void ClusterExtensionAlgorithm::PopulateClusterMergeMap(const ClusterVector &clusterVector, ClusterMergeMap &clusterMergeMap) const
-{
+  void ClusterExtensionAlgorithm::PopulateClusterMergeMap(const ClusterVector& clusterVector,
+                                                          ClusterMergeMap& clusterMergeMap) const
+  {
     ClusterAssociationMatrix clusterAssociationMatrix;
     this->FillClusterAssociationMatrix(clusterVector, clusterAssociationMatrix);
     this->FillClusterMergeMap(clusterAssociationMatrix, clusterMergeMap);
-}
+  }
 
 } // namespace lar_content

@@ -10,25 +10,23 @@
 
 #include "larpandoracontent/LArTrackShowerId/PfoCharacterisationBaseAlgorithm.h"
 
-namespace lar_dl_content
-{
+namespace lar_dl_content {
 
-/**
+  /**
  *  @brief  DlPfoCharacterisationAlgorithm class
  */
-class DlPfoCharacterisationAlgorithm : public lar_content::PfoCharacterisationBaseAlgorithm
-{
-public:
+  class DlPfoCharacterisationAlgorithm : public lar_content::PfoCharacterisationBaseAlgorithm {
+  public:
     /**
      *  @brief  Default constructor
      */
     DlPfoCharacterisationAlgorithm();
 
-private:
-    bool IsClearTrack(const pandora::Cluster *const pCluster) const;
-    bool IsClearTrack(const pandora::ParticleFlowObject *const pPfo) const;
+  private:
+    bool IsClearTrack(const pandora::Cluster* const pCluster) const;
+    bool IsClearTrack(const pandora::ParticleFlowObject* const pPfo) const;
     pandora::StatusCode ReadSettings(const pandora::TiXmlHandle xmlHandle);
-};
+  };
 
 } // namespace lar_dl_content
 

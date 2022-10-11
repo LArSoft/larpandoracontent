@@ -11,24 +11,17 @@
 #include "Objects/Cluster.h"
 #include "Objects/Vertex.h"
 
-namespace lar_content
-{
+namespace lar_content {
 
-/**
+  /**
  *  @brief  LArVertexHelper class
  */
-class LArVertexHelper
-{
-public:
+  class LArVertexHelper {
+  public:
     /**
      *  ClusterDirection enumeration
      */
-    enum ClusterDirection
-    {
-        DIRECTION_FORWARD_IN_Z,
-        DIRECTION_BACKWARD_IN_Z,
-        DIRECTION_UNKNOWN
-    };
+    enum ClusterDirection { DIRECTION_FORWARD_IN_Z, DIRECTION_BACKWARD_IN_Z, DIRECTION_UNKNOWN };
 
     /**
      *  @brief  Get the direction of the cluster in z, using a projection of the provided vertex
@@ -41,8 +34,11 @@ public:
      *
      *  @return the cluster direction in z
      */
-    static ClusterDirection GetClusterDirectionInZ(const pandora::Pandora &pandora, const pandora::Vertex *const pVertex,
-        const pandora::Cluster *const pCluster, const float tanAngle, const float apexShift);
+    static ClusterDirection GetClusterDirectionInZ(const pandora::Pandora& pandora,
+                                                   const pandora::Vertex* const pVertex,
+                                                   const pandora::Cluster* const pCluster,
+                                                   const float tanAngle,
+                                                   const float apexShift);
 
     /**
      *  @brief  Determine if a vertex is within a detector's fiducial volume. This throws a STATUS_CODE_INVALID_PARAMETER exception if the detector
@@ -55,8 +51,10 @@ public:
      *
      *  @return true if in fiducial volume, false if not
      */
-    static bool IsInFiducialVolume(const pandora::Pandora &pandora, const pandora::CartesianVector &vertex, const std::string &detector);
-};
+    static bool IsInFiducialVolume(const pandora::Pandora& pandora,
+                                   const pandora::CartesianVector& vertex,
+                                   const std::string& detector);
+  };
 
 } // namespace lar_content
 

@@ -10,21 +10,19 @@
 
 #include "Pandora/Algorithm.h"
 
-namespace lar_content
-{
+namespace lar_content {
 
-/**
+  /**
  *  @brief  NeutrinoPropertiesAlgorithm class
  */
-class NeutrinoPropertiesAlgorithm : public pandora::Algorithm
-{
-public:
+  class NeutrinoPropertiesAlgorithm : public pandora::Algorithm {
+  public:
     /**
      *  @brief  Default constructor
      */
     NeutrinoPropertiesAlgorithm();
 
-private:
+  private:
     pandora::StatusCode Run();
 
     /**
@@ -32,7 +30,7 @@ private:
      *
      *  @param  pNeutrinoPfo address of the neutrino pfo
      */
-    void SetNeutrinoId(const pandora::ParticleFlowObject *const pNeutrinoPfo) const;
+    void SetNeutrinoId(const pandora::ParticleFlowObject* const pNeutrinoPfo) const;
 
     /**
      *  @brief  Get the number of two dimensional hits (TPC_VIEW_U, V or W) contained in clusters in a pfo and all its daughters
@@ -41,14 +39,15 @@ private:
      *
      *  @return the number of two dimensional hits
      */
-    unsigned int GetNTwoDHitsInPfoChain(const pandora::ParticleFlowObject *const pPfo) const;
+    unsigned int GetNTwoDHitsInPfoChain(const pandora::ParticleFlowObject* const pPfo) const;
 
     pandora::StatusCode ReadSettings(const pandora::TiXmlHandle xmlHandle);
 
     std::string m_neutrinoPfoListName; ///< The name of the output neutrino pfo list
 
-    bool m_includeIsolatedHits; ///< Whether to include isolated hits when counting 2d hits in pfo chain
-};
+    bool
+      m_includeIsolatedHits; ///< Whether to include isolated hits when counting 2d hits in pfo chain
+  };
 
 } // namespace lar_content
 

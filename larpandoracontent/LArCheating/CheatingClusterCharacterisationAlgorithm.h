@@ -10,17 +10,15 @@
 
 #include "larpandoracontent/LArTrackShowerId/ClusterCharacterisationBaseAlgorithm.h"
 
-namespace lar_content
-{
+namespace lar_content {
 
-/**
+  /**
  *  @brief  CheatingClusterCharacterisationAlgorithm class
  */
-class CheatingClusterCharacterisationAlgorithm : public ClusterCharacterisationBaseAlgorithm
-{
-private:
-    bool IsClearTrack(const pandora::Cluster *const pCluster) const;
-};
+  class CheatingClusterCharacterisationAlgorithm : public ClusterCharacterisationBaseAlgorithm {
+  private:
+    bool IsClearTrack(const pandora::Cluster* const pCluster) const;
+  };
 
 } // namespace lar_content
 

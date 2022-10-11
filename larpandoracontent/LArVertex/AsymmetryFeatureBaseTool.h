@@ -10,15 +10,13 @@
 
 #include "larpandoracontent/LArVertex/VertexSelectionBaseAlgorithm.h"
 
-namespace lar_content
-{
+namespace lar_content {
 
-/**
+  /**
  *  @brief  AsymmetryFeatureBaseTool class
  */
-class AsymmetryFeatureBaseTool : public VertexSelectionBaseAlgorithm::VertexFeatureTool
-{
-public:
+  class AsymmetryFeatureBaseTool : public VertexSelectionBaseAlgorithm::VertexFeatureTool {
+  public:
     /**
      *  @brief  Default constructor
      */
@@ -34,12 +32,17 @@ public:
      *
      *  @return the asymmetry feature
      */
-    void Run(LArMvaHelper::MvaFeatureVector &featureVector, const VertexSelectionBaseAlgorithm *const pAlgorithm,
-        const pandora::Vertex *const pVertex, const VertexSelectionBaseAlgorithm::SlidingFitDataListMap &slidingFitDataListMap,
-        const VertexSelectionBaseAlgorithm::ClusterListMap &, const VertexSelectionBaseAlgorithm::KDTreeMap &,
-        const VertexSelectionBaseAlgorithm::ShowerClusterListMap &showerClusterListMap, const float, float &);
+    void Run(LArMvaHelper::MvaFeatureVector& featureVector,
+             const VertexSelectionBaseAlgorithm* const pAlgorithm,
+             const pandora::Vertex* const pVertex,
+             const VertexSelectionBaseAlgorithm::SlidingFitDataListMap& slidingFitDataListMap,
+             const VertexSelectionBaseAlgorithm::ClusterListMap&,
+             const VertexSelectionBaseAlgorithm::KDTreeMap&,
+             const VertexSelectionBaseAlgorithm::ShowerClusterListMap& showerClusterListMap,
+             const float,
+             float&);
 
-protected:
+  protected:
     pandora::StatusCode ReadSettings(const pandora::TiXmlHandle xmlHandle);
 
     /**
@@ -51,9 +54,10 @@ protected:
      *
      *  @return the asymmetry feature
      */
-    virtual float GetAsymmetryForView(const pandora::CartesianVector &vertexPosition2D,
-        const VertexSelectionBaseAlgorithm::SlidingFitDataList &slidingFitDataList,
-        const VertexSelectionBaseAlgorithm::ShowerClusterList &showerClusterList) const = 0;
+    virtual float GetAsymmetryForView(
+      const pandora::CartesianVector& vertexPosition2D,
+      const VertexSelectionBaseAlgorithm::SlidingFitDataList& slidingFitDataList,
+      const VertexSelectionBaseAlgorithm::ShowerClusterList& showerClusterList) const = 0;
 
     /**
      *  @brief  Increment the asymmetry parameters
@@ -62,8 +66,9 @@ protected:
      *  @param  clusterDirection the direction of the cluster
      *  @param  localWeightedDirectionSum the current energy-weighted local cluster direction vector
      */
-    void IncrementAsymmetryParameters(
-        const float weight, const pandora::CartesianVector &clusterDirection, pandora::CartesianVector &localWeightedDirectionSum) const;
+    void IncrementAsymmetryParameters(const float weight,
+                                      const pandora::CartesianVector& clusterDirection,
+                                      pandora::CartesianVector& localWeightedDirectionSum) const;
 
     /**
      *  @brief  Calculate the asymmetry feature
@@ -75,11 +80,15 @@ protected:
      *
      *  @return the asymmetry feature
      */
-    virtual float CalculateAsymmetry(const bool useEnergyMetrics, const pandora::CartesianVector &vertexPosition2D,
-        const pandora::ClusterVector &asymmetryClusters, const pandora::CartesianVector &localWeightedDirectionSum) const;
+    virtual float CalculateAsymmetry(
+      const bool useEnergyMetrics,
+      const pandora::CartesianVector& vertexPosition2D,
+      const pandora::ClusterVector& asymmetryClusters,
+      const pandora::CartesianVector& localWeightedDirectionSum) const;
 
-    float m_maxAsymmetryDistance; ///< The max distance between cluster (any hit) and vertex to calculate asymmetry score
-};
+    float
+      m_maxAsymmetryDistance; ///< The max distance between cluster (any hit) and vertex to calculate asymmetry score
+  };
 
 } // namespace lar_content
 

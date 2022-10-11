@@ -10,15 +10,13 @@
 
 #include "Objects/Cluster.h"
 
-namespace lar_content
-{
+namespace lar_content {
 
-/**
+  /**
  *  @brief  LArClusterHelper class
  */
-class LArClusterHelper
-{
-public:
+  class LArClusterHelper {
+  public:
     typedef std::set<unsigned int> UIntSet;
 
     /**
@@ -28,7 +26,7 @@ public:
      *
      *  @return the cluster hit type
      */
-    static pandora::HitType GetClusterHitType(const pandora::Cluster *const pCluster);
+    static pandora::HitType GetClusterHitType(const pandora::Cluster* const pCluster);
 
     /**
      *  @brief  Divide an input cluster list into separate u, v and w lists (exception raised if alternative hit type encountered)
@@ -38,8 +36,10 @@ public:
      *  @param  clusterListV to receive the v clusters
      *  @param  clusterListW to receive the w clusters
      */
-    static void GetClustersUVW(const pandora::ClusterList &inputClusters, pandora::ClusterList &clusterListU,
-        pandora::ClusterList &clusterListV, pandora::ClusterList &clusterListW);
+    static void GetClustersUVW(const pandora::ClusterList& inputClusters,
+                               pandora::ClusterList& clusterListU,
+                               pandora::ClusterList& clusterListV,
+                               pandora::ClusterList& clusterListW);
 
     /**
      *  @brief  Get the subset of clusters, from a provided list, that match the specified hit type
@@ -48,7 +48,9 @@ public:
      *  @param  hitType the specified hit type
      *  @param  clusterList to receive the clusters
      */
-    static void GetClustersByHitType(const pandora::ClusterList &inputClusters, const pandora::HitType hitType, pandora::ClusterList &clusterList);
+    static void GetClustersByHitType(const pandora::ClusterList& inputClusters,
+                                     const pandora::HitType hitType,
+                                     pandora::ClusterList& clusterList);
 
     /**
      *  @brief  Get length squared of cluster
@@ -57,7 +59,7 @@ public:
      *
      *  @return the length squared
      */
-    static float GetLengthSquared(const pandora::Cluster *const pCluster);
+    static float GetLengthSquared(const pandora::Cluster* const pCluster);
 
     /**
      *  @brief  Get length of cluster
@@ -66,7 +68,7 @@ public:
      *
      *  @return the length
      */
-    static float GetLength(const pandora::Cluster *const pCluster);
+    static float GetLength(const pandora::Cluster* const pCluster);
 
     /**
      *  @brief  Get energy of cluster, based on length
@@ -75,7 +77,7 @@ public:
      *
      *  @return the energy
      */
-    static float GetEnergyFromLength(const pandora::Cluster *const pCluster);
+    static float GetEnergyFromLength(const pandora::Cluster* const pCluster);
 
     /**
      *  @brief  Get number of layers spanned by cluster (1+Last-First)
@@ -84,7 +86,7 @@ public:
      *
      *  @return the layer span
      */
-    static unsigned int GetLayerSpan(const pandora::Cluster *const pCluster);
+    static unsigned int GetLayerSpan(const pandora::Cluster* const pCluster);
 
     /**
      *  @brief  Fraction of occupied layers in cluster
@@ -93,7 +95,7 @@ public:
      *
      *  @return float
      */
-    static float GetLayerOccupancy(const pandora::Cluster *const pCluster);
+    static float GetLayerOccupancy(const pandora::Cluster* const pCluster);
 
     /**
      *  @brief  Fraction of occupied layers in a pair of clusters
@@ -103,7 +105,8 @@ public:
      *
      *  @return float
      */
-    static float GetLayerOccupancy(const pandora::Cluster *const pCluster1, const pandora::Cluster *const pCluster2);
+    static float GetLayerOccupancy(const pandora::Cluster* const pCluster1,
+                                   const pandora::Cluster* const pCluster2);
 
     /**
      *  @brief  Get closest distance between clusters in a pair of cluster lists
@@ -113,7 +116,8 @@ public:
      *
      *  @return the closest distance
      */
-    static float GetClosestDistance(const pandora::ClusterList &clusterList1, const pandora::ClusterList &clusterList2);
+    static float GetClosestDistance(const pandora::ClusterList& clusterList1,
+                                    const pandora::ClusterList& clusterList2);
 
     /**
      *  @brief  Get closest distance between a specified cluster and list of clusters
@@ -123,7 +127,8 @@ public:
      *
      *  @return the closest distance
      */
-    static float GetClosestDistance(const pandora::Cluster *const pCluster, const pandora::ClusterList &clusterList);
+    static float GetClosestDistance(const pandora::Cluster* const pCluster,
+                                    const pandora::ClusterList& clusterList);
 
     /**
      *  @brief  Get closest distance between a pair of clusters
@@ -133,7 +138,8 @@ public:
      *
      *  @return the closest distance
      */
-    static float GetClosestDistance(const pandora::Cluster *const pCluster1, const pandora::Cluster *const pCluster2);
+    static float GetClosestDistance(const pandora::Cluster* const pCluster1,
+                                    const pandora::Cluster* const pCluster2);
 
     /**
      *  @brief  Get closest distance between a specified position and list of clusters
@@ -143,7 +149,8 @@ public:
      *
      *  @return the closest distance
      */
-    static float GetClosestDistance(const pandora::CartesianVector &position, const pandora::ClusterList &clusterList);
+    static float GetClosestDistance(const pandora::CartesianVector& position,
+                                    const pandora::ClusterList& clusterList);
 
     /**
      *  @brief  Get closest distance between a specified position vector and the hits in a specified cluster
@@ -153,7 +160,8 @@ public:
      *
      *  @return the closest distance
      */
-    static float GetClosestDistance(const pandora::CartesianVector &position, const pandora::Cluster *const pCluster);
+    static float GetClosestDistance(const pandora::CartesianVector& position,
+                                    const pandora::Cluster* const pCluster);
 
     /**
      *  @brief  Get closest distance between a specified position vector and the hits in a specified calo hit list
@@ -163,7 +171,8 @@ public:
      *
      *  @return the closest distance
      */
-    static float GetClosestDistance(const pandora::CartesianVector &position, const pandora::CaloHitList &caloHitList);
+    static float GetClosestDistance(const pandora::CartesianVector& position,
+                                    const pandora::CaloHitList& caloHitList);
 
     /**
      *  @brief  Get closest position in a list of clusters to a specified input position vector
@@ -173,7 +182,8 @@ public:
      *
      *  @return the closest position
      */
-    static pandora::CartesianVector GetClosestPosition(const pandora::CartesianVector &position, const pandora::ClusterList &clusterList);
+    static pandora::CartesianVector GetClosestPosition(const pandora::CartesianVector& position,
+                                                       const pandora::ClusterList& clusterList);
 
     /**
      *  @brief  Get closest position on a cluster to a specified input position vector
@@ -183,7 +193,8 @@ public:
      *
      *  @return the closest position
      */
-    static pandora::CartesianVector GetClosestPosition(const pandora::CartesianVector &position, const pandora::Cluster *const pCluster);
+    static pandora::CartesianVector GetClosestPosition(const pandora::CartesianVector& position,
+                                                       const pandora::Cluster* const pCluster);
 
     /**
      *  @brief  Get closest position of hits in a given calo hit list to a specified input position vector
@@ -193,7 +204,8 @@ public:
      *
      *  @return the closest position
      */
-    static pandora::CartesianVector GetClosestPosition(const pandora::CartesianVector &position, const pandora::CaloHitList &caloHitList);
+    static pandora::CartesianVector GetClosestPosition(const pandora::CartesianVector& position,
+                                                       const pandora::CaloHitList& caloHitList);
 
     /**
      *  @brief  Get pair of closest positions for a pair of clusters
@@ -203,8 +215,10 @@ public:
      *  @param  the closest position in the first cluster
      *  @param  the closest position in the second cluster
      */
-    static void GetClosestPositions(const pandora::Cluster *const pCluster1, const pandora::Cluster *const pCluster2,
-        pandora::CartesianVector &position1, pandora::CartesianVector &position2);
+    static void GetClosestPositions(const pandora::Cluster* const pCluster1,
+                                    const pandora::Cluster* const pCluster2,
+                                    pandora::CartesianVector& position1,
+                                    pandora::CartesianVector& position2);
 
     /**
      *  @brief  Get positions of the two most distant calo hits in a list of cluster (ordered by Z)
@@ -213,8 +227,9 @@ public:
      *  @param  the inner extremal position
      *  @param  the outer extremal position
      */
-    static void GetExtremalCoordinates(
-        const pandora::ClusterList &clusterList, pandora::CartesianVector &innerCoordinate, pandora::CartesianVector &outerCoordinate);
+    static void GetExtremalCoordinates(const pandora::ClusterList& clusterList,
+                                       pandora::CartesianVector& innerCoordinate,
+                                       pandora::CartesianVector& outerCoordinate);
 
     /**
      *  @brief  Get positions of the two most distant calo hits in a cluster (ordered by Z)
@@ -223,8 +238,9 @@ public:
      *  @param  the inner extremal position
      *  @param  the outer extremal position
      */
-    static void GetExtremalCoordinates(
-        const pandora::Cluster *const pCluster, pandora::CartesianVector &innerCoordinate, pandora::CartesianVector &outerCoordinate);
+    static void GetExtremalCoordinates(const pandora::Cluster* const pCluster,
+                                       pandora::CartesianVector& innerCoordinate,
+                                       pandora::CartesianVector& outerCoordinate);
 
     /**
      *  @brief  Get positions of the two most distant calo hits in an ordered calo hit list (ordered by Z)
@@ -233,8 +249,9 @@ public:
      *  @param  the inner extremal position
      *  @param  the outer extremal position
      */
-    static void GetExtremalCoordinates(const pandora::OrderedCaloHitList &orderedCaloHitList, pandora::CartesianVector &innerCoordinate,
-        pandora::CartesianVector &outerCoordinate);
+    static void GetExtremalCoordinates(const pandora::OrderedCaloHitList& orderedCaloHitList,
+                                       pandora::CartesianVector& innerCoordinate,
+                                       pandora::CartesianVector& outerCoordinate);
 
     /**
      *  @brief  Get positions of the two most distant points in a provided list (ordered by Z)
@@ -243,8 +260,9 @@ public:
      *  @param  the inner extremal position
      *  @param  the outer extremal position
      */
-    static void GetExtremalCoordinates(const pandora::CartesianPointVector &coordinateVector, pandora::CartesianVector &innerCoordinate,
-        pandora::CartesianVector &outerCoordinate);
+    static void GetExtremalCoordinates(const pandora::CartesianPointVector& coordinateVector,
+                                       pandora::CartesianVector& innerCoordinate,
+                                       pandora::CartesianVector& outerCoordinate);
 
     /**
      *  @brief  Get minimum and maximum X, Y and Z positions of the calo hits in a cluster
@@ -253,8 +271,9 @@ public:
      *  @param  the minimum positions (x,y,z)
      *  @param  the maximum positions (x,y,z)
      */
-    static void GetClusterBoundingBox(
-        const pandora::Cluster *const pCluster, pandora::CartesianVector &minimumCoordinate, pandora::CartesianVector &maximumCoordinate);
+    static void GetClusterBoundingBox(const pandora::Cluster* const pCluster,
+                                      pandora::CartesianVector& minimumCoordinate,
+                                      pandora::CartesianVector& maximumCoordinate);
 
     /**
      *  @brief  Get vector of hit coordinates from an input cluster
@@ -262,7 +281,8 @@ public:
      *  @param  pCluster address of the cluster
      *  @param  coordinateVector
      */
-    static void GetCoordinateVector(const pandora::Cluster *const pCluster, pandora::CartesianPointVector &coordinateVector);
+    static void GetCoordinateVector(const pandora::Cluster* const pCluster,
+                                    pandora::CartesianPointVector& coordinateVector);
 
     /**
      *  @brief  Get list of Calo hits from an input cluster that are contained in a bounding box.  The hits are sorted by position
@@ -272,8 +292,10 @@ public:
      *  @param  upperBound the other opposing corner of the bounding box
      *  @param  caloHitList the CaloHitList to be filled
      */
-    static void GetCaloHitListInBoundingBox(const pandora::Cluster *const pCluster, const pandora::CartesianVector &lowerBound,
-        const pandora::CartesianVector &upperBound, pandora::CaloHitList &caloHitList);
+    static void GetCaloHitListInBoundingBox(const pandora::Cluster* const pCluster,
+                                            const pandora::CartesianVector& lowerBound,
+                                            const pandora::CartesianVector& upperBound,
+                                            pandora::CaloHitList& caloHitList);
 
     /**
      *  @brief  Get the set of the daughter volumes that contains the cluster
@@ -281,7 +303,8 @@ public:
      *  @param  pCluster address of the cluster
      *  @param  daughterVolumeIds output variable
      */
-    static void GetDaughterVolumeIDs(const pandora::Cluster *const pCluster, UIntSet &daughterVolumeIds);
+    static void GetDaughterVolumeIDs(const pandora::Cluster* const pCluster,
+                                     UIntSet& daughterVolumeIds);
 
     /**
      *  @brief  Get average Z positions of the calo hits in a cluster in range xmin to xmax
@@ -293,7 +316,10 @@ public:
      *
      *  @return status code, faster than throwing in regular use-cases
      */
-    static pandora::StatusCode GetAverageZ(const pandora::Cluster *const pCluster, const float xmin, const float xmax, float &averageZ);
+    static pandora::StatusCode GetAverageZ(const pandora::Cluster* const pCluster,
+                                           const float xmin,
+                                           const float xmax,
+                                           float& averageZ);
 
     /**
      *  @brief  Sort clusters by number of occupied layers, and by inner layer, then energy in event of a tie
@@ -301,7 +327,8 @@ public:
      *  @param  pLhs address of first cluster
      *  @param  pRhs address of second cluster
      */
-    static bool SortByNOccupiedLayers(const pandora::Cluster *const pLhs, const pandora::Cluster *const pRhs);
+    static bool SortByNOccupiedLayers(const pandora::Cluster* const pLhs,
+                                      const pandora::Cluster* const pRhs);
 
     /**
      *  @brief  Sort clusters by number of hits, then layer span, then inner layer, then position, then pulse-height
@@ -309,7 +336,7 @@ public:
      *  @param  pLhs address of first cluster
      *  @param  pRhs address of second cluster
      */
-    static bool SortByNHits(const pandora::Cluster *const pLhs, const pandora::Cluster *const pRhs);
+    static bool SortByNHits(const pandora::Cluster* const pLhs, const pandora::Cluster* const pRhs);
 
     /**
      *  @brief  Sort clusters by layer span, then inner layer, then position, then pulse-height
@@ -317,7 +344,8 @@ public:
      *  @param  pLhs address of first cluster
      *  @param  pRhs address of second cluster
      */
-    static bool SortByLayerSpan(const pandora::Cluster *const pLhs, const pandora::Cluster *const pRhs);
+    static bool SortByLayerSpan(const pandora::Cluster* const pLhs,
+                                const pandora::Cluster* const pRhs);
 
     /**
      *  @brief  Sort clusters by inner layer, then position, then pulse-height
@@ -325,7 +353,8 @@ public:
      *  @param  pLhs address of first cluster
      *  @param  pRhs address of second cluster
      */
-    static bool SortByInnerLayer(const pandora::Cluster *const pLhs, const pandora::Cluster *const pRhs);
+    static bool SortByInnerLayer(const pandora::Cluster* const pLhs,
+                                 const pandora::Cluster* const pRhs);
 
     /**
      *  @brief  Sort clusters by position, then pulse-height
@@ -333,7 +362,8 @@ public:
      *  @param  pLhs address of first cluster
      *  @param  pRhs address of second cluster
      */
-    static bool SortByPosition(const pandora::Cluster *const pLhs, const pandora::Cluster *const pRhs);
+    static bool SortByPosition(const pandora::Cluster* const pLhs,
+                               const pandora::Cluster* const pRhs);
 
     /**
      *  @brief  Sort clusters by pulse-height
@@ -341,7 +371,8 @@ public:
      *  @param  pLhs address of first cluster
      *  @param  pRhs address of second cluster
      */
-    static bool SortByPulseHeight(const pandora::Cluster *const pLhs, const pandora::Cluster *const pRhs);
+    static bool SortByPulseHeight(const pandora::Cluster* const pLhs,
+                                  const pandora::Cluster* const pRhs);
 
     /**
      *  @brief  Sort calo hits by their position (use Z, followed by X, followed by Y)
@@ -349,7 +380,8 @@ public:
      *  @param  pLhs address of first calo hit
      *  @param  pRhs address of second calo hit
      */
-    static bool SortHitsByPosition(const pandora::CaloHit *const pLhs, const pandora::CaloHit *const pRhs);
+    static bool SortHitsByPosition(const pandora::CaloHit* const pLhs,
+                                   const pandora::CaloHit* const pRhs);
 
     /**
      *  @brief  Sort calo hits by their position (use X, followed by Z, followed by Y)
@@ -357,7 +389,8 @@ public:
      *  @param  pLhs address of first calo hit
      *  @param  pRhs address of second calo hit
      */
-    static bool SortHitsByPositionInX(const pandora::CaloHit *const pLhs, const pandora::CaloHit *const pRhs);
+    static bool SortHitsByPositionInX(const pandora::CaloHit* const pLhs,
+                                      const pandora::CaloHit* const pRhs);
 
     /**
      *  @brief  Sort calo hits by their pulse height
@@ -365,7 +398,8 @@ public:
      *  @param  pLhs address of first calo hit
      *  @param  pRhs address of second calo hit
      */
-    static bool SortHitsByPulseHeight(const pandora::CaloHit *const pLhs, const pandora::CaloHit *const pRhs);
+    static bool SortHitsByPulseHeight(const pandora::CaloHit* const pLhs,
+                                      const pandora::CaloHit* const pRhs);
 
     /**
      *  @brief  Sort cartesian vectors by their position (use Z, followed by X, followed by Y)
@@ -373,8 +407,9 @@ public:
      *  @param  lhs first point
      *  @param  rhs second point
      */
-    static bool SortCoordinatesByPosition(const pandora::CartesianVector &lhs, const pandora::CartesianVector &rhs);
-};
+    static bool SortCoordinatesByPosition(const pandora::CartesianVector& lhs,
+                                          const pandora::CartesianVector& rhs);
+  };
 
 } // namespace lar_content
 

@@ -88,9 +88,9 @@ LAR_DL_ALGORITHM_TOOL_LIST(LAR_DL_CONTENT_CREATE_ALGORITHM_TOOL_FACTORY)
     }
 // clang-format on
 
-pandora::StatusCode LArDLContent::RegisterAlgorithms(const pandora::Pandora &pandora)
+pandora::StatusCode LArDLContent::RegisterAlgorithms(const pandora::Pandora& pandora)
 {
-    LAR_DL_ALGORITHM_LIST(LAR_DL_CONTENT_REGISTER_ALGORITHM);
-    LAR_DL_ALGORITHM_TOOL_LIST(LAR_DL_CONTENT_REGISTER_ALGORITHM_TOOL);
-    return pandora::STATUS_CODE_SUCCESS;
+  LAR_DL_ALGORITHM_LIST(LAR_DL_CONTENT_REGISTER_ALGORITHM);
+  LAR_DL_ALGORITHM_TOOL_LIST(LAR_DL_CONTENT_REGISTER_ALGORITHM_TOOL);
+  return pandora::STATUS_CODE_SUCCESS;
 }

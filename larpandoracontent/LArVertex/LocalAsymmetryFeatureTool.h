@@ -10,21 +10,19 @@
 
 #include "larpandoracontent/LArVertex/AsymmetryFeatureBaseTool.h"
 
-namespace lar_content
-{
+namespace lar_content {
 
-/**
+  /**
  *  @brief  LocalAsymmetryFeatureTool class
  */
-class LocalAsymmetryFeatureTool : public AsymmetryFeatureBaseTool
-{
-public:
+  class LocalAsymmetryFeatureTool : public AsymmetryFeatureBaseTool {
+  public:
     /**
      *  @brief  Default constructor
      */
     LocalAsymmetryFeatureTool();
 
-private:
+  private:
     pandora::StatusCode ReadSettings(const pandora::TiXmlHandle xmlHandle) override;
 
     /**
@@ -35,8 +33,10 @@ private:
      *
      *  @return the local asymmetry feature
      */
-    float GetAsymmetryForView(const pandora::CartesianVector &vertexPosition2D, const VertexSelectionBaseAlgorithm::SlidingFitDataList &slidingFitDataList,
-        const VertexSelectionBaseAlgorithm::ShowerClusterList &) const override;
+    float GetAsymmetryForView(
+      const pandora::CartesianVector& vertexPosition2D,
+      const VertexSelectionBaseAlgorithm::SlidingFitDataList& slidingFitDataList,
+      const VertexSelectionBaseAlgorithm::ShowerClusterList&) const override;
 
     /**
      *  @brief  Check whether a cluster's direction agrees with the current weighted direction
@@ -46,11 +46,14 @@ private:
      *
      *  @return boolean
      */
-    bool CheckAngle(const pandora::CartesianVector &weightedDirectionSum, const pandora::CartesianVector &clusterDirection) const;
+    bool CheckAngle(const pandora::CartesianVector& weightedDirectionSum,
+                    const pandora::CartesianVector& clusterDirection) const;
 
-    float m_minAsymmetryCosAngle;         ///< The min opening angle cosine used to determine viability of asymmetry score
-    unsigned int m_maxAsymmetryNClusters; ///< The max number of associated clusters to calculate the asymmetry
-};
+    float
+      m_minAsymmetryCosAngle; ///< The min opening angle cosine used to determine viability of asymmetry score
+    unsigned int
+      m_maxAsymmetryNClusters; ///< The max number of associated clusters to calculate the asymmetry
+  };
 
 } // namespace lar_content
 

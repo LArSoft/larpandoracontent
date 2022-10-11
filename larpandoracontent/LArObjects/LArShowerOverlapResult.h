@@ -16,15 +16,13 @@
 #include <cmath>
 #include <vector>
 
-namespace lar_content
-{
+namespace lar_content {
 
-/**
+  /**
  *  @brief  ShowerOverlapResult class
  */
-class ShowerOverlapResult
-{
-public:
+  class ShowerOverlapResult {
+  public:
     /**
      *  @brief  Default constructor
      */
@@ -36,14 +34,16 @@ public:
      *  @param  nMatchedSamplingPoints
      *  @param  nSamplingPoints
      */
-    ShowerOverlapResult(const unsigned int nMatchedSamplingPoints, const unsigned int nSamplingPoints, const XOverlap &xOverlap);
+    ShowerOverlapResult(const unsigned int nMatchedSamplingPoints,
+                        const unsigned int nSamplingPoints,
+                        const XOverlap& xOverlap);
 
     /**
      *  @brief  Copy constructor
      *
      *  @param  rhs
      */
-    ShowerOverlapResult(const ShowerOverlapResult &rhs);
+    ShowerOverlapResult(const ShowerOverlapResult& rhs);
 
     /**
      *  @brief  Destructor
@@ -83,83 +83,76 @@ public:
      *
      *  @return the x overlap object
      */
-    const XOverlap &GetXOverlap() const;
+    const XOverlap& GetXOverlap() const;
 
     /**
      *  @brief  Track overlap result less than operator
      *
      *  @param  rhs the track overlap result for comparison
      */
-    bool operator<(const ShowerOverlapResult &rhs) const;
+    bool operator<(const ShowerOverlapResult& rhs) const;
 
     /**
      *  @brief  Track overlap result greater than operator
      *
      *  @param  rhs the track overlap result for comparison
      */
-    bool operator>(const ShowerOverlapResult &rhs) const;
+    bool operator>(const ShowerOverlapResult& rhs) const;
 
     /**
      *  @brief  Track overlap result assigment operator
      *
      *  @param  rhs the track overlap result to assign
      */
-    ShowerOverlapResult &operator=(const ShowerOverlapResult &rhs);
+    ShowerOverlapResult& operator=(const ShowerOverlapResult& rhs);
 
-protected:
-    bool m_isInitialized;                  ///< Whether the track overlap result has been initialized
+  protected:
+    bool m_isInitialized; ///< Whether the track overlap result has been initialized
     unsigned int m_nMatchedSamplingPoints; ///< The number of matched sampling points
     unsigned int m_nSamplingPoints;        ///< The number of sampling points
     float m_matchedFraction;               ///< The fraction of sampling points resulting in a match
     XOverlap m_xOverlap;                   ///< The x overlap object
-};
+  };
 
-//------------------------------------------------------------------------------------------------------------------------------------------
+  //------------------------------------------------------------------------------------------------------------------------------------------
 
-inline bool ShowerOverlapResult::IsInitialized() const
-{
-    return m_isInitialized;
-}
+  inline bool ShowerOverlapResult::IsInitialized() const { return m_isInitialized; }
 
-//------------------------------------------------------------------------------------------------------------------------------------------
+  //------------------------------------------------------------------------------------------------------------------------------------------
 
-inline unsigned int ShowerOverlapResult::GetNMatchedSamplingPoints() const
-{
-    if (m_isInitialized)
-        return m_nMatchedSamplingPoints;
+  inline unsigned int ShowerOverlapResult::GetNMatchedSamplingPoints() const
+  {
+    if (m_isInitialized) return m_nMatchedSamplingPoints;
 
     throw pandora::StatusCodeException(pandora::STATUS_CODE_NOT_INITIALIZED);
-}
+  }
 
-//------------------------------------------------------------------------------------------------------------------------------------------
+  //------------------------------------------------------------------------------------------------------------------------------------------
 
-inline unsigned int ShowerOverlapResult::GetNSamplingPoints() const
-{
-    if (m_isInitialized)
-        return m_nSamplingPoints;
-
-    throw pandora::StatusCodeException(pandora::STATUS_CODE_NOT_INITIALIZED);
-}
-
-//------------------------------------------------------------------------------------------------------------------------------------------
-
-inline float ShowerOverlapResult::GetMatchedFraction() const
-{
-    if (m_isInitialized)
-        return m_matchedFraction;
+  inline unsigned int ShowerOverlapResult::GetNSamplingPoints() const
+  {
+    if (m_isInitialized) return m_nSamplingPoints;
 
     throw pandora::StatusCodeException(pandora::STATUS_CODE_NOT_INITIALIZED);
-}
+  }
 
-//------------------------------------------------------------------------------------------------------------------------------------------
+  //------------------------------------------------------------------------------------------------------------------------------------------
 
-inline const XOverlap &ShowerOverlapResult::GetXOverlap() const
-{
-    if (m_isInitialized)
-        return m_xOverlap;
+  inline float ShowerOverlapResult::GetMatchedFraction() const
+  {
+    if (m_isInitialized) return m_matchedFraction;
 
     throw pandora::StatusCodeException(pandora::STATUS_CODE_NOT_INITIALIZED);
-}
+  }
+
+  //------------------------------------------------------------------------------------------------------------------------------------------
+
+  inline const XOverlap& ShowerOverlapResult::GetXOverlap() const
+  {
+    if (m_isInitialized) return m_xOverlap;
+
+    throw pandora::StatusCodeException(pandora::STATUS_CODE_NOT_INITIALIZED);
+  }
 
 } // namespace lar_content
 

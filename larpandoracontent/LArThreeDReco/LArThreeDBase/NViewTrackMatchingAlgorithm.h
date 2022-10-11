@@ -12,20 +12,19 @@
 
 #include "larpandoracontent/LArThreeDReco/LArThreeDBase/NViewMatchingAlgorithm.h"
 
-namespace lar_content
-{
+namespace lar_content {
 
-typedef std::unordered_map<const pandora::Cluster *, pandora::CartesianPointVector> SplitPositionMap;
+  typedef std::unordered_map<const pandora::Cluster*, pandora::CartesianPointVector>
+    SplitPositionMap;
 
-//------------------------------------------------------------------------------------------------------------------------------------------
+  //------------------------------------------------------------------------------------------------------------------------------------------
 
-/**
+  /**
  *  @brief  NViewTrackMatchingAlgorithm class
  */
-template <typename T>
-class NViewTrackMatchingAlgorithm : public NViewMatchingAlgorithm<T>
-{
-public:
+  template <typename T>
+  class NViewTrackMatchingAlgorithm : public NViewMatchingAlgorithm<T> {
+  public:
     /**
      *  @brief  Default constructor
      */
@@ -41,7 +40,8 @@ public:
      *
      *  @param  pCluster address of the relevant cluster
      */
-    const TwoDSlidingFitResult &GetCachedSlidingFitResult(const pandora::Cluster *const pCluster) const;
+    const TwoDSlidingFitResult& GetCachedSlidingFitResult(
+      const pandora::Cluster* const pCluster) const;
 
     /**
      *  @brief  Get the layer window for the sliding linear fits
@@ -57,7 +57,7 @@ public:
      *
      *  @return whether changes to the overlap container have been made
      */
-    virtual bool MakeClusterSplits(const SplitPositionMap &splitPositionMap);
+    virtual bool MakeClusterSplits(const SplitPositionMap& splitPositionMap);
 
     /**
      *  @brief  Make a cluster split
@@ -69,8 +69,10 @@ public:
      *
      *  @return whether a cluster split occurred
      */
-    virtual bool MakeClusterSplit(const pandora::CartesianVector &splitPosition, const pandora::Cluster *&pCurrentCluster,
-        const pandora::Cluster *&pLowXCluster, const pandora::Cluster *&pHighXCluster) const;
+    virtual bool MakeClusterSplit(const pandora::CartesianVector& splitPosition,
+                                  const pandora::Cluster*& pCurrentCluster,
+                                  const pandora::Cluster*& pLowXCluster,
+                                  const pandora::Cluster*& pHighXCluster) const;
 
     /**
      *  @brief  Sort split position cartesian vectors by increasing x coordinate
@@ -78,47 +80,50 @@ public:
      *  @param  lhs the first cartesian vector
      *  @param  rhs the second cartesian vector
      */
-    static bool SortSplitPositions(const pandora::CartesianVector &lhs, const pandora::CartesianVector &rhs);
+    static bool SortSplitPositions(const pandora::CartesianVector& lhs,
+                                   const pandora::CartesianVector& rhs);
 
-    virtual void UpdateForNewCluster(const pandora::Cluster *const pNewCluster);
-    virtual void UpdateUponDeletion(const pandora::Cluster *const pDeletedCluster);
-    virtual void SelectInputClusters(const pandora::ClusterList *const pInputClusterList, pandora::ClusterList &selectedClusterList) const;
-    virtual void PrepareInputClusters(pandora::ClusterList &preparedClusterList);
-    virtual void SetPfoParticleId(PandoraContentApi::ParticleFlowObject::Parameters &pfoParameters) const;
+    virtual void UpdateForNewCluster(const pandora::Cluster* const pNewCluster);
+    virtual void UpdateUponDeletion(const pandora::Cluster* const pDeletedCluster);
+    virtual void SelectInputClusters(const pandora::ClusterList* const pInputClusterList,
+                                     pandora::ClusterList& selectedClusterList) const;
+    virtual void PrepareInputClusters(pandora::ClusterList& preparedClusterList);
+    virtual void SetPfoParticleId(
+      PandoraContentApi::ParticleFlowObject::Parameters& pfoParameters) const;
 
-protected:
+  protected:
     /**
      *  @brief  Add a new sliding fit result, for the specified cluster, to the algorithm cache
      *
      *  @param  pCluster address of the relevant cluster
      */
-    void AddToSlidingFitCache(const pandora::Cluster *const pCluster);
+    void AddToSlidingFitCache(const pandora::Cluster* const pCluster);
 
     /**
      *  @brief  Remova an existing sliding fit result, for the specified cluster, from the algorithm cache
      *
      *  @param  pCluster address of the relevant cluster
      */
-    void RemoveFromSlidingFitCache(const pandora::Cluster *const pCluster);
+    void RemoveFromSlidingFitCache(const pandora::Cluster* const pCluster);
 
     virtual void TidyUp();
     virtual pandora::StatusCode ReadSettings(const pandora::TiXmlHandle xmlHandle);
 
-private:
+  private:
     unsigned int m_slidingFitWindow;               ///< The layer window for the sliding linear fits
     TwoDSlidingFitResultMap m_slidingFitResultMap; ///< The sliding fit result map
 
     unsigned int m_minClusterCaloHits; ///< The min number of hits in base cluster selection method
-    float m_minClusterLengthSquared;   ///< The min length (squared) in base cluster selection method
-};
+    float m_minClusterLengthSquared; ///< The min length (squared) in base cluster selection method
+  };
 
-//------------------------------------------------------------------------------------------------------------------------------------------
+  //------------------------------------------------------------------------------------------------------------------------------------------
 
-template <typename T>
-inline unsigned int NViewTrackMatchingAlgorithm<T>::GetSlidingFitWindow() const
-{
+  template <typename T>
+  inline unsigned int NViewTrackMatchingAlgorithm<T>::GetSlidingFitWindow() const
+  {
     return m_slidingFitWindow;
-}
+  }
 
 } // namespace lar_content
 

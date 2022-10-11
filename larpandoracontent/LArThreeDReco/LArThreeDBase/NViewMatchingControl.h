@@ -8,45 +8,43 @@
 #ifndef LAR_N_VIEW_MATCHING_CONTROL_H
 #define LAR_N_VIEW_MATCHING_CONTROL_H 1
 
-namespace lar_content
-{
+namespace lar_content {
 
-class MatchingBaseAlgorithm;
+  class MatchingBaseAlgorithm;
 
-//------------------------------------------------------------------------------------------------------------------------------------------
+  //------------------------------------------------------------------------------------------------------------------------------------------
 
-/**
+  /**
  *  @brief  NViewMatchingControl class
  */
-class NViewMatchingControl
-{
-public:
+  class NViewMatchingControl {
+  public:
     /**
      *  @brief  Constructor
      *
      *  @param  pAlgorithm address of the matching base algorithm
      */
-    NViewMatchingControl(MatchingBaseAlgorithm *const pAlgorithm);
+    NViewMatchingControl(MatchingBaseAlgorithm* const pAlgorithm);
 
     /**
      *  @brief  Destructor
      */
     virtual ~NViewMatchingControl();
 
-protected:
+  protected:
     /**
      *  @brief  Update to reflect addition of a new cluster to the problem space
      *
      *  @param  pNewCluster address of the new cluster
      */
-    virtual void UpdateForNewCluster(const pandora::Cluster *const pNewCluster) = 0;
+    virtual void UpdateForNewCluster(const pandora::Cluster* const pNewCluster) = 0;
 
     /**
      *  @brief  Update to reflect cluster deletion
      *
      *  @param  pDeletedCluster address of the deleted cluster
      */
-    virtual void UpdateUponDeletion(const pandora::Cluster *const pDeletedCluster) = 0;
+    virtual void UpdateUponDeletion(const pandora::Cluster* const pDeletedCluster) = 0;
 
     /**
      *  @brief  Get the cluster list name corresponding to a specified hit type
@@ -55,7 +53,7 @@ protected:
      *
      *  @return the cluster list name
      */
-    virtual const std::string &GetClusterListName(const pandora::HitType hitType) const = 0;
+    virtual const std::string& GetClusterListName(const pandora::HitType hitType) const = 0;
 
     /**
      *  @brief  Get the input cluster list corresponding to a specified hit type
@@ -64,7 +62,8 @@ protected:
      *
      *  @return the input cluster list
      */
-    virtual const pandora::ClusterList &GetInputClusterList(const pandora::HitType hitType) const = 0;
+    virtual const pandora::ClusterList& GetInputClusterList(
+      const pandora::HitType hitType) const = 0;
 
     /**
      *  @brief  Get the selected cluster list corresponding to a specified hit type
@@ -73,7 +72,8 @@ protected:
      *
      *  @return the selected cluster list
      */
-    virtual const pandora::ClusterList &GetSelectedClusterList(const pandora::HitType hitType) const = 0;
+    virtual const pandora::ClusterList& GetSelectedClusterList(
+      const pandora::HitType hitType) const = 0;
 
     /**
      *  @brief  Select a subset of input clusters for processing in this algorithm
@@ -102,20 +102,18 @@ protected:
      */
     virtual pandora::StatusCode ReadSettings(const pandora::TiXmlHandle xmlHandle) = 0;
 
-    MatchingBaseAlgorithm *m_pAlgorithm; ///< The address of the matching base algorithm
-};
+    MatchingBaseAlgorithm* m_pAlgorithm; ///< The address of the matching base algorithm
+  };
 
-//------------------------------------------------------------------------------------------------------------------------------------------
+  //------------------------------------------------------------------------------------------------------------------------------------------
 
-inline NViewMatchingControl::NViewMatchingControl(MatchingBaseAlgorithm *const pAlgorithm) : m_pAlgorithm(pAlgorithm)
-{
-}
+  inline NViewMatchingControl::NViewMatchingControl(MatchingBaseAlgorithm* const pAlgorithm)
+    : m_pAlgorithm(pAlgorithm)
+  {}
 
-//------------------------------------------------------------------------------------------------------------------------------------------
+  //------------------------------------------------------------------------------------------------------------------------------------------
 
-inline NViewMatchingControl::~NViewMatchingControl()
-{
-}
+  inline NViewMatchingControl::~NViewMatchingControl() {}
 
 } // namespace lar_content
 

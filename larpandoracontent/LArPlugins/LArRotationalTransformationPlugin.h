@@ -10,15 +10,13 @@
 
 #include "Plugins/LArTransformationPlugin.h"
 
-namespace lar_content
-{
+namespace lar_content {
 
-/**
+  /**
  *  @brief  LArRotationalTransformationPlugin class
  */
-class LArRotationalTransformationPlugin : public pandora::LArTransformationPlugin
-{
-public:
+  class LArRotationalTransformationPlugin : public pandora::LArTransformationPlugin {
+  public:
     /**
      *  @brief  Default constructor
      */
@@ -39,12 +37,30 @@ public:
     virtual double YZtoV(const double y, const double z) const;
     virtual double YZtoW(const double y, const double z) const;
 
-    virtual void GetMinChiSquaredYZ(const double u, const double v, const double w, const double sigmaU, const double sigmaV,
-        const double sigmaW, double &y, double &z, double &chiSquared) const;
-    virtual void GetMinChiSquaredYZ(const double u, const double v, const double w, const double sigmaU, const double sigmaV, const double sigmaW,
-        const double uFit, const double vFit, const double wFit, const double sigmaFit, double &y, double &z, double &chiSquared) const;
+    virtual void GetMinChiSquaredYZ(const double u,
+                                    const double v,
+                                    const double w,
+                                    const double sigmaU,
+                                    const double sigmaV,
+                                    const double sigmaW,
+                                    double& y,
+                                    double& z,
+                                    double& chiSquared) const;
+    virtual void GetMinChiSquaredYZ(const double u,
+                                    const double v,
+                                    const double w,
+                                    const double sigmaU,
+                                    const double sigmaV,
+                                    const double sigmaW,
+                                    const double uFit,
+                                    const double vFit,
+                                    const double wFit,
+                                    const double sigmaFit,
+                                    double& y,
+                                    double& z,
+                                    double& chiSquared) const;
 
-private:
+  private:
     pandora::StatusCode Initialize();
     pandora::StatusCode ReadSettings(const pandora::TiXmlHandle xmlHandle);
 
@@ -62,11 +78,15 @@ private:
     double m_sinWminusV; ///< sin(thetaW - thetaV)
     double m_sinUminusW; ///< sin(thetaU - thetaW)
 
-    double m_maxAngularDiscrepancyU; ///< Maximum allowed difference between u wire angles between LArTPCs
-    double m_maxAngularDiscrepancyV; ///< Maximum allowed difference between v wire angles between LArTPCs
-    double m_maxAngularDiscrepancyW; ///< Maximum allowed difference between w wire angles between LArTPCs
-    double m_maxSigmaDiscrepancy;    ///< Maximum allowed difference between like wire sigma values between LArTPCs
-};
+    double
+      m_maxAngularDiscrepancyU; ///< Maximum allowed difference between u wire angles between LArTPCs
+    double
+      m_maxAngularDiscrepancyV; ///< Maximum allowed difference between v wire angles between LArTPCs
+    double
+      m_maxAngularDiscrepancyW; ///< Maximum allowed difference between w wire angles between LArTPCs
+    double
+      m_maxSigmaDiscrepancy; ///< Maximum allowed difference between like wire sigma values between LArTPCs
+  };
 
 } // namespace lar_content
 

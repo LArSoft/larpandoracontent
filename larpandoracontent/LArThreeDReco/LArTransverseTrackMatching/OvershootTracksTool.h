@@ -10,47 +10,46 @@
 
 #include "larpandoracontent/LArThreeDReco/LArTransverseTrackMatching/ThreeDKinkBaseTool.h"
 
-namespace lar_content
-{
+namespace lar_content {
 
-/**
+  /**
  *  @brief  OvershootTracksTool class
  */
-class OvershootTracksTool : public ThreeDKinkBaseTool
-{
-public:
+  class OvershootTracksTool : public ThreeDKinkBaseTool {
+  public:
     /**
      *  @brief  Default constructor
      */
     OvershootTracksTool();
 
-private:
+  private:
     /**
      *  @brief  Particle class
      */
-    class Particle
-    {
+    class Particle {
     public:
-        /**
+      /**
          *  @brief  Constructor
          *
          *  @param  elementA the tensor element A
          *  @param  elementB the tensor element B
          */
-        Particle(const TensorType::Element &elementA, const TensorType::Element &elementB);
+      Particle(const TensorType::Element& elementA, const TensorType::Element& elementB);
 
-        const pandora::Cluster *m_pCommonCluster;  ///< Address of the common cluster
-        const pandora::Cluster *m_pClusterA1;      ///< Address of cluster in element A, view 1
-        const pandora::Cluster *m_pClusterA2;      ///< Address of cluster in element A, view 2
-        const pandora::Cluster *m_pClusterB1;      ///< Address of cluster in element B, view 1
-        const pandora::Cluster *m_pClusterB2;      ///< Address of cluster in element B, view 2
-        pandora::CartesianVector m_splitPosition;  ///< The candidate split position for the common cluster
-        pandora::CartesianVector m_splitPosition1; ///< The candidate split position in view 1
-        pandora::CartesianVector m_splitPosition2; ///< The candidate split position in view 2
+      const pandora::Cluster* m_pCommonCluster; ///< Address of the common cluster
+      const pandora::Cluster* m_pClusterA1;     ///< Address of cluster in element A, view 1
+      const pandora::Cluster* m_pClusterA2;     ///< Address of cluster in element A, view 2
+      const pandora::Cluster* m_pClusterB1;     ///< Address of cluster in element B, view 1
+      const pandora::Cluster* m_pClusterB2;     ///< Address of cluster in element B, view 2
+      pandora::CartesianVector
+        m_splitPosition; ///< The candidate split position for the common cluster
+      pandora::CartesianVector m_splitPosition1; ///< The candidate split position in view 1
+      pandora::CartesianVector m_splitPosition2; ///< The candidate split position in view 2
     };
 
-    void GetIteratorListModifications(
-        ThreeViewTransverseTracksAlgorithm *const pAlgorithm, const IteratorList &iteratorList, ModificationList &modificationList) const;
+    void GetIteratorListModifications(ThreeViewTransverseTracksAlgorithm* const pAlgorithm,
+                                      const IteratorList& iteratorList,
+                                      ModificationList& modificationList) const;
     pandora::StatusCode ReadSettings(const pandora::TiXmlHandle xmlHandle);
 
     /**
@@ -59,7 +58,8 @@ private:
      *  @param  vertexA vertex from cluster in tensor element a
      *  @param  vertexB vertex from cluster in tensor element b
      */
-    bool PassesVertexCuts(const LArPointingCluster::Vertex &vertexA, const LArPointingCluster::Vertex &vertexB) const;
+    bool PassesVertexCuts(const LArPointingCluster::Vertex& vertexA,
+                          const LArPointingCluster::Vertex& vertexB) const;
 
     /**
      *  @brief  Set split position for a provided particle
@@ -70,8 +70,11 @@ private:
      *  @param  vertexB2 vertex for tensor element b in view 2
      *  @param  particle the particle
      */
-    void SetSplitPosition(const LArPointingCluster::Vertex &vertexA1, const LArPointingCluster::Vertex &vertexA2,
-        const LArPointingCluster::Vertex &vertexB1, const LArPointingCluster::Vertex &vertexB2, Particle &particle) const;
+    void SetSplitPosition(const LArPointingCluster::Vertex& vertexA1,
+                          const LArPointingCluster::Vertex& vertexA2,
+                          const LArPointingCluster::Vertex& vertexB1,
+                          const LArPointingCluster::Vertex& vertexB2,
+                          Particle& particle) const;
 
     /**
      *  @brief  Whether the provided particle is consistent with being a kink, when examined in three dimensions at the split position
@@ -83,13 +86,18 @@ private:
      *
      *  @return boolean
      */
-    bool IsThreeDKink(ThreeViewTransverseTracksAlgorithm *const pAlgorithm, const Particle &particle, const bool isA1LowestInX,
-        const bool isA2LowestInX) const;
+    bool IsThreeDKink(ThreeViewTransverseTracksAlgorithm* const pAlgorithm,
+                      const Particle& particle,
+                      const bool isA1LowestInX,
+                      const bool isA2LowestInX) const;
 
-    bool m_splitMode;                 ///< Whether to run in cluster splitting mode, as opposed to cluster merging mode
-    float m_maxVertexXSeparation;     ///< The max separation between accompanying clusters vertex x positions to make split
-    float m_cosThetaCutForKinkSearch; ///< The cos theta cut used for the kink search in three dimensions
-};
+    bool
+      m_splitMode; ///< Whether to run in cluster splitting mode, as opposed to cluster merging mode
+    float
+      m_maxVertexXSeparation; ///< The max separation between accompanying clusters vertex x positions to make split
+    float
+      m_cosThetaCutForKinkSearch; ///< The cos theta cut used for the kink search in three dimensions
+  };
 
 } // namespace lar_content
 

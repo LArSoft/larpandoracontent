@@ -10,18 +10,16 @@
 
 #include "larpandoracontent/LArTrackShowerId/PfoCharacterisationBaseAlgorithm.h"
 
-namespace lar_content
-{
+namespace lar_content {
 
-/**
+  /**
  *  @brief  CheatingPfoCharacterisationAlgorithm class
  */
-class CheatingPfoCharacterisationAlgorithm : public PfoCharacterisationBaseAlgorithm
-{
-private:
-    bool IsClearTrack(const pandora::ParticleFlowObject *const pPfo) const;
-    bool IsClearTrack(const pandora::Cluster *const pCluster) const;
-};
+  class CheatingPfoCharacterisationAlgorithm : public PfoCharacterisationBaseAlgorithm {
+  private:
+    bool IsClearTrack(const pandora::ParticleFlowObject* const pPfo) const;
+    bool IsClearTrack(const pandora::Cluster* const pCluster) const;
+  };
 
 } // namespace lar_content
 

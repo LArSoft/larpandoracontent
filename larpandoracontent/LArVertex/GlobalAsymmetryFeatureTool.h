@@ -10,24 +10,22 @@
 
 #include "larpandoracontent/LArVertex/AsymmetryFeatureBaseTool.h"
 
-namespace lar_content
-{
+namespace lar_content {
 
-/**
+  /**
  *  @brief  GlobalAsymmetryFeatureTool class
  */
-class GlobalAsymmetryFeatureTool : public AsymmetryFeatureBaseTool
-{
-public:
+  class GlobalAsymmetryFeatureTool : public AsymmetryFeatureBaseTool {
+  public:
     /**
      *  @brief  Default constructor
      */
     GlobalAsymmetryFeatureTool();
 
-protected:
+  protected:
     pandora::StatusCode ReadSettings(const pandora::TiXmlHandle xmlHandle) override;
 
-private:
+  private:
     /**
      *  @brief  Get the global asymmetry feature for a given view
      *
@@ -36,9 +34,11 @@ private:
      *
      *  @return the global asymmetry feature
      */
-    float GetAsymmetryForView(const pandora::CartesianVector &vertexPosition2D, const VertexSelectionBaseAlgorithm::SlidingFitDataList &slidingFitDataList,
-        const VertexSelectionBaseAlgorithm::ShowerClusterList &) const override;
-};
+    float GetAsymmetryForView(
+      const pandora::CartesianVector& vertexPosition2D,
+      const VertexSelectionBaseAlgorithm::SlidingFitDataList& slidingFitDataList,
+      const VertexSelectionBaseAlgorithm::ShowerClusterList&) const override;
+  };
 
 } // namespace lar_content
 

@@ -10,15 +10,13 @@
 
 #include "Pandora/Algorithm.h"
 
-namespace lar_content
-{
+namespace lar_content {
 
-/**
+  /**
  *  @brief  ListChangingAlgorithm::Algorithm class
  */
-class ListChangingAlgorithm : public pandora::Algorithm
-{
-private:
+  class ListChangingAlgorithm : public pandora::Algorithm {
+  private:
     pandora::StatusCode Run();
     pandora::StatusCode ReadSettings(const pandora::TiXmlHandle xmlHandle);
 
@@ -26,7 +24,7 @@ private:
     std::string m_clusterListName; ///< The cluster list name to set as the current cluster list
     std::string m_vertexListName;  ///< The vertex list name to set as the current vertex list
     std::string m_pfoListName;     ///< The pfo list name to set as the current pfo list
-};
+  };
 
 } // namespace lar_content
 

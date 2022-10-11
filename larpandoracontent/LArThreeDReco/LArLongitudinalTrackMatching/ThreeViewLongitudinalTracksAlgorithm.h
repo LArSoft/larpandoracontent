@@ -16,28 +16,30 @@
 #include "larpandoracontent/LArThreeDReco/LArThreeDBase/NViewTrackMatchingAlgorithm.h"
 #include "larpandoracontent/LArThreeDReco/LArThreeDBase/ThreeViewMatchingControl.h"
 
-namespace lar_content
-{
+namespace lar_content {
 
-class LongitudinalTensorTool;
+  class LongitudinalTensorTool;
 
-//------------------------------------------------------------------------------------------------------------------------------------------
+  //------------------------------------------------------------------------------------------------------------------------------------------
 
-/**
+  /**
  *  @brief  ThreeViewLongitudinalTracksAlgorithm class
  */
-class ThreeViewLongitudinalTracksAlgorithm : public NViewTrackMatchingAlgorithm<ThreeViewMatchingControl<LongitudinalOverlapResult>>
-{
-public:
-    typedef NViewTrackMatchingAlgorithm<ThreeViewMatchingControl<LongitudinalOverlapResult>> BaseAlgorithm;
+  class ThreeViewLongitudinalTracksAlgorithm
+    : public NViewTrackMatchingAlgorithm<ThreeViewMatchingControl<LongitudinalOverlapResult>> {
+  public:
+    typedef NViewTrackMatchingAlgorithm<ThreeViewMatchingControl<LongitudinalOverlapResult>>
+      BaseAlgorithm;
 
     /**
      *  @brief  Default constructor
      */
     ThreeViewLongitudinalTracksAlgorithm();
 
-private:
-    void CalculateOverlapResult(const pandora::Cluster *const pClusterU, const pandora::Cluster *const pClusterV, const pandora::Cluster *const pClusterW);
+  private:
+    void CalculateOverlapResult(const pandora::Cluster* const pClusterU,
+                                const pandora::Cluster* const pClusterV,
+                                const pandora::Cluster* const pClusterW);
 
     /**
      *  @brief  Calculate the overlap result for given group of clusters
@@ -47,8 +49,10 @@ private:
      *  @param  pClusterW the cluster from the W view
      *  @param  overlapResult to receive the overlap result
      */
-    void CalculateOverlapResult(const pandora::Cluster *const pClusterU, const pandora::Cluster *const pClusterV,
-        const pandora::Cluster *const pClusterW, LongitudinalOverlapResult &overlapResult);
+    void CalculateOverlapResult(const pandora::Cluster* const pClusterU,
+                                const pandora::Cluster* const pClusterV,
+                                const pandora::Cluster* const pClusterW,
+                                LongitudinalOverlapResult& overlapResult);
 
     /**
      *  @brief  Calculate the overlap result for given 3D vertex and end positions
@@ -60,31 +64,34 @@ private:
      *  @param  endMerged3D the 3D end position
      *  @param  overlapResult to receive the overlap result
      */
-    void CalculateOverlapResult(const TwoDSlidingFitResult &slidingFitResultU, const TwoDSlidingFitResult &slidingFitResultV,
-        const TwoDSlidingFitResult &slidingFitResultW, const pandora::CartesianVector &vtxMerged3D,
-        const pandora::CartesianVector &endMerged3D, TrackOverlapResult &overlapResult) const;
+    void CalculateOverlapResult(const TwoDSlidingFitResult& slidingFitResultU,
+                                const TwoDSlidingFitResult& slidingFitResultV,
+                                const TwoDSlidingFitResult& slidingFitResultW,
+                                const pandora::CartesianVector& vtxMerged3D,
+                                const pandora::CartesianVector& endMerged3D,
+                                TrackOverlapResult& overlapResult) const;
 
     void ExamineOverlapContainer();
 
     pandora::StatusCode ReadSettings(const pandora::TiXmlHandle xmlHandle);
 
-    typedef std::vector<LongitudinalTensorTool *> TensorToolVector;
+    typedef std::vector<LongitudinalTensorTool*> TensorToolVector;
     TensorToolVector m_algorithmToolVector; ///< The algorithm tool vector
 
     unsigned int m_nMaxTensorToolRepeats; ///< The maximum number of repeat loops over tensor tools
-    float m_vertexChi2Cut;                ///< The maximum allowed chi2 for associating end points from three views
-    float m_reducedChi2Cut;               ///< The maximum allowed chi2 for associating hit positions from three views
-    float m_samplingPitch;                ///< Pitch used to generate sampling points along tracks
-};
+    float m_vertexChi2Cut; ///< The maximum allowed chi2 for associating end points from three views
+    float
+      m_reducedChi2Cut; ///< The maximum allowed chi2 for associating hit positions from three views
+    float m_samplingPitch; ///< Pitch used to generate sampling points along tracks
+  };
 
-//------------------------------------------------------------------------------------------------------------------------------------------
+  //------------------------------------------------------------------------------------------------------------------------------------------
 
-/**
+  /**
  *  @brief  LongitudinalTensorTool class
  */
-class LongitudinalTensorTool : public pandora::AlgorithmTool
-{
-public:
+  class LongitudinalTensorTool : public pandora::AlgorithmTool {
+  public:
     typedef ThreeViewLongitudinalTracksAlgorithm::MatchingType::TensorType TensorType;
     typedef std::vector<TensorType::ElementList::const_iterator> IteratorList;
 
@@ -96,8 +103,9 @@ public:
      *
      *  @return whether changes have been made by the tool
      */
-    virtual bool Run(ThreeViewLongitudinalTracksAlgorithm *const pAlgorithm, TensorType &overlapTensor) = 0;
-};
+    virtual bool Run(ThreeViewLongitudinalTracksAlgorithm* const pAlgorithm,
+                     TensorType& overlapTensor) = 0;
+  };
 
 } // namespace lar_content
 

@@ -10,21 +10,19 @@
 
 #include "Pandora/Algorithm.h"
 
-namespace lar_content
-{
+namespace lar_content {
 
-/**
+  /**
  *  @brief  TwoDParticleCreationAlgorithm class
  */
-class TwoDParticleCreationAlgorithm : public pandora::Algorithm
-{
-public:
+  class TwoDParticleCreationAlgorithm : public pandora::Algorithm {
+  public:
     /**
      *  @brief  Default constructor
      */
     TwoDParticleCreationAlgorithm();
 
-private:
+  private:
     pandora::StatusCode Run();
     pandora::StatusCode ReadSettings(const pandora::TiXmlHandle xmlHandle);
 
@@ -33,7 +31,7 @@ private:
      *
      *  @param  pClusterList address of the cluster list
      */
-    pandora::StatusCode CreatePFOs(const pandora::ClusterList *const pClusterList) const;
+    pandora::StatusCode CreatePFOs(const pandora::ClusterList* const pClusterList) const;
 
     std::string m_inputClusterListNameU; ///< The input cluster list name for the U view
     std::string m_inputClusterListNameV; ///< The input cluster list name for the V view
@@ -42,7 +40,7 @@ private:
     std::string m_outputPfoListName; ///< The output pfo list name
     unsigned int m_minHitsInCluster; ///< Min number of hits for clusters to form pfos
     float m_minClusterEnergy;        ///< Min energy for clusters to form pfos
-};
+  };
 
 } // namespace lar_content
 

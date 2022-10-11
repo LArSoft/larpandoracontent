@@ -14,19 +14,18 @@
 #include "larpandoracontent/LArThreeDReco/LArThreeDBase/NViewMatchingAlgorithm.h"
 #include "larpandoracontent/LArThreeDReco/LArThreeDBase/ThreeViewMatchingControl.h"
 
-namespace lar_content
-{
+namespace lar_content {
 
-class RemnantTensorTool;
+  class RemnantTensorTool;
 
-//------------------------------------------------------------------------------------------------------------------------------------------
+  //------------------------------------------------------------------------------------------------------------------------------------------
 
-/**
+  /**
  *  @brief  ThreeViewRemnantsAlgorithm class
  */
-class ThreeViewRemnantsAlgorithm : public NViewMatchingAlgorithm<ThreeViewMatchingControl<float>>
-{
-public:
+  class ThreeViewRemnantsAlgorithm
+    : public NViewMatchingAlgorithm<ThreeViewMatchingControl<float>> {
+  public:
     typedef NViewMatchingAlgorithm<ThreeViewMatchingControl<float>> BaseAlgorithm;
 
     /**
@@ -34,31 +33,33 @@ public:
      */
     ThreeViewRemnantsAlgorithm();
 
-    void SelectInputClusters(const pandora::ClusterList *const pInputClusterList, pandora::ClusterList &selectedClusterList) const;
+    void SelectInputClusters(const pandora::ClusterList* const pInputClusterList,
+                             pandora::ClusterList& selectedClusterList) const;
 
-private:
-    void CalculateOverlapResult(const pandora::Cluster *const pClusterU, const pandora::Cluster *const pClusterV, const pandora::Cluster *const pClusterW);
+  private:
+    void CalculateOverlapResult(const pandora::Cluster* const pClusterU,
+                                const pandora::Cluster* const pClusterV,
+                                const pandora::Cluster* const pClusterW);
     void ExamineOverlapContainer();
 
     pandora::StatusCode ReadSettings(const pandora::TiXmlHandle xmlHandle);
 
-    typedef std::vector<RemnantTensorTool *> RemnantTensorToolVector;
+    typedef std::vector<RemnantTensorTool*> RemnantTensorToolVector;
     RemnantTensorToolVector m_algorithmToolVector; ///< The algorithm tool list
 
     unsigned int m_nMaxTensorToolRepeats; ///< The maximum number of repeat loops over tensor tools
     unsigned int m_minClusterCaloHits;    ///< The selection cut on the number of cluster calo hits
     float m_xOverlapWindow;               ///< The sampling pitch in the x coordinate
     float m_pseudoChi2Cut;                ///< The selection cut on the matched chi2
-};
+  };
 
-//------------------------------------------------------------------------------------------------------------------------------------------
+  //------------------------------------------------------------------------------------------------------------------------------------------
 
-/**
+  /**
  *  @brief  RemnantTensorTool class
  */
-class RemnantTensorTool : public pandora::AlgorithmTool
-{
-public:
+  class RemnantTensorTool : public pandora::AlgorithmTool {
+  public:
     typedef ThreeViewRemnantsAlgorithm::MatchingType::TensorType TensorType;
     typedef std::vector<TensorType::ElementList::const_iterator> IteratorList;
 
@@ -70,8 +71,8 @@ public:
      *
      *  @return whether changes have been made by the tool
      */
-    virtual bool Run(ThreeViewRemnantsAlgorithm *const pAlgorithm, TensorType &overlapTensor) = 0;
-};
+    virtual bool Run(ThreeViewRemnantsAlgorithm* const pAlgorithm, TensorType& overlapTensor) = 0;
+  };
 
 } // namespace lar_content
 

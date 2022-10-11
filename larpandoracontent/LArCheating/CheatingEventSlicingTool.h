@@ -12,22 +12,23 @@
 
 #include <unordered_map>
 
-namespace lar_content
-{
+namespace lar_content {
 
-/**
+  /**
  *  @brief  CheatingEventSlicingTool class
  */
-class CheatingEventSlicingTool : public EventSlicingBaseTool
-{
-public:
-    void RunSlicing(const pandora::Algorithm *const pAlgorithm, const SlicingAlgorithm::HitTypeToNameMap &caloHitListNames,
-        const SlicingAlgorithm::HitTypeToNameMap &clusterListNames, SlicingAlgorithm::SliceList &sliceList);
+  class CheatingEventSlicingTool : public EventSlicingBaseTool {
+  public:
+    void RunSlicing(const pandora::Algorithm* const pAlgorithm,
+                    const SlicingAlgorithm::HitTypeToNameMap& caloHitListNames,
+                    const SlicingAlgorithm::HitTypeToNameMap& clusterListNames,
+                    SlicingAlgorithm::SliceList& sliceList);
 
-private:
+  private:
     pandora::StatusCode ReadSettings(const pandora::TiXmlHandle xmlHandle);
 
-    typedef std::unordered_map<const pandora::MCParticle *, SlicingAlgorithm::Slice> MCParticleToSliceMap;
+    typedef std::unordered_map<const pandora::MCParticle*, SlicingAlgorithm::Slice>
+      MCParticleToSliceMap;
 
     /**
      *  @brief  Initialize the map from parent mc particles to slice objects
@@ -36,8 +37,9 @@ private:
      *  @param  caloHitListNames the hit type to calo hit list name map
      *  @param  mcParticleToSliceMap to receive the parent mc particle to slice map
      */
-    void InitializeMCParticleToSliceMap(const pandora::Algorithm *const pAlgorithm,
-        const SlicingAlgorithm::HitTypeToNameMap &caloHitListNames, MCParticleToSliceMap &mcParticleToSliceMap) const;
+    void InitializeMCParticleToSliceMap(const pandora::Algorithm* const pAlgorithm,
+                                        const SlicingAlgorithm::HitTypeToNameMap& caloHitListNames,
+                                        MCParticleToSliceMap& mcParticleToSliceMap) const;
 
     /**
      *  @brief  Fill slices using hits from a specified view
@@ -47,9 +49,11 @@ private:
      *  @param  caloHitListNames the hit type to calo hit list name map
      *  @param  mcParticleToSliceMap to receive the parent mc particle to slice map
      */
-    void FillSlices(const pandora::Algorithm *const pAlgorithm, const pandora::HitType hitType,
-        const SlicingAlgorithm::HitTypeToNameMap &caloHitListNames, MCParticleToSliceMap &mcParticleToSliceMap) const;
-};
+    void FillSlices(const pandora::Algorithm* const pAlgorithm,
+                    const pandora::HitType hitType,
+                    const SlicingAlgorithm::HitTypeToNameMap& caloHitListNames,
+                    MCParticleToSliceMap& mcParticleToSliceMap) const;
+  };
 
 } // namespace lar_content
 

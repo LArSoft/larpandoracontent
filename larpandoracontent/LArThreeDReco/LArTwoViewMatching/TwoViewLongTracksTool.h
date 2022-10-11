@@ -10,15 +10,13 @@
 
 #include "larpandoracontent/LArThreeDReco/LArTwoViewMatching/TwoViewTransverseTracksAlgorithm.h"
 
-namespace lar_content
-{
+namespace lar_content {
 
-/**
+  /**
  *  @brief  TwoViewLongTracksTool class
  */
-class TwoViewLongTracksTool : public TransverseMatrixTool
-{
-public:
+  class TwoViewLongTracksTool : public TransverseMatrixTool {
+  public:
     /**
      *  @brief  Default constructor
      */
@@ -32,7 +30,8 @@ public:
      *
      *  @return boolean
      */
-    static bool HasLongDirectConnections(IteratorList::const_iterator iIter, const IteratorList &iteratorList);
+    static bool HasLongDirectConnections(IteratorList::const_iterator iIter,
+                                         const IteratorList& iteratorList);
 
     /**
      *  @brief  Whether a long element is significantly longer that other elements with which it shares a cluster
@@ -42,12 +41,14 @@ public:
      *  @param  minMatchedSamplingPointRatio the min ratio between 1st and 2nd highest msps for simple ambiguity resolution
      *  @param  usedClusters the list of clusters already marked as to be added to a pfo
      */
-    static bool IsLongerThanDirectConnections(IteratorList::const_iterator iIter, const MatrixType::ElementList &elementList,
-        const unsigned int minMatchedSamplingPointRatio, const pandora::ClusterSet &usedClusters);
+    static bool IsLongerThanDirectConnections(IteratorList::const_iterator iIter,
+                                              const MatrixType::ElementList& elementList,
+                                              const unsigned int minMatchedSamplingPointRatio,
+                                              const pandora::ClusterSet& usedClusters);
 
-    bool Run(TwoViewTransverseTracksAlgorithm *const pAlgorithm, MatrixType &overlapMatrix);
+    bool Run(TwoViewTransverseTracksAlgorithm* const pAlgorithm, MatrixType& overlapMatrix);
 
-private:
+  private:
     pandora::StatusCode ReadSettings(const pandora::TiXmlHandle xmlHandle);
 
     /**
@@ -56,7 +57,8 @@ private:
      *  @param  overlapMatrix the overlap matrix
      *  @param  protoParticleVector to receive the list of proto particles
      */
-    void FindLongTracks(const MatrixType &overlapMatrix, ProtoParticleVector &protoParticleVector) const;
+    void FindLongTracks(const MatrixType& overlapMatrix,
+                        ProtoParticleVector& protoParticleVector) const;
 
     /**
      *  @brief  Select a list of long track-like elements from a set of connected matrix elements
@@ -65,14 +67,19 @@ private:
      *  @param  usedClusters the list of clusters already marked as to be added to a pfo
      *  @param  iteratorList to receive a list of iterators to long track-like elements
      */
-    void SelectLongElements(const MatrixType::ElementList &elementList, const pandora::ClusterSet &usedClusters, IteratorList &iteratorList) const;
+    void SelectLongElements(const MatrixType::ElementList& elementList,
+                            const pandora::ClusterSet& usedClusters,
+                            IteratorList& iteratorList) const;
 
-    float m_minMatchedFraction;                  ///< The min matched sampling point fraction for particle creation
-    float m_minMatchingScore;                    ///< The min global matching score for particle creation
-    unsigned int m_minMatchedSamplingPoints;     ///< The min number of matched sampling points for particle creation
-    float m_minXOverlapFraction;                 ///< The min x overlap fraction (in each view) for particle creation
-    unsigned int m_minMatchedSamplingPointRatio; ///< The min ratio between 1st and 2nd highest msps for simple ambiguity resolution
-};
+    float m_minMatchedFraction; ///< The min matched sampling point fraction for particle creation
+    float m_minMatchingScore;   ///< The min global matching score for particle creation
+    unsigned int
+      m_minMatchedSamplingPoints; ///< The min number of matched sampling points for particle creation
+    float
+      m_minXOverlapFraction; ///< The min x overlap fraction (in each view) for particle creation
+    unsigned int
+      m_minMatchedSamplingPointRatio; ///< The min ratio between 1st and 2nd highest msps for simple ambiguity resolution
+  };
 
 } // namespace lar_content
 

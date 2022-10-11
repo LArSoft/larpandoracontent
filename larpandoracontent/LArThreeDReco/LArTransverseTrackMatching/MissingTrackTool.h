@@ -10,23 +10,21 @@
 
 #include "larpandoracontent/LArThreeDReco/LArTransverseTrackMatching/ThreeViewTransverseTracksAlgorithm.h"
 
-namespace lar_content
-{
+namespace lar_content {
 
-/**
+  /**
  *  @brief  MissingTrackTool class
  */
-class MissingTrackTool : public TransverseTensorTool
-{
-public:
+  class MissingTrackTool : public TransverseTensorTool {
+  public:
     /**
      *  @brief  Default constructor
      */
     MissingTrackTool();
 
-    bool Run(ThreeViewTransverseTracksAlgorithm *const pAlgorithm, TensorType &overlapTensor);
+    bool Run(ThreeViewTransverseTracksAlgorithm* const pAlgorithm, TensorType& overlapTensor);
 
-private:
+  private:
     pandora::StatusCode ReadSettings(const pandora::TiXmlHandle xmlHandle);
 
     /**
@@ -35,13 +33,18 @@ private:
      *  @param  overlapTensor the overlap tensor
      *  @param  protoParticleVector to receive the list of proto particles
      */
-    void FindMissingTracks(const TensorType &overlapTensor, ProtoParticleVector &protoParticleVector) const;
+    void FindMissingTracks(const TensorType& overlapTensor,
+                           ProtoParticleVector& protoParticleVector) const;
 
-    unsigned int m_minMatchedSamplingPoints; ///< The min number of matched sampling points for the unavailable tensor element
-    float m_minMatchedFraction;              ///< The min matched sampling point fraction for the unavailable tensor element
-    float m_maxReducedChiSquared;            ///< The max reduced chi squared value for the unavailable tensor element
-    float m_minXOverlapFraction;             ///< The min x overlap fraction for the two available clusters in the tensor element
-};
+    unsigned int
+      m_minMatchedSamplingPoints; ///< The min number of matched sampling points for the unavailable tensor element
+    float
+      m_minMatchedFraction; ///< The min matched sampling point fraction for the unavailable tensor element
+    float
+      m_maxReducedChiSquared; ///< The max reduced chi squared value for the unavailable tensor element
+    float
+      m_minXOverlapFraction; ///< The min x overlap fraction for the two available clusters in the tensor element
+  };
 
 } // namespace lar_content
 

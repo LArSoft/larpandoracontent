@@ -20,15 +20,13 @@
 
 #include <map>
 
-namespace lar_content
-{
+namespace lar_content {
 
-/**
+  /**
  *  @brief  TestBeamHierarchyEventValidationAlgorithm class
  */
-class TestBeamHierarchyEventValidationAlgorithm : public EventValidationBaseAlgorithm
-{
-public:
+  class TestBeamHierarchyEventValidationAlgorithm : public EventValidationBaseAlgorithm {
+  public:
     /**
      *  @brief  Default constructor
      */
@@ -39,7 +37,7 @@ public:
      */
     ~TestBeamHierarchyEventValidationAlgorithm();
 
-private:
+  private:
     /**
      *  @brief  Fill the validation info containers
      *
@@ -48,10 +46,12 @@ private:
      *  @param  pPfoList the address of the pfo list
      *  @param  validationInfo to receive the validation info
      */
-    void FillValidationInfo(const pandora::MCParticleList *const pMCParticleList, const pandora::CaloHitList *const pCaloHitList,
-        const pandora::PfoList *const pPfoList, ValidationInfo &validationInfo) const;
+    void FillValidationInfo(const pandora::MCParticleList* const pMCParticleList,
+                            const pandora::CaloHitList* const pCaloHitList,
+                            const pandora::PfoList* const pPfoList,
+                            ValidationInfo& validationInfo) const;
 
-    typedef std::unordered_map<const pandora::ParticleFlowObject *, unsigned int> PfoToIdMap;
+    typedef std::unordered_map<const pandora::ParticleFlowObject*, unsigned int> PfoToIdMap;
 
     /**
      *  @brief  Print matching information in a provided validation info object, and write information to tree if configured to do so
@@ -61,14 +61,17 @@ private:
      *  @param  printToScreen whether to print the information to screen
      *  @param  fillTree whether to write the information to tree
      */
-    void ProcessOutput(const ValidationInfo &validationInfo, const bool useInterpretedMatching, const bool printToScreen, const bool fillTree) const;
+    void ProcessOutput(const ValidationInfo& validationInfo,
+                       const bool useInterpretedMatching,
+                       const bool printToScreen,
+                       const bool fillTree) const;
 
     pandora::StatusCode ReadSettings(const pandora::TiXmlHandle xmlHandle);
 
     typedef std::vector<pandora::HitType> HitTypeVector;
 
     int m_eventNumber; ///< The event number
-};
+  };
 
 } // namespace lar_content
 

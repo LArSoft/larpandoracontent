@@ -10,23 +10,21 @@
 
 #include "larpandoracontent/LArThreeDReco/LArLongitudinalTrackMatching/ThreeViewLongitudinalTracksAlgorithm.h"
 
-namespace lar_content
-{
+namespace lar_content {
 
-/**
+  /**
  *  @brief  MatchedEndPointsTool class
  */
-class MatchedEndPointsTool : public LongitudinalTensorTool
-{
-public:
+  class MatchedEndPointsTool : public LongitudinalTensorTool {
+  public:
     /**
      *  @brief  Default constructor
      */
     MatchedEndPointsTool();
 
-    bool Run(ThreeViewLongitudinalTracksAlgorithm *const pAlgorithm, TensorType &overlapTensor);
+    bool Run(ThreeViewLongitudinalTracksAlgorithm* const pAlgorithm, TensorType& overlapTensor);
 
-private:
+  private:
     pandora::StatusCode ReadSettings(const pandora::TiXmlHandle xmlHandle);
 
     /**
@@ -35,7 +33,8 @@ private:
      *  @param  overlapTensor the overlap tensor
      *  @param  protoParticleVector to receive the list of proto particles
      */
-    void FindMatchedTracks(const TensorType &overlapTensor, ProtoParticleVector &protoParticleVector) const;
+    void FindMatchedTracks(const TensorType& overlapTensor,
+                           ProtoParticleVector& protoParticleVector) const;
 
     /**
      *  @brief  Sort tensor elements by chi-squared
@@ -45,11 +44,12 @@ private:
      *
      *  @return boolean
      */
-    static bool SortByChiSquared(const TensorType::Element &lhs, const TensorType::Element &rhs);
+    static bool SortByChiSquared(const TensorType::Element& lhs, const TensorType::Element& rhs);
 
     float m_minMatchedFraction; ///< The min matched sampling point fraction for particle creation
-    float m_maxEndPointChi2;    ///< The max chi2 of matched vertex and end points for particle creation
-};
+    float
+      m_maxEndPointChi2; ///< The max chi2 of matched vertex and end points for particle creation
+  };
 
 } // namespace lar_content
 

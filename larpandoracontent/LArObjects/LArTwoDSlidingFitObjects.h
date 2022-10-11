@@ -14,28 +14,20 @@
 #include <map>
 #include <vector>
 
-namespace lar_content
-{
+namespace lar_content {
 
-/**
+  /**
  *  @brief  TransverseDirection enum
  */
-enum TransverseDirection
-{
-    POSITIVE_IN_X,
-    NEGATIVE_IN_X,
-    UNCHANGED_IN_X,
-    UNKNOWN
-};
+  enum TransverseDirection { POSITIVE_IN_X, NEGATIVE_IN_X, UNCHANGED_IN_X, UNKNOWN };
 
-//------------------------------------------------------------------------------------------------------------------------------------------
+  //------------------------------------------------------------------------------------------------------------------------------------------
 
-/**
+  /**
  *  @brief  class LayerFitResult
  */
-class LayerFitResult
-{
-public:
+  class LayerFitResult {
+  public:
     /**
      *  @brief  Constructor
      *
@@ -74,23 +66,22 @@ public:
      */
     double GetRms() const;
 
-private:
+  private:
     double m_l;        ///< The l coordinate
     double m_fitT;     ///< The fitted t coordinate
     double m_gradient; ///< The fitted gradient dt/dl
     double m_rms;      ///< The rms of the fit residuals
-};
+  };
 
-typedef std::map<int, LayerFitResult> LayerFitResultMap;
+  typedef std::map<int, LayerFitResult> LayerFitResultMap;
 
-//------------------------------------------------------------------------------------------------------------------------------------------
+  //------------------------------------------------------------------------------------------------------------------------------------------
 
-/**
+  /**
  *  @brief  LayerFitContribution class
  */
-class LayerFitContribution
-{
-public:
+  class LayerFitContribution {
+  public:
     /**
      *  @brief  Default constructor
      */
@@ -146,25 +137,24 @@ public:
      */
     unsigned int GetNPoints() const;
 
-private:
+  private:
     double m_sumT;          ///< The sum t
     double m_sumL;          ///< The sum l
     double m_sumTT;         ///< The sum t * t
     double m_sumLT;         ///< The sum l * t
     double m_sumLL;         ///< The sum l * l
     unsigned int m_nPoints; ///< The number of points used
-};
+  };
 
-typedef std::map<int, LayerFitContribution> LayerFitContributionMap;
+  typedef std::map<int, LayerFitContribution> LayerFitContributionMap;
 
-//------------------------------------------------------------------------------------------------------------------------------------------
+  //------------------------------------------------------------------------------------------------------------------------------------------
 
-/**
+  /**
  *  @brief  LayerInterpolation class
  */
-class LayerInterpolation
-{
-public:
+  class LayerInterpolation {
+  public:
     /**
      *  @brief  Default constructor
      */
@@ -178,8 +168,10 @@ public:
      *  @param firstWeight  the weight to be applied to the upstream layer
      *  @param secondWeight  the weight to be applied to the downstream layer
      */
-    LayerInterpolation(const LayerFitResultMap::const_iterator &firstLayerIter, const LayerFitResultMap::const_iterator &secondLayerIter,
-        const double firstWeight, const double secondWeight);
+    LayerInterpolation(const LayerFitResultMap::const_iterator& firstLayerIter,
+                       const LayerFitResultMap::const_iterator& secondLayerIter,
+                       const double firstWeight,
+                       const double secondWeight);
 
     /**
      *  @brief  Whether the object is initialized
@@ -216,24 +208,23 @@ public:
      */
     double GetEndLayerWeight() const;
 
-private:
+  private:
     bool m_isInitialized;                               ///< Whether the object is initialized
     LayerFitResultMap::const_iterator m_startLayerIter; ///< The start layer iterator
     LayerFitResultMap::const_iterator m_endLayerIter;   ///< The end layer iterator
     double m_startLayerWeight;                          ///< The start layer weight
     double m_endLayerWeight;                            ///< The end layer weight
-};
+  };
 
-typedef std::vector<LayerInterpolation> LayerInterpolationList;
+  typedef std::vector<LayerInterpolation> LayerInterpolationList;
 
-//------------------------------------------------------------------------------------------------------------------------------------------
+  //------------------------------------------------------------------------------------------------------------------------------------------
 
-/**
+  /**
  *  @brief  FitSegment class
  */
-class FitSegment
-{
-public:
+  class FitSegment {
+  public:
     /**
      *  @brief Constructor
      *
@@ -279,66 +270,53 @@ public:
      */
     bool IsIncreasingX() const;
 
-private:
+  private:
     int m_startLayer;     ///< The start layer
     int m_endLayer;       ///< The end layer
     double m_minX;        ///< The minimum x value
     double m_maxX;        ///< The maximum x value
     bool m_isIncreasingX; ///< Whether the x coordinate increases between the start and end layers
-};
+  };
 
-typedef std::vector<FitSegment> FitSegmentList;
+  typedef std::vector<FitSegment> FitSegmentList;
 
-//------------------------------------------------------------------------------------------------------------------------------------------
-//------------------------------------------------------------------------------------------------------------------------------------------
+  //------------------------------------------------------------------------------------------------------------------------------------------
+  //------------------------------------------------------------------------------------------------------------------------------------------
 
-inline LayerFitResult::LayerFitResult(const double l, const double fitT, const double gradient, const double rms) :
-    m_l(l),
-    m_fitT(fitT),
-    m_gradient(gradient),
-    m_rms(rms)
-{
-}
+  inline LayerFitResult::LayerFitResult(const double l,
+                                        const double fitT,
+                                        const double gradient,
+                                        const double rms)
+    : m_l(l), m_fitT(fitT), m_gradient(gradient), m_rms(rms)
+  {}
 
-//------------------------------------------------------------------------------------------------------------------------------------------
+  //------------------------------------------------------------------------------------------------------------------------------------------
 
-inline double LayerFitResult::GetL() const
-{
-    return m_l;
-}
+  inline double LayerFitResult::GetL() const { return m_l; }
 
-//------------------------------------------------------------------------------------------------------------------------------------------
+  //------------------------------------------------------------------------------------------------------------------------------------------
 
-inline double LayerFitResult::GetFitT() const
-{
-    return m_fitT;
-}
+  inline double LayerFitResult::GetFitT() const { return m_fitT; }
 
-//------------------------------------------------------------------------------------------------------------------------------------------
+  //------------------------------------------------------------------------------------------------------------------------------------------
 
-inline double LayerFitResult::GetGradient() const
-{
-    return m_gradient;
-}
+  inline double LayerFitResult::GetGradient() const { return m_gradient; }
 
-//------------------------------------------------------------------------------------------------------------------------------------------
+  //------------------------------------------------------------------------------------------------------------------------------------------
 
-inline double LayerFitResult::GetRms() const
-{
-    return m_rms;
-}
+  inline double LayerFitResult::GetRms() const { return m_rms; }
 
-//------------------------------------------------------------------------------------------------------------------------------------------
-//------------------------------------------------------------------------------------------------------------------------------------------
+  //------------------------------------------------------------------------------------------------------------------------------------------
+  //------------------------------------------------------------------------------------------------------------------------------------------
 
-inline LayerFitContribution::LayerFitContribution() : m_sumT(0.), m_sumL(0.), m_sumTT(0.), m_sumLT(0.), m_sumLL(0.), m_nPoints(0)
-{
-}
+  inline LayerFitContribution::LayerFitContribution()
+    : m_sumT(0.), m_sumL(0.), m_sumTT(0.), m_sumLT(0.), m_sumLL(0.), m_nPoints(0)
+  {}
 
-//------------------------------------------------------------------------------------------------------------------------------------------
+  //------------------------------------------------------------------------------------------------------------------------------------------
 
-inline void LayerFitContribution::AddPoint(const float l, const float t)
-{
+  inline void LayerFitContribution::AddPoint(const float l, const float t)
+  {
     const double T = static_cast<double>(t);
     const double L = static_cast<double>(l);
 
@@ -348,162 +326,126 @@ inline void LayerFitContribution::AddPoint(const float l, const float t)
     m_sumLT += L * T;
     m_sumLL += L * L;
     ++m_nPoints;
-}
+  }
 
-//------------------------------------------------------------------------------------------------------------------------------------------
+  //------------------------------------------------------------------------------------------------------------------------------------------
 
-inline double LayerFitContribution::GetSumT() const
-{
-    return m_sumT;
-}
+  inline double LayerFitContribution::GetSumT() const { return m_sumT; }
 
-//------------------------------------------------------------------------------------------------------------------------------------------
+  //------------------------------------------------------------------------------------------------------------------------------------------
 
-inline double LayerFitContribution::GetSumL() const
-{
-    return m_sumL;
-}
+  inline double LayerFitContribution::GetSumL() const { return m_sumL; }
 
-//------------------------------------------------------------------------------------------------------------------------------------------
+  //------------------------------------------------------------------------------------------------------------------------------------------
 
-inline double LayerFitContribution::GetSumLT() const
-{
-    return m_sumLT;
-}
+  inline double LayerFitContribution::GetSumLT() const { return m_sumLT; }
 
-//------------------------------------------------------------------------------------------------------------------------------------------
+  //------------------------------------------------------------------------------------------------------------------------------------------
 
-inline double LayerFitContribution::GetSumLL() const
-{
-    return m_sumLL;
-}
+  inline double LayerFitContribution::GetSumLL() const { return m_sumLL; }
 
-//------------------------------------------------------------------------------------------------------------------------------------------
+  //------------------------------------------------------------------------------------------------------------------------------------------
 
-inline double LayerFitContribution::GetSumTT() const
-{
-    return m_sumTT;
-}
+  inline double LayerFitContribution::GetSumTT() const { return m_sumTT; }
 
-//------------------------------------------------------------------------------------------------------------------------------------------
+  //------------------------------------------------------------------------------------------------------------------------------------------
 
-inline unsigned int LayerFitContribution::GetNPoints() const
-{
-    return m_nPoints;
-}
+  inline unsigned int LayerFitContribution::GetNPoints() const { return m_nPoints; }
 
-//------------------------------------------------------------------------------------------------------------------------------------------
-//------------------------------------------------------------------------------------------------------------------------------------------
+  //------------------------------------------------------------------------------------------------------------------------------------------
+  //------------------------------------------------------------------------------------------------------------------------------------------
 
-inline LayerInterpolation::LayerInterpolation() : m_isInitialized(false), m_startLayerWeight(0.f), m_endLayerWeight(0.f)
-{
-}
+  inline LayerInterpolation::LayerInterpolation()
+    : m_isInitialized(false), m_startLayerWeight(0.f), m_endLayerWeight(0.f)
+  {}
 
-//------------------------------------------------------------------------------------------------------------------------------------------
+  //------------------------------------------------------------------------------------------------------------------------------------------
 
-inline LayerInterpolation::LayerInterpolation(const LayerFitResultMap::const_iterator &startLayerIter,
-    const LayerFitResultMap::const_iterator &endLayerIter, const double startLayerWeight, const double endLayerWeight) :
-    m_isInitialized(true),
-    m_startLayerIter(startLayerIter),
-    m_endLayerIter(endLayerIter),
-    m_startLayerWeight(startLayerWeight),
-    m_endLayerWeight(endLayerWeight)
-{
-}
+  inline LayerInterpolation::LayerInterpolation(
+    const LayerFitResultMap::const_iterator& startLayerIter,
+    const LayerFitResultMap::const_iterator& endLayerIter,
+    const double startLayerWeight,
+    const double endLayerWeight)
+    : m_isInitialized(true)
+    , m_startLayerIter(startLayerIter)
+    , m_endLayerIter(endLayerIter)
+    , m_startLayerWeight(startLayerWeight)
+    , m_endLayerWeight(endLayerWeight)
+  {}
 
-//------------------------------------------------------------------------------------------------------------------------------------------
+  //------------------------------------------------------------------------------------------------------------------------------------------
 
-inline bool LayerInterpolation::IsInitialized() const
-{
-    return m_isInitialized;
-}
+  inline bool LayerInterpolation::IsInitialized() const { return m_isInitialized; }
 
-//------------------------------------------------------------------------------------------------------------------------------------------
+  //------------------------------------------------------------------------------------------------------------------------------------------
 
-inline LayerFitResultMap::const_iterator LayerInterpolation::GetStartLayerIter() const
-{
-    if (!m_isInitialized)
-        throw pandora::StatusCodeException(pandora::STATUS_CODE_NOT_INITIALIZED);
+  inline LayerFitResultMap::const_iterator LayerInterpolation::GetStartLayerIter() const
+  {
+    if (!m_isInitialized) throw pandora::StatusCodeException(pandora::STATUS_CODE_NOT_INITIALIZED);
 
     return m_startLayerIter;
-}
+  }
 
-//------------------------------------------------------------------------------------------------------------------------------------------
+  //------------------------------------------------------------------------------------------------------------------------------------------
 
-inline LayerFitResultMap::const_iterator LayerInterpolation::GetEndLayerIter() const
-{
-    if (!m_isInitialized)
-        throw pandora::StatusCodeException(pandora::STATUS_CODE_NOT_INITIALIZED);
+  inline LayerFitResultMap::const_iterator LayerInterpolation::GetEndLayerIter() const
+  {
+    if (!m_isInitialized) throw pandora::StatusCodeException(pandora::STATUS_CODE_NOT_INITIALIZED);
 
     return m_endLayerIter;
-}
+  }
 
-//------------------------------------------------------------------------------------------------------------------------------------------
+  //------------------------------------------------------------------------------------------------------------------------------------------
 
-inline double LayerInterpolation::GetStartLayerWeight() const
-{
-    if (!m_isInitialized)
-        throw pandora::StatusCodeException(pandora::STATUS_CODE_NOT_INITIALIZED);
+  inline double LayerInterpolation::GetStartLayerWeight() const
+  {
+    if (!m_isInitialized) throw pandora::StatusCodeException(pandora::STATUS_CODE_NOT_INITIALIZED);
 
     return m_startLayerWeight;
-}
+  }
 
-//------------------------------------------------------------------------------------------------------------------------------------------
+  //------------------------------------------------------------------------------------------------------------------------------------------
 
-inline double LayerInterpolation::GetEndLayerWeight() const
-{
-    if (!m_isInitialized)
-        throw pandora::StatusCodeException(pandora::STATUS_CODE_NOT_INITIALIZED);
+  inline double LayerInterpolation::GetEndLayerWeight() const
+  {
+    if (!m_isInitialized) throw pandora::StatusCodeException(pandora::STATUS_CODE_NOT_INITIALIZED);
 
     return m_endLayerWeight;
-}
+  }
 
-//------------------------------------------------------------------------------------------------------------------------------------------
-//------------------------------------------------------------------------------------------------------------------------------------------
+  //------------------------------------------------------------------------------------------------------------------------------------------
+  //------------------------------------------------------------------------------------------------------------------------------------------
 
-inline FitSegment::FitSegment(const int startLayer, const int endLayer, const double startX, const double endX) :
-    m_startLayer(startLayer),
-    m_endLayer(endLayer)
-{
+  inline FitSegment::FitSegment(const int startLayer,
+                                const int endLayer,
+                                const double startX,
+                                const double endX)
+    : m_startLayer(startLayer), m_endLayer(endLayer)
+  {
     m_minX = std::min(startX, endX);
     m_maxX = std::max(startX, endX);
     m_isIncreasingX = (endX > startX);
-}
+  }
 
-//------------------------------------------------------------------------------------------------------------------------------------------
+  //------------------------------------------------------------------------------------------------------------------------------------------
 
-inline int FitSegment::GetStartLayer() const
-{
-    return m_startLayer;
-}
+  inline int FitSegment::GetStartLayer() const { return m_startLayer; }
 
-//------------------------------------------------------------------------------------------------------------------------------------------
+  //------------------------------------------------------------------------------------------------------------------------------------------
 
-inline int FitSegment::GetEndLayer() const
-{
-    return m_endLayer;
-}
+  inline int FitSegment::GetEndLayer() const { return m_endLayer; }
 
-//------------------------------------------------------------------------------------------------------------------------------------------
+  //------------------------------------------------------------------------------------------------------------------------------------------
 
-inline double FitSegment::GetMinX() const
-{
-    return m_minX;
-}
+  inline double FitSegment::GetMinX() const { return m_minX; }
 
-//------------------------------------------------------------------------------------------------------------------------------------------
+  //------------------------------------------------------------------------------------------------------------------------------------------
 
-inline double FitSegment::GetMaxX() const
-{
-    return m_maxX;
-}
+  inline double FitSegment::GetMaxX() const { return m_maxX; }
 
-//------------------------------------------------------------------------------------------------------------------------------------------
+  //------------------------------------------------------------------------------------------------------------------------------------------
 
-inline bool FitSegment::IsIncreasingX() const
-{
-    return m_isIncreasingX;
-}
+  inline bool FitSegment::IsIncreasingX() const { return m_isIncreasingX; }
 
 } // namespace lar_content
 

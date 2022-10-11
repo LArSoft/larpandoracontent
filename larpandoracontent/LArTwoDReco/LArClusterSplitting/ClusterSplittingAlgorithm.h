@@ -12,15 +12,13 @@
 
 #include <list>
 
-namespace lar_content
-{
+namespace lar_content {
 
-/**
+  /**
  *  @brief  ClusterSplittingAlgorithm class
  */
-class ClusterSplittingAlgorithm : public pandora::Algorithm
-{
-protected:
+  class ClusterSplittingAlgorithm : public pandora::Algorithm {
+  protected:
     virtual pandora::StatusCode Run();
     virtual pandora::StatusCode ReadSettings(const pandora::TiXmlHandle xmlHandle);
 
@@ -36,20 +34,23 @@ protected:
      *  @param  firstCaloHitList the hits in the first fragment
      *  @param  secondCaloHitList the hits in the second fragment
      */
-    virtual pandora::StatusCode DivideCaloHits(
-        const pandora::Cluster *const pCluster, pandora::CaloHitList &firstCaloHitList, pandora::CaloHitList &secondCaloHitList) const = 0;
+    virtual pandora::StatusCode DivideCaloHits(const pandora::Cluster* const pCluster,
+                                               pandora::CaloHitList& firstCaloHitList,
+                                               pandora::CaloHitList& secondCaloHitList) const = 0;
 
-private:
+  private:
     /**
      *  @brief  Split cluster into two fragments
      *
      *  @param  pCluster address of the cluster
      *  @param  clusterSplittingList to receive the two cluster fragments
      */
-    pandora::StatusCode SplitCluster(const pandora::Cluster *const pCluster, pandora::ClusterList &clusterSplittingList) const;
+    pandora::StatusCode SplitCluster(const pandora::Cluster* const pCluster,
+                                     pandora::ClusterList& clusterSplittingList) const;
 
-    pandora::StringVector m_inputClusterListNames; ///< The list of input cluster list names - if empty, use the current cluster list
-};
+    pandora::StringVector
+      m_inputClusterListNames; ///< The list of input cluster list names - if empty, use the current cluster list
+  };
 
 } // namespace lar_content
 

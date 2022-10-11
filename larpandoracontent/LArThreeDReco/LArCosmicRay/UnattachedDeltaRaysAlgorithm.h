@@ -10,20 +10,18 @@
 
 #include "Pandora/Algorithm.h"
 
-namespace lar_content
-{
+namespace lar_content {
 
-/**
+  /**
  *  @brief  UnattachedDeltaRaysAlgorithm class
  */
-class UnattachedDeltaRaysAlgorithm : public pandora::Algorithm
-{
-private:
+  class UnattachedDeltaRaysAlgorithm : public pandora::Algorithm {
+  private:
     pandora::StatusCode Run();
     pandora::StatusCode ReadSettings(const pandora::TiXmlHandle xmlHandle);
 
     std::string m_pfoListName; ///< The pfo list name
-};
+  };
 
 } // namespace lar_content
 

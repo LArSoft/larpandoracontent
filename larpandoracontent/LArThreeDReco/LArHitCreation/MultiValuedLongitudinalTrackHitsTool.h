@@ -10,18 +10,18 @@
 
 #include "larpandoracontent/LArThreeDReco/LArHitCreation/LongitudinalTrackHitsBaseTool.h"
 
-namespace lar_content
-{
+namespace lar_content {
 
-/**
+  /**
  *  @brief  MultiValuedLongitudinalTrackHitsTool class
  */
-class MultiValuedLongitudinalTrackHitsTool : public LongitudinalTrackHitsBaseTool
-{
-private:
-    void GetLongitudinalTrackHit3D(const MatchedSlidingFitMap &matchedSlidingFitMap, const pandora::CartesianVector &vtx3D,
-        const pandora::CartesianVector &end3D, ProtoHit &protoHit) const;
-};
+  class MultiValuedLongitudinalTrackHitsTool : public LongitudinalTrackHitsBaseTool {
+  private:
+    void GetLongitudinalTrackHit3D(const MatchedSlidingFitMap& matchedSlidingFitMap,
+                                   const pandora::CartesianVector& vtx3D,
+                                   const pandora::CartesianVector& end3D,
+                                   ProtoHit& protoHit) const;
+  };
 
 } // namespace lar_content
 

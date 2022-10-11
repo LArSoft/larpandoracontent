@@ -10,15 +10,13 @@
 
 #include "Pandora/Algorithm.h"
 
-namespace lar_content
-{
+namespace lar_content {
 
-/**
+  /**
  *  @brief  StreamSelectionAlgorithm class
  */
-class StreamSelectionAlgorithm : public pandora::Algorithm
-{
-public:
+  class StreamSelectionAlgorithm : public pandora::Algorithm {
+  public:
     /**
      *  @brief  Default constructor
      */
@@ -26,7 +24,7 @@ public:
 
     virtual ~StreamSelectionAlgorithm() = default;
 
-protected:
+  protected:
     typedef std::map<std::string, pandora::ClusterList> ClusterListMap;
 
     /**
@@ -36,18 +34,18 @@ protected:
      *
      *  @return The StatusCode
      */
-    virtual pandora::StatusCode AllocateToStreams(const pandora::Cluster *const pCluster) = 0;
+    virtual pandora::StatusCode AllocateToStreams(const pandora::Cluster* const pCluster) = 0;
 
     pandora::StatusCode ReadSettings(const pandora::TiXmlHandle xmlHandle);
 
-    std::string m_inputListName;       ///< The input list name if not using the current list
-    std::string m_listType;            ///< The type of the input lists (currently only Cluster is supported)
+    std::string m_inputListName; ///< The input list name if not using the current list
+    std::string m_listType; ///< The type of the input lists (currently only Cluster is supported)
     pandora::StringVector m_listNames; ///< The name of the output lists
     ClusterListMap m_clusterListMap;   ///< The map from cluster list names to cluster lists
 
-private:
+  private:
     pandora::StatusCode Run();
-};
+  };
 
 } // namespace lar_content
 

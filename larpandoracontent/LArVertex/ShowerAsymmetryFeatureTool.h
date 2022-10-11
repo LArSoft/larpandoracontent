@@ -12,21 +12,19 @@
 
 #include "larpandoracontent/LArObjects/LArTwoDSlidingFitResult.h"
 
-namespace lar_content
-{
+namespace lar_content {
 
-/**
+  /**
  *  @brief  ShowerAsymmetryFeatureTool class
  */
-class ShowerAsymmetryFeatureTool : public AsymmetryFeatureBaseTool
-{
-public:
+  class ShowerAsymmetryFeatureTool : public AsymmetryFeatureBaseTool {
+  public:
     /**
      *  @brief  Default constructor
      */
     ShowerAsymmetryFeatureTool();
 
-private:
+  private:
     pandora::StatusCode ReadSettings(const pandora::TiXmlHandle xmlHandle) override;
 
     /**
@@ -37,8 +35,10 @@ private:
      *
      *  @return the shower asymmetry feature
      */
-    float GetAsymmetryForView(const pandora::CartesianVector &vertexPosition2D, const VertexSelectionBaseAlgorithm::SlidingFitDataList &,
-        const VertexSelectionBaseAlgorithm::ShowerClusterList &showerClusterList) const override;
+    float GetAsymmetryForView(
+      const pandora::CartesianVector& vertexPosition2D,
+      const VertexSelectionBaseAlgorithm::SlidingFitDataList&,
+      const VertexSelectionBaseAlgorithm::ShowerClusterList& showerClusterList) const override;
 
     /**
      *  @brief  Get whether we should use a given shower cluster for asymmetry calculation
@@ -48,10 +48,12 @@ private:
      *
      *  @return whether the shower cluster should be considered
      */
-    bool ShouldUseShowerCluster(const pandora::CartesianVector &vertexPosition, const VertexSelectionBaseAlgorithm::ShowerCluster &showerCluster) const;
+    bool ShouldUseShowerCluster(
+      const pandora::CartesianVector& vertexPosition,
+      const VertexSelectionBaseAlgorithm::ShowerCluster& showerCluster) const;
 
     float m_vertexClusterDistance; ///< The distance around the vertex to look for shower clusters
-};
+  };
 
 } // namespace lar_content
 

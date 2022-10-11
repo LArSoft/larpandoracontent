@@ -10,16 +10,16 @@
 
 #include "larpandoracontent/LArThreeDReco/LArHitCreation/ShowerHitsBaseTool.h"
 
-namespace lar_content
-{
+namespace lar_content {
 
-/**
+  /**
  *  @brief  TwoViewShowerHitsTool class
  */
-class TwoViewShowerHitsTool : public ShowerHitsBaseTool
-{
-private:
-    void GetShowerHit3D(const pandora::CaloHitVector &caloHitVector1, const pandora::CaloHitVector &caloHitVector2, ProtoHit &protoHit) const;
+  class TwoViewShowerHitsTool : public ShowerHitsBaseTool {
+  private:
+    void GetShowerHit3D(const pandora::CaloHitVector& caloHitVector1,
+                        const pandora::CaloHitVector& caloHitVector2,
+                        ProtoHit& protoHit) const;
 
     /**
      *  @brief  Get the three dimensional position for to a two dimensional calo hit, using the hit and a list of candidate matched
@@ -28,8 +28,8 @@ private:
      *  @param  caloHitVector the vector of candidate hits in another view
      *  @param  protoHit to receive the populated proto hit
      */
-    void GetShowerHit3D(const pandora::CaloHitVector &caloHitVector, ProtoHit &protoHit) const;
-};
+    void GetShowerHit3D(const pandora::CaloHitVector& caloHitVector, ProtoHit& protoHit) const;
+  };
 
 } // namespace lar_content
 

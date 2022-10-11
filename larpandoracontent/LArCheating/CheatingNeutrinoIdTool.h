@@ -11,21 +11,21 @@
 #include "larpandoracontent/LArCheating/CheatingSliceIdBaseTool.h"
 #include "larpandoracontent/LArControlFlow/MasterAlgorithm.h"
 
-namespace lar_content
-{
+namespace lar_content {
 
-/**
+  /**
  *  @brief  CheatingNeutrinoIdTool class
  */
-class CheatingNeutrinoIdTool : public CheatingSliceIdBaseTool
-{
-public:
-    void SelectOutputPfos(const pandora::Algorithm *const pAlgorithm, const SliceHypotheses &nuSliceHypotheses,
-        const SliceHypotheses &crSliceHypotheses, pandora::PfoList &selectedPfos);
+  class CheatingNeutrinoIdTool : public CheatingSliceIdBaseTool {
+  public:
+    void SelectOutputPfos(const pandora::Algorithm* const pAlgorithm,
+                          const SliceHypotheses& nuSliceHypotheses,
+                          const SliceHypotheses& crSliceHypotheses,
+                          pandora::PfoList& selectedPfos);
 
-private:
+  private:
     pandora::StatusCode ReadSettings(const pandora::TiXmlHandle xmlHandle);
-};
+  };
 
 } // namespace lar_content
 

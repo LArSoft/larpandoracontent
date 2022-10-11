@@ -14,32 +14,31 @@
 
 #include <unordered_map>
 
-namespace lar_content
-{
+namespace lar_content {
 
-/**
+  /**
  *  @brief  CheatingClusterCreationAlgorithm class
  */
-class CheatingClusterCreationAlgorithm : public pandora::Algorithm
-{
-public:
+  class CheatingClusterCreationAlgorithm : public pandora::Algorithm {
+  public:
     /**
      *  @brief  Default constructor
      */
     CheatingClusterCreationAlgorithm();
 
-private:
+  private:
     pandora::StatusCode Run();
     pandora::StatusCode ReadSettings(const pandora::TiXmlHandle xmlHandle);
 
-    typedef std::unordered_map<const pandora::MCParticle *, pandora::CaloHitList> MCParticleToHitListMap;
+    typedef std::unordered_map<const pandora::MCParticle*, pandora::CaloHitList>
+      MCParticleToHitListMap;
 
     /**
      *  @brief  Create map between each (primary) MC particle and associated calo hits
      *
      *  @param  mcParticleToHitListMap to receive the mc particle to hit list map
      */
-    void GetMCParticleToHitListMap(MCParticleToHitListMap &mcParticleToHitListMap) const;
+    void GetMCParticleToHitListMap(MCParticleToHitListMap& mcParticleToHitListMap) const;
 
     /**
      *  @brief  Simple mc particle collection, using main mc particle associated with each calo hit
@@ -48,8 +47,9 @@ private:
      *  @param  mcPrimaryMap the mapping between mc particles and their parents
      *  @param  mcParticleToHitListMap the mc particle to hit list map
      */
-    void SimpleMCParticleCollection(const pandora::CaloHit *const pCaloHit, const LArMCParticleHelper::MCRelationMap &mcPrimaryMap,
-        MCParticleToHitListMap &mcParticleToHitListMap) const;
+    void SimpleMCParticleCollection(const pandora::CaloHit* const pCaloHit,
+                                    const LArMCParticleHelper::MCRelationMap& mcPrimaryMap,
+                                    MCParticleToHitListMap& mcParticleToHitListMap) const;
 
     /**
      *  @brief  Check whether mc particle is of a type specified for inclusion in cheated clustering
@@ -58,20 +58,22 @@ private:
      *
      *  @return boolean
      */
-    bool SelectMCParticlesForClustering(const pandora::MCParticle *const pMCParticle) const;
+    bool SelectMCParticlesForClustering(const pandora::MCParticle* const pMCParticle) const;
 
     /**
      *  @brief  Create clusters based on information in the mc particle to hit list map
      *
      *  @param  mcParticleToHitListMap the mc particle to hit list map
      */
-    void CreateClusters(const MCParticleToHitListMap &mcParticleToHitListMap) const;
+    void CreateClusters(const MCParticleToHitListMap& mcParticleToHitListMap) const;
 
-    bool m_collapseToPrimaryMCParticles; ///< Whether to collapse mc particle hierarchies to primary particles
-    std::string m_mcParticleListName;    ///< The mc particle list name, required if want to collapse mc particle hierarchy
+    bool
+      m_collapseToPrimaryMCParticles; ///< Whether to collapse mc particle hierarchies to primary particles
+    std::string
+      m_mcParticleListName; ///< The mc particle list name, required if want to collapse mc particle hierarchy
 
     pandora::IntVector m_particleIdList; ///< list of particle ids of MCPFOs to be selected
-};
+  };
 
 } // namespace lar_content
 

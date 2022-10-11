@@ -14,15 +14,13 @@
 
 #include <unordered_map>
 
-namespace lar_content
-{
+namespace lar_content {
 
-/**
+  /**
  *  @brief  ThreeDSlidingFitResult class
  */
-class ThreeDSlidingFitResult
-{
-public:
+  class ThreeDSlidingFitResult {
+  public:
     /**
      *  @brief  Constructor
      *
@@ -31,70 +29,72 @@ public:
      *  @param  slidingFitLayerPitch the sliding fit z pitch, units cm
      */
     template <typename T>
-    ThreeDSlidingFitResult(const T *const pT, const unsigned int slidingFitWindow, const float slidingFitLayerPitch);
+    ThreeDSlidingFitResult(const T* const pT,
+                           const unsigned int slidingFitWindow,
+                           const float slidingFitLayerPitch);
 
     /**
      *  @brief  Get the address of the cluster
      *
      *  @return the address of the cluster
      */
-    const pandora::Cluster *GetCluster() const;
+    const pandora::Cluster* GetCluster() const;
 
     /**
      *  @brief  Get the axis intercept position
      *
      *  @return the axis intercept position
      */
-    const pandora::CartesianVector &GetAxisIntercept() const;
+    const pandora::CartesianVector& GetAxisIntercept() const;
 
     /**
      *  @brief  Get the axis direction vector
      *
      *  @return the axis direction vector
      */
-    const pandora::CartesianVector &GetAxisDirection() const;
+    const pandora::CartesianVector& GetAxisDirection() const;
 
     /**
      *  @brief  Get the first sliding fit result for this cluster
      *
      *  @return the first sliding fit result for this cluster
      */
-    const TwoDSlidingFitResult &GetFirstFitResult() const;
+    const TwoDSlidingFitResult& GetFirstFitResult() const;
 
     /**
      *  @brief  Get the second sliding fit result for this cluster
      *
      *  @return the second sliding fit result for this cluster
      */
-    const TwoDSlidingFitResult &GetSecondFitResult() const;
+    const TwoDSlidingFitResult& GetSecondFitResult() const;
 
     /**
      *  @brief  Get global position corresponding to the fit result in minimum fit layer
      *
      *  @return the position
      */
-    const pandora::CartesianVector &GetGlobalMinLayerPosition() const;
+    const pandora::CartesianVector& GetGlobalMinLayerPosition() const;
 
     /**
      *  @brief  Get global position corresponding to the fit result in maximum fit layer
      *
      *  @return the position
      */
-    const pandora::CartesianVector &GetGlobalMaxLayerPosition() const;
+    const pandora::CartesianVector& GetGlobalMaxLayerPosition() const;
 
     /**
      *  @brief  Get global direction corresponding to the fit result in minimum fit layer
      *
      *  @return the position
      */
-    const pandora::CartesianVector &GetGlobalMinLayerDirection() const;
+    const pandora::CartesianVector& GetGlobalMinLayerDirection() const;
 
     /**
      *  @brief  Get global direction corresponding to the fit result in maximum fit layer
      *
      *  @return the position
      */
-    const pandora::CartesianVector &GetGlobalMaxLayerDirection() const;
+    const pandora::CartesianVector& GetGlobalMaxLayerDirection() const;
 
     /**
      *  @brief  Get the minimum occupied layer in the sliding fit
@@ -140,7 +140,7 @@ public:
      *
      *  @return the longitudinal distance along the axis direction from the axis intercept
      */
-    float GetLongitudinalDisplacement(const pandora::CartesianVector &position) const;
+    float GetLongitudinalDisplacement(const pandora::CartesianVector& position) const;
 
     /**
      *  @brief  Get global fit position for a given longitudinal coordinate
@@ -150,7 +150,8 @@ public:
      *
      *  @return status code, faster than throwing in regular use-cases
      */
-    pandora::StatusCode GetGlobalFitPosition(const float rL, pandora::CartesianVector &position) const;
+    pandora::StatusCode GetGlobalFitPosition(const float rL,
+                                             pandora::CartesianVector& position) const;
 
     /**
      *  @brief  Get global fit direction for a given longitudinal coordinate
@@ -160,9 +161,10 @@ public:
      *
      *  @return status code, faster than throwing in regular use-cases
      */
-    pandora::StatusCode GetGlobalFitDirection(const float rL, pandora::CartesianVector &direction) const;
+    pandora::StatusCode GetGlobalFitDirection(const float rL,
+                                              pandora::CartesianVector& direction) const;
 
-private:
+  private:
     /**
      *  @brief  Get global coordinates for a given pair of sliding linear fit coordinates
      *
@@ -171,7 +173,10 @@ private:
      *  @param  rT2 the second transverse coordinate
      *  @param  position to receive the position cartesian vector
      */
-    void GetGlobalPosition(const float rL, const float rT1, const float rT2, pandora::CartesianVector &position) const;
+    void GetGlobalPosition(const float rL,
+                           const float rT1,
+                           const float rT2,
+                           pandora::CartesianVector& position) const;
 
     /**
      *  @brief  Get global direction coordinates for a given pair of sliding linear fit gradients
@@ -180,7 +185,9 @@ private:
      *  @param  dTdL2 the second transverse coordinate
      *  @param  direction to receive the direction cartesian vector
      */
-    void GetGlobalDirection(const float dTdL1, const float dTdL2, pandora::CartesianVector &direction) const;
+    void GetGlobalDirection(const float dTdL1,
+                            const float dTdL2,
+                            pandora::CartesianVector& direction) const;
 
     /**
      *  @brief  Calculate the position and direction of the primary axis
@@ -190,7 +197,8 @@ private:
      *
      *  @return pandora::TrackState object containing the position and direction
      */
-    static pandora::TrackState GetPrimaryAxis(const pandora::Cluster *const pCluster, const float slidingFitLayerPitch);
+    static pandora::TrackState GetPrimaryAxis(const pandora::Cluster* const pCluster,
+                                              const float slidingFitLayerPitch);
 
     /**
      *  @brief  Calculate the position and direction of the primary axis
@@ -200,7 +208,9 @@ private:
      *
      *  @return pandora::TrackState object containing the position and direction
      */
-    static pandora::TrackState GetPrimaryAxis(const pandora::CartesianPointVector *const pPointVector, const float slidingFitLayerPitch);
+    static pandora::TrackState GetPrimaryAxis(
+      const pandora::CartesianPointVector* const pPointVector,
+      const float slidingFitLayerPitch);
 
     /**
      *  @brief  Generate a seed vector to be used in calculating the orthogonal axes
@@ -209,11 +219,11 @@ private:
      *
      *  @return the seed direction vector
      */
-    static pandora::CartesianVector GetSeedDirection(const pandora::CartesianVector &axisDirection);
+    static pandora::CartesianVector GetSeedDirection(const pandora::CartesianVector& axisDirection);
 
-    const pandora::TrackState m_primaryAxis;               ///< The primary axis position and direction
-    const pandora::CartesianVector m_axisIntercept;        ///< The axis intercept position
-    const pandora::CartesianVector m_axisDirection;        ///< The axis direction vector
+    const pandora::TrackState m_primaryAxis;        ///< The primary axis position and direction
+    const pandora::CartesianVector m_axisIntercept; ///< The axis intercept position
+    const pandora::CartesianVector m_axisDirection; ///< The axis direction vector
     const pandora::CartesianVector m_firstOrthoDirection;  ///< The orthogonal direction vector
     const pandora::CartesianVector m_secondOrthoDirection; ///< The orthogonal direction vector
     const TwoDSlidingFitResult m_firstFitResult;           ///< The first sliding fit result
@@ -221,71 +231,76 @@ private:
     const int m_minLayer;                                  ///< The minimum combined layer
     const int m_maxLayer;                                  ///< The maximum combined layer
 
-    pandora::CartesianVector m_minLayerPosition;  ///< The global position at the minimum combined layer
-    pandora::CartesianVector m_maxLayerPosition;  ///< The global position at the maximum combined layer
-    pandora::CartesianVector m_minLayerDirection; ///< The global direction at the minimum combined layer
-    pandora::CartesianVector m_maxLayerDirection; ///< The global direction at the maximum combined layer
-};
+    pandora::CartesianVector
+      m_minLayerPosition; ///< The global position at the minimum combined layer
+    pandora::CartesianVector
+      m_maxLayerPosition; ///< The global position at the maximum combined layer
+    pandora::CartesianVector
+      m_minLayerDirection; ///< The global direction at the minimum combined layer
+    pandora::CartesianVector
+      m_maxLayerDirection; ///< The global direction at the maximum combined layer
+  };
 
-typedef std::vector<ThreeDSlidingFitResult> ThreeDSlidingFitResultList;
-typedef std::unordered_map<const pandora::Cluster *, ThreeDSlidingFitResult> ThreeDSlidingFitResultMap;
+  typedef std::vector<ThreeDSlidingFitResult> ThreeDSlidingFitResultList;
+  typedef std::unordered_map<const pandora::Cluster*, ThreeDSlidingFitResult>
+    ThreeDSlidingFitResultMap;
 
-//------------------------------------------------------------------------------------------------------------------------------------------
-//------------------------------------------------------------------------------------------------------------------------------------------
+  //------------------------------------------------------------------------------------------------------------------------------------------
+  //------------------------------------------------------------------------------------------------------------------------------------------
 
-inline const pandora::CartesianVector &ThreeDSlidingFitResult::GetAxisIntercept() const
-{
+  inline const pandora::CartesianVector& ThreeDSlidingFitResult::GetAxisIntercept() const
+  {
     return m_axisIntercept;
-}
+  }
 
-//------------------------------------------------------------------------------------------------------------------------------------------
+  //------------------------------------------------------------------------------------------------------------------------------------------
 
-inline const pandora::CartesianVector &ThreeDSlidingFitResult::GetAxisDirection() const
-{
+  inline const pandora::CartesianVector& ThreeDSlidingFitResult::GetAxisDirection() const
+  {
     return m_axisDirection;
-}
+  }
 
-//------------------------------------------------------------------------------------------------------------------------------------------
+  //------------------------------------------------------------------------------------------------------------------------------------------
 
-inline const TwoDSlidingFitResult &ThreeDSlidingFitResult::GetFirstFitResult() const
-{
+  inline const TwoDSlidingFitResult& ThreeDSlidingFitResult::GetFirstFitResult() const
+  {
     return m_firstFitResult;
-}
+  }
 
-//------------------------------------------------------------------------------------------------------------------------------------------
+  //------------------------------------------------------------------------------------------------------------------------------------------
 
-inline const TwoDSlidingFitResult &ThreeDSlidingFitResult::GetSecondFitResult() const
-{
+  inline const TwoDSlidingFitResult& ThreeDSlidingFitResult::GetSecondFitResult() const
+  {
     return m_secondFitResult;
-}
+  }
 
-//------------------------------------------------------------------------------------------------------------------------------------------
+  //------------------------------------------------------------------------------------------------------------------------------------------
 
-inline const pandora::CartesianVector &ThreeDSlidingFitResult::GetGlobalMinLayerPosition() const
-{
+  inline const pandora::CartesianVector& ThreeDSlidingFitResult::GetGlobalMinLayerPosition() const
+  {
     return m_minLayerPosition;
-}
+  }
 
-//------------------------------------------------------------------------------------------------------------------------------------------
+  //------------------------------------------------------------------------------------------------------------------------------------------
 
-inline const pandora::CartesianVector &ThreeDSlidingFitResult::GetGlobalMaxLayerPosition() const
-{
+  inline const pandora::CartesianVector& ThreeDSlidingFitResult::GetGlobalMaxLayerPosition() const
+  {
     return m_maxLayerPosition;
-}
+  }
 
-//------------------------------------------------------------------------------------------------------------------------------------------
+  //------------------------------------------------------------------------------------------------------------------------------------------
 
-inline const pandora::CartesianVector &ThreeDSlidingFitResult::GetGlobalMinLayerDirection() const
-{
+  inline const pandora::CartesianVector& ThreeDSlidingFitResult::GetGlobalMinLayerDirection() const
+  {
     return m_minLayerDirection;
-}
+  }
 
-//------------------------------------------------------------------------------------------------------------------------------------------
+  //------------------------------------------------------------------------------------------------------------------------------------------
 
-inline const pandora::CartesianVector &ThreeDSlidingFitResult::GetGlobalMaxLayerDirection() const
-{
+  inline const pandora::CartesianVector& ThreeDSlidingFitResult::GetGlobalMaxLayerDirection() const
+  {
     return m_maxLayerDirection;
-}
+  }
 
 } // namespace lar_content
 

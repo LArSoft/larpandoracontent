@@ -10,15 +10,13 @@
 
 #include "Pandora/Algorithm.h"
 
-namespace lar_content
-{
+namespace lar_content {
 
-/**
+  /**
  *  @brief  PfoCharacterisationBaseAlgorithm class
  */
-class PfoCharacterisationBaseAlgorithm : public pandora::Algorithm
-{
-public:
+  class PfoCharacterisationBaseAlgorithm : public pandora::Algorithm {
+  public:
     /**
      *  @brief  Default constructor
      */
@@ -29,7 +27,7 @@ public:
      */
     virtual ~PfoCharacterisationBaseAlgorithm();
 
-protected:
+  protected:
     pandora::StatusCode Run();
 
     /**
@@ -39,7 +37,7 @@ protected:
      *
      *  @return boolean
      */
-    virtual bool IsClearTrack3x2D(const pandora::ParticleFlowObject *const pPfo) const;
+    virtual bool IsClearTrack3x2D(const pandora::ParticleFlowObject* const pPfo) const;
 
     /**
      *  @brief  Whether pfo is identified as a clear track
@@ -48,7 +46,7 @@ protected:
      *
      *  @return boolean
      */
-    virtual bool IsClearTrack(const pandora::ParticleFlowObject *const pPfo) const = 0;
+    virtual bool IsClearTrack(const pandora::ParticleFlowObject* const pPfo) const = 0;
 
     /**
      *  @brief  Whether cluster is identified as a clear track
@@ -57,7 +55,7 @@ protected:
      *
      *  @return boolean
      */
-    virtual bool IsClearTrack(const pandora::Cluster *const pCluster) const = 0;
+    virtual bool IsClearTrack(const pandora::Cluster* const pCluster) const = 0;
 
     pandora::StatusCode ReadSettings(const pandora::TiXmlHandle xmlHandle);
 
@@ -65,11 +63,15 @@ protected:
     std::string m_showerPfoListName;           ///< The shower pfo list name
     pandora::StringVector m_inputPfoListNames; ///< The names of the input pfo lists
 
-    bool m_updateClusterIds;          ///< Whether to update daughter cluster particle id labels to match pfo id
-    bool m_postBranchAddition;        ///< Whether to use configuration for shower clusters post branch addition
-    bool m_useThreeDInformation;      ///< Whether to use PFO and 3D information or clusters for characterisation
-    unsigned int m_minTrackLikeViews; ///< The minimum number of track-like views to declare a pfo as track-like
-};
+    bool
+      m_updateClusterIds; ///< Whether to update daughter cluster particle id labels to match pfo id
+    bool
+      m_postBranchAddition; ///< Whether to use configuration for shower clusters post branch addition
+    bool
+      m_useThreeDInformation; ///< Whether to use PFO and 3D information or clusters for characterisation
+    unsigned int
+      m_minTrackLikeViews; ///< The minimum number of track-like views to declare a pfo as track-like
+  };
 
 } // namespace lar_content
 

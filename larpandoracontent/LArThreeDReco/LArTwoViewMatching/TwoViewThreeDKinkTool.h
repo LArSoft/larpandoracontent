@@ -12,15 +12,13 @@
 
 #include "larpandoracontent/LArThreeDReco/LArTwoViewMatching/TwoViewTransverseTracksAlgorithm.h"
 
-namespace lar_content
-{
+namespace lar_content {
 
-/**
+  /**
  *  @brief  TwoViewThreeDKinkTool class
  */
-class TwoViewThreeDKinkTool : public TransverseMatrixTool
-{
-public:
+  class TwoViewThreeDKinkTool : public TransverseMatrixTool {
+  public:
     /**
      *  @brief  Constructor
      *
@@ -33,18 +31,17 @@ public:
      */
     virtual ~TwoViewThreeDKinkTool();
 
-    bool Run(TwoViewTransverseTracksAlgorithm *const pAlgorithm, MatrixType &overlapMatrix);
+    bool Run(TwoViewTransverseTracksAlgorithm* const pAlgorithm, MatrixType& overlapMatrix);
 
-private:
+  private:
     /**
      *  @brief  Modification class
      */
-    class Modification
-    {
+    class Modification {
     public:
-        SplitPositionMap m_splitPositionMap;     ///< The split position map
-        ClusterMergeMap m_clusterMergeMap;       ///< The cluster merge map
-        pandora::ClusterList m_affectedClusters; ///< The list of affected clusters
+      SplitPositionMap m_splitPositionMap;     ///< The split position map
+      ClusterMergeMap m_clusterMergeMap;       ///< The cluster merge map
+      pandora::ClusterList m_affectedClusters; ///< The list of affected clusters
     };
 
     typedef std::vector<Modification> ModificationList;
@@ -52,20 +49,19 @@ private:
     /**
      *  @brief  Particle class
      */
-    class Particle
-    {
+    class Particle {
     public:
-        /**
+      /**
          *  @brief  Constructor
          *
          *  @param  elementA the matrix element A
          *  @param  elementB the matrix element B
          */
-        Particle(const MatrixType::Element &elementA, const MatrixType::Element &elementB);
+      Particle(const MatrixType::Element& elementA, const MatrixType::Element& elementB);
 
-        const pandora::Cluster *m_pClusterA;      ///< Address of non-shared cluster in element A
-        const pandora::Cluster *m_pClusterB;      ///< Address of non-shared cluster in element B
-        const pandora::Cluster *m_pCommonCluster; ///< Address of the common cluster
+      const pandora::Cluster* m_pClusterA;      ///< Address of non-shared cluster in element A
+      const pandora::Cluster* m_pClusterB;      ///< Address of non-shared cluster in element B
+      const pandora::Cluster* m_pCommonCluster; ///< Address of the common cluster
     };
 
     /**
@@ -76,7 +72,9 @@ private:
      *  @param  overlapMatrix the overlap matrix
      *  @param  modificationList to be populated with modifications
      */
-    void GetModifications(TwoViewTransverseTracksAlgorithm *const pAlgorithm, const MatrixType &overlapMatrix, ModificationList &modificationList) const;
+    void GetModifications(TwoViewTransverseTracksAlgorithm* const pAlgorithm,
+                          const MatrixType& overlapMatrix,
+                          ModificationList& modificationList) const;
 
     /**
      *  @brief  Whether a provided (iterator to a) matrix element passes the
@@ -85,7 +83,8 @@ private:
      *  @param  eIter the iterator to the matrix element
      *  @param  usedClusters the list of used clusters
      */
-    bool PassesElementCuts(MatrixType::ElementList::const_iterator eIter, const pandora::ClusterSet &usedClusters) const;
+    bool PassesElementCuts(MatrixType::ElementList::const_iterator eIter,
+                           const pandora::ClusterSet& usedClusters) const;
 
     /**
      *  @brief  Select elements representing possible components of interest due
@@ -96,8 +95,10 @@ private:
      *  @param  usedClusters the list of used clusters
      *  @param  iteratorList to receive a list of iterators to relevant elements
      */
-    void SelectMatrixElements(MatrixType::ElementList::const_iterator eIter, const MatrixType::ElementList &elementList,
-        const pandora::ClusterSet &usedClusters, IteratorList &iteratorList) const;
+    void SelectMatrixElements(MatrixType::ElementList::const_iterator eIter,
+                              const MatrixType::ElementList& elementList,
+                              const pandora::ClusterSet& usedClusters,
+                              IteratorList& iteratorList) const;
 
     /**
      *  @brief  Get modification objects for specific elements of the matrix, identifying required splits and merges for clusters
@@ -106,8 +107,9 @@ private:
      *  @param  iteratorList list of iterators to relevant tensor elements
      *  @param  modificationList to be populated with modifications
      */
-    void GetIteratorListModifications(
-        TwoViewTransverseTracksAlgorithm *const pAlgorithm, const IteratorList &iteratorList, ModificationList &modificationList) const;
+    void GetIteratorListModifications(TwoViewTransverseTracksAlgorithm* const pAlgorithm,
+                                      const IteratorList& iteratorList,
+                                      ModificationList& modificationList) const;
 
     /**
      *  @brief  Whether pointing cluster labelled A extends to lowest x positions
@@ -116,7 +118,8 @@ private:
      *  @param  pointingClusterA pointing cluster A
      *  @param  pointingClusterB pointing cluster B
      */
-    static bool IsALowestInX(const LArPointingCluster &pointingClusterA, const LArPointingCluster &pointingClusterB);
+    static bool IsALowestInX(const LArPointingCluster& pointingClusterA,
+                             const LArPointingCluster& pointingClusterB);
 
     /**
      *  @brief  Whether the provided particle is consistent with being a kink,
@@ -130,8 +133,10 @@ private:
      *
      *  @return boolean
      */
-    bool IsThreeDKink(TwoViewTransverseTracksAlgorithm *const pAlgorithm, const Particle &particle,
-        const pandora::CartesianVector &splitPosition, const bool isALowestInX) const;
+    bool IsThreeDKink(TwoViewTransverseTracksAlgorithm* const pAlgorithm,
+                      const Particle& particle,
+                      const pandora::CartesianVector& splitPosition,
+                      const bool isALowestInX) const;
 
     /**
      *  @brief  Get a sampling point in x that is common to sliding linear fit
@@ -144,8 +149,10 @@ private:
      *
      *  @return the sampling point
      */
-    float GetXSamplingPoint(const pandora::CartesianVector &splitPosition1, const bool isForwardInX, const TwoDSlidingFitResult &fitResult1,
-        const TwoDSlidingFitResult &fitResult2) const;
+    float GetXSamplingPoint(const pandora::CartesianVector& splitPosition1,
+                            const bool isForwardInX,
+                            const TwoDSlidingFitResult& fitResult1,
+                            const TwoDSlidingFitResult& fitResult2) const;
 
     /**
      *  @brief  Apply the changes cached in a modification list and update the
@@ -156,20 +163,26 @@ private:
      *
      *  @return whether changes to the matrix have been made
      */
-    bool ApplyChanges(TwoViewTransverseTracksAlgorithm *const pAlgorithm, const ModificationList &modificationList) const;
+    bool ApplyChanges(TwoViewTransverseTracksAlgorithm* const pAlgorithm,
+                      const ModificationList& modificationList) const;
 
     pandora::StatusCode ReadSettings(const pandora::TiXmlHandle xmlHandle);
 
-    float m_minXOverlapFraction;            ///< The min x overlap fraction value for particle creation
-    float m_minMatchingScore;               ///< The min global matching score for particle creation
-    float m_minLocallyMatchedFraction;      ///< The min locally matched fraction for particle creation
-    float m_minLongitudinalImpactParameter; ///< The min longitudinal impact parameter for connecting accompanying clusters
-    int m_nLayersForKinkSearch;             ///< The number of sliding fit layers to step in the kink search
-    float m_additionalXStepForKinkSearch;   ///< An additional (safety) step to tack-on when choosing x sampling
-    float m_maxTransverseImpactParameter;   ///< The maximum transverse impact parameter for connecting broken clusters
-    float m_minImpactParameterCosTheta;     ///< The minimum cos theta (angle between vertex directions) for connecting broken clusters
-    float m_cosThetaCutForKinkSearch;       ///< The cos theta cut used for the kink search in three dimensions
-};
+    float m_minXOverlapFraction;       ///< The min x overlap fraction value for particle creation
+    float m_minMatchingScore;          ///< The min global matching score for particle creation
+    float m_minLocallyMatchedFraction; ///< The min locally matched fraction for particle creation
+    float
+      m_minLongitudinalImpactParameter; ///< The min longitudinal impact parameter for connecting accompanying clusters
+    int m_nLayersForKinkSearch; ///< The number of sliding fit layers to step in the kink search
+    float
+      m_additionalXStepForKinkSearch; ///< An additional (safety) step to tack-on when choosing x sampling
+    float
+      m_maxTransverseImpactParameter; ///< The maximum transverse impact parameter for connecting broken clusters
+    float
+      m_minImpactParameterCosTheta; ///< The minimum cos theta (angle between vertex directions) for connecting broken clusters
+    float
+      m_cosThetaCutForKinkSearch; ///< The cos theta cut used for the kink search in three dimensions
+  };
 
 } // namespace lar_content
 

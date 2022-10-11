@@ -12,15 +12,13 @@
 
 #include <vector>
 
-namespace lar_content
-{
+namespace lar_content {
 
-/**
+  /**
  *  @brief  LArPcaHelper class
  */
-class LArPcaHelper
-{
-public:
+  class LArPcaHelper {
+  public:
     typedef pandora::CartesianVector EigenValues;
     typedef std::vector<pandora::CartesianVector> EigenVectors;
     typedef std::pair<const pandora::CartesianVector, double> WeightedPoint;
@@ -35,7 +33,10 @@ public:
      *  @param  outputEigenVectors to receive the eigen vectors
      */
     template <typename T>
-    static void RunPca(const T &t, pandora::CartesianVector &centroid, EigenValues &outputEigenValues, EigenVectors &outputEigenVectors);
+    static void RunPca(const T& t,
+                       pandora::CartesianVector& centroid,
+                       EigenValues& outputEigenValues,
+                       EigenVectors& outputEigenVectors);
 
     /**
      *  @brief  Run principal component analysis using weighted input Cartesian vectors (TPC_VIEW_U,V,W or TPC_3D; all treated as 3D points)
@@ -45,9 +46,11 @@ public:
      *  @param  outputEigenValues to receive the eigen values
      *  @param  outputEigenVectors to receive the eigen vectors
      */
-    static void RunPca(const WeightedPointVector &pointVector, pandora::CartesianVector &centroid, EigenValues &outputEigenValues,
-        EigenVectors &outputEigenVectors);
-};
+    static void RunPca(const WeightedPointVector& pointVector,
+                       pandora::CartesianVector& centroid,
+                       EigenValues& outputEigenValues,
+                       EigenVectors& outputEigenVectors);
+  };
 
 } // namespace lar_content
 

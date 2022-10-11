@@ -10,20 +10,18 @@
 
 #include "larpandoracontent/LArTwoDReco/LArCosmicRay/TrackRefinementBaseAlgorithm.h"
 
-namespace lar_content
-{
-/**
+namespace lar_content {
+  /**
  *  @brief TrackMergeRefinementAlgorithm class
  */
-class TrackMergeRefinementAlgorithm : public TrackRefinementBaseAlgorithm
-{
-public:
+  class TrackMergeRefinementAlgorithm : public TrackRefinementBaseAlgorithm {
+  public:
     /**
      *  @brief  Default constructor
      */
     TrackMergeRefinementAlgorithm();
 
-private:
+  private:
     pandora::StatusCode Run();
     pandora::StatusCode ReadSettings(const pandora::TiXmlHandle xmlHandle);
 
@@ -36,8 +34,9 @@ private:
      *
      *  @return  whether a cluster pair association was found
      */
-    bool FindBestClusterAssociation(const pandora::ClusterVector &clusterVector, const SlidingFitResultMapPair &slidingFitResultMapPair,
-        ClusterPairAssociation &clusterAssociation) const;
+    bool FindBestClusterAssociation(const pandora::ClusterVector& clusterVector,
+                                    const SlidingFitResultMapPair& slidingFitResultMapPair,
+                                    ClusterPairAssociation& clusterAssociation) const;
 
     /**
      *  @brief  Whether two clusters are assoicated to one another
@@ -49,8 +48,10 @@ private:
      *
      *  @return  whether the clusters are associated
      */
-    bool AreClustersAssociated(const pandora::CartesianVector &upstreamPoint, const pandora::CartesianVector &upstreamDirection,
-        const pandora::CartesianVector &downstreamPoint, const pandora::CartesianVector &downstreamDirection) const;
+    bool AreClustersAssociated(const pandora::CartesianVector& upstreamPoint,
+                               const pandora::CartesianVector& upstreamDirection,
+                               const pandora::CartesianVector& downstreamPoint,
+                               const pandora::CartesianVector& downstreamDirection) const;
 
     /**
      *  @brief  Obtain a list of clusters whos hits are protected and cannot be reassigned
@@ -59,8 +60,9 @@ private:
      *  @param  createdMainTrackClusters the list of main track clusters that have hitherto collected
      *  @param  unavailableProtectedClusters the output list of protected clusters
      */
-    void GetUnavailableProtectedClusters(const ClusterPairAssociation &clusterAssociation,
-        const pandora::ClusterList &createdMainTrackClusters, pandora::ClusterList &unavailableProtectedClusters) const;
+    void GetUnavailableProtectedClusters(const ClusterPairAssociation& clusterAssociation,
+                                         const pandora::ClusterList& createdMainTrackClusters,
+                                         pandora::ClusterList& unavailableProtectedClusters) const;
 
     /**
      *  @brief  Check the separation of the extremal extrapolated hits with the cluster merge points or, in the case of no hits, the cluster merge point separation
@@ -70,7 +72,8 @@ private:
      *
      *  @return  whether the checks pass
      */
-    bool AreExtrapolatedHitsNearBoundaries(const pandora::CaloHitVector &extrapolatedHitVector, ClusterAssociation &clusterAssociation) const;
+    bool AreExtrapolatedHitsNearBoundaries(const pandora::CaloHitVector& extrapolatedHitVector,
+                                           ClusterAssociation& clusterAssociation) const;
 
     /**
      *  @brief  Remove the cluster association from the cluster vector so that the same cluster pair is not considered again
@@ -79,8 +82,9 @@ private:
      *  @param  clusterVector the vector of clusters considered in future iterations of the algorithm
      *  @param  slidingFitResultMapPair the {micro, macro} pair of [cluster -> TwoDSlidingFitResult] maps
      */
-    void ConsiderClusterAssociation(const ClusterPairAssociation &clusterAssociation, pandora::ClusterVector &clusterVector,
-        SlidingFitResultMapPair &slidingFitResultMapPair) const;
+    void ConsiderClusterAssociation(const ClusterPairAssociation& clusterAssociation,
+                                    pandora::ClusterVector& clusterVector,
+                                    SlidingFitResultMapPair& slidingFitResultMapPair) const;
 
     /**
      *  @brief  Refine the cluster endpoints and merge together the associated clusters alongside any extrapolated hits
@@ -93,17 +97,25 @@ private:
      *
      *  @return  the address of the created main track cluster
      */
-    const pandora::Cluster *CreateMainTrack(const ClusterPairAssociation &clusterAssociation, const ClusterToCaloHitListMap &clusterToCaloHitListMap,
-        const pandora::ClusterList *pClusterList, pandora::ClusterVector &clusterVector, SlidingFitResultMapPair &slidingFitResultMapPair) const;
+    const pandora::Cluster* CreateMainTrack(const ClusterPairAssociation& clusterAssociation,
+                                            const ClusterToCaloHitListMap& clusterToCaloHitListMap,
+                                            const pandora::ClusterList* pClusterList,
+                                            pandora::ClusterVector& clusterVector,
+                                            SlidingFitResultMapPair& slidingFitResultMapPair) const;
 
-    unsigned int m_maxLoopIterations;      ///< The maximum number of main loop iterations
-    float m_minClusterLengthSum;           ///< The threshold cluster and associated cluster length sum
-    float m_minSeparationDistance;         ///< The threshold separation distance between associated clusters
-    float m_minDirectionDeviationCosAngle; ///< The threshold cos opening angle of the associated cluster directions
-    float m_maxPredictedMergePointOffset;  ///< The threshold separation distance between the predicted and true cluster merge points
-    float m_distanceToLine;                ///< The threshold hit distance of an extrapolated hit from the segment connecting line
-    float m_boundaryTolerance;             ///< The maximum allowed distance of an extremal extrapolate hit to a cluster merge point
-};
+    unsigned int m_maxLoopIterations; ///< The maximum number of main loop iterations
+    float m_minClusterLengthSum;      ///< The threshold cluster and associated cluster length sum
+    float
+      m_minSeparationDistance; ///< The threshold separation distance between associated clusters
+    float
+      m_minDirectionDeviationCosAngle; ///< The threshold cos opening angle of the associated cluster directions
+    float
+      m_maxPredictedMergePointOffset; ///< The threshold separation distance between the predicted and true cluster merge points
+    float
+      m_distanceToLine; ///< The threshold hit distance of an extrapolated hit from the segment connecting line
+    float
+      m_boundaryTolerance; ///< The maximum allowed distance of an extremal extrapolate hit to a cluster merge point
+  };
 
 } // namespace lar_content
 

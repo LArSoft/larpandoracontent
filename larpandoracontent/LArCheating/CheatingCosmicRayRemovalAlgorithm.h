@@ -10,21 +10,19 @@
 
 #include "Pandora/Algorithm.h"
 
-namespace lar_content
-{
+namespace lar_content {
 
-/**
+  /**
  *  @brief  CheatingCosmicRayRemovalAlgorithm::Algorithm class
  */
-class CheatingCosmicRayRemovalAlgorithm : public pandora::Algorithm
-{
-public:
+  class CheatingCosmicRayRemovalAlgorithm : public pandora::Algorithm {
+  public:
     /**
      *  @brief  Default constructor
      */
     CheatingCosmicRayRemovalAlgorithm() = default;
 
-private:
+  private:
     pandora::StatusCode Run();
 
     pandora::StatusCode ReadSettings(const pandora::TiXmlHandle xmlHandle);
@@ -32,7 +30,7 @@ private:
     std::string m_inputCaloHitListName;  ///< Input calo hit list name
     std::string m_outputCaloHitListName; ///< Output calo hit list name
     std::string m_mcParticleListName;    ///< MC Particle list name
-};
+  };
 
 } // namespace lar_content
 

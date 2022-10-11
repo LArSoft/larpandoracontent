@@ -18,12 +18,10 @@
 #include "Persistency/XmlFileReader.h"
 #include "Persistency/XmlFileWriter.h"
 
-namespace lar_content
-{
+namespace lar_content {
 
-// Enumeration maps onto G4 process IDs from QGSP_BERT and EM standard physics lists, plus an ID for the incident neutrino
-enum MCProcess
-{
+  // Enumeration maps onto G4 process IDs from QGSP_BERT and EM standard physics lists, plus an ID for the incident neutrino
+  enum MCProcess {
     MC_PROC_INCIDENT_NU = -1,
     MC_PROC_UNKNOWN,
     MC_PROC_PRIMARY,
@@ -74,32 +72,30 @@ enum MCProcess
     MC_PROC_MU_NUCLEAR,
     MC_PROC_TRITON_INELASTIC,
     MC_PROC_PRIMARY_BACKGROUND
-};
+  };
 
-/**
+  /**
  *  @brief  LAr mc particle parameters
  */
-class LArMCParticleParameters : public object_creation::MCParticle::Parameters
-{
-public:
+  class LArMCParticleParameters : public object_creation::MCParticle::Parameters {
+  public:
     pandora::InputInt m_nuanceCode; ///< The nuance code
     pandora::InputInt m_process;    ///< The process creating the particle
-};
+  };
 
-//------------------------------------------------------------------------------------------------------------------------------------------
+  //------------------------------------------------------------------------------------------------------------------------------------------
 
-/**
+  /**
  *  @brief  LAr mc particle class
  */
-class LArMCParticle : public object_creation::MCParticle::Object
-{
-public:
+  class LArMCParticle : public object_creation::MCParticle::Object {
+  public:
     /**
      *  @brief  Constructor
      *
      *  @param  parameters the lar mc particle parameters
      */
-    LArMCParticle(const LArMCParticleParameters &parameters);
+    LArMCParticle(const LArMCParticleParameters& parameters);
 
     /**
      *  @brief  Get the nuance code
@@ -113,7 +109,7 @@ public:
      *
      *  @param  parameters the output parameters
      */
-    void FillParameters(LArMCParticleParameters &parameters) const;
+    void FillParameters(LArMCParticleParameters& parameters) const;
 
     /**
      *  @brief  Get the process
@@ -122,19 +118,20 @@ public:
      */
     MCProcess GetProcess() const;
 
-private:
+  private:
     int m_nuanceCode; ///< The nuance code
     int m_process;    ///< The process that created the particle
-};
+  };
 
-//------------------------------------------------------------------------------------------------------------------------------------------
+  //------------------------------------------------------------------------------------------------------------------------------------------
 
-/**
+  /**
  *  @brief  LArMCParticleFactory responsible for object creation
  */
-class LArMCParticleFactory : public pandora::ObjectFactory<object_creation::MCParticle::Parameters, object_creation::MCParticle::Object>
-{
-public:
+  class LArMCParticleFactory
+    : public pandora::ObjectFactory<object_creation::MCParticle::Parameters,
+                                    object_creation::MCParticle::Object> {
+  public:
     /**
      *  @brief  Constructor
      *
@@ -147,7 +144,7 @@ public:
      *
      *  @return the address of the new parameters instance
      */
-    Parameters *NewParameters() const;
+    Parameters* NewParameters() const;
 
     /**
      *  @brief  Read any additional (derived class only) object parameters from file using the specified file reader
@@ -155,7 +152,7 @@ public:
      *  @param  parameters the parameters to pass in constructor
      *  @param  fileReader the file reader, used to extract any additional parameters from file
      */
-    pandora::StatusCode Read(Parameters &parameters, pandora::FileReader &fileReader) const;
+    pandora::StatusCode Read(Parameters& parameters, pandora::FileReader& fileReader) const;
 
     /**
      *  @brief  Persist any additional (derived class only) object parameters using the specified file writer
@@ -163,7 +160,7 @@ public:
      *  @param  pObject the address of the object to persist
      *  @param  fileWriter the file writer
      */
-    pandora::StatusCode Write(const Object *const pObject, pandora::FileWriter &fileWriter) const;
+    pandora::StatusCode Write(const Object* const pObject, pandora::FileWriter& fileWriter) const;
 
     /**
      *  @brief  Create an object with the given parameters
@@ -171,33 +168,29 @@ public:
      *  @param  parameters the parameters to pass in constructor
      *  @param  pObject to receive the address of the object created
      */
-    pandora::StatusCode Create(const Parameters &parameters, const Object *&pObject) const;
+    pandora::StatusCode Create(const Parameters& parameters, const Object*& pObject) const;
 
-private:
+  private:
     unsigned int m_version; ///< The LArMCParticle version
-};
+  };
 
-//------------------------------------------------------------------------------------------------------------------------------------------
-//------------------------------------------------------------------------------------------------------------------------------------------
+  //------------------------------------------------------------------------------------------------------------------------------------------
+  //------------------------------------------------------------------------------------------------------------------------------------------
 
-inline LArMCParticle::LArMCParticle(const LArMCParticleParameters &parameters) :
-    object_creation::MCParticle::Object(parameters),
-    m_nuanceCode(parameters.m_nuanceCode.Get()),
-    m_process(parameters.m_process.Get())
-{
-}
+  inline LArMCParticle::LArMCParticle(const LArMCParticleParameters& parameters)
+    : object_creation::MCParticle::Object(parameters)
+    , m_nuanceCode(parameters.m_nuanceCode.Get())
+    , m_process(parameters.m_process.Get())
+  {}
 
-//------------------------------------------------------------------------------------------------------------------------------------------
+  //------------------------------------------------------------------------------------------------------------------------------------------
 
-inline int LArMCParticle::GetNuanceCode() const
-{
-    return m_nuanceCode;
-}
+  inline int LArMCParticle::GetNuanceCode() const { return m_nuanceCode; }
 
-//------------------------------------------------------------------------------------------------------------------------------------------
+  //------------------------------------------------------------------------------------------------------------------------------------------
 
-inline void LArMCParticle::FillParameters(LArMCParticleParameters &parameters) const
-{
+  inline void LArMCParticle::FillParameters(LArMCParticleParameters& parameters) const
+  {
     parameters.m_nuanceCode = this->GetNuanceCode();
     parameters.m_process = this->GetProcess();
     parameters.m_energy = this->GetEnergy();
@@ -207,111 +200,120 @@ inline void LArMCParticle::FillParameters(LArMCParticleParameters &parameters) c
     parameters.m_particleId = this->GetParticleId();
     parameters.m_mcParticleType = this->GetMCParticleType();
     // ATTN Set the parent address to the original owner of the mc particle
-    parameters.m_pParentAddress = static_cast<const void *>(this);
-}
+    parameters.m_pParentAddress = static_cast<const void*>(this);
+  }
 
-//------------------------------------------------------------------------------------------------------------------------------------------
+  //------------------------------------------------------------------------------------------------------------------------------------------
 
-inline MCProcess LArMCParticle::GetProcess() const
-{
-    return MCProcess(m_process);
-}
+  inline MCProcess LArMCParticle::GetProcess() const { return MCProcess(m_process); }
 
-//------------------------------------------------------------------------------------------------------------------------------------------
-//------------------------------------------------------------------------------------------------------------------------------------------
+  //------------------------------------------------------------------------------------------------------------------------------------------
+  //------------------------------------------------------------------------------------------------------------------------------------------
 
-inline LArMCParticleFactory::LArMCParticleFactory(const unsigned int version) : m_version(version)
-{
-}
+  inline LArMCParticleFactory::LArMCParticleFactory(const unsigned int version) : m_version(version)
+  {}
 
-//------------------------------------------------------------------------------------------------------------------------------------------
+  //------------------------------------------------------------------------------------------------------------------------------------------
 
-inline LArMCParticleFactory::Parameters *LArMCParticleFactory::NewParameters() const
-{
+  inline LArMCParticleFactory::Parameters* LArMCParticleFactory::NewParameters() const
+  {
     return (new LArMCParticleParameters);
-}
+  }
 
-//------------------------------------------------------------------------------------------------------------------------------------------
+  //------------------------------------------------------------------------------------------------------------------------------------------
 
-inline pandora::StatusCode LArMCParticleFactory::Create(const Parameters &parameters, const Object *&pObject) const
-{
-    const LArMCParticleParameters &larMCParticleParameters(dynamic_cast<const LArMCParticleParameters &>(parameters));
+  inline pandora::StatusCode LArMCParticleFactory::Create(const Parameters& parameters,
+                                                          const Object*& pObject) const
+  {
+    const LArMCParticleParameters& larMCParticleParameters(
+      dynamic_cast<const LArMCParticleParameters&>(parameters));
     pObject = new LArMCParticle(larMCParticleParameters);
 
     return pandora::STATUS_CODE_SUCCESS;
-}
+  }
 
-//------------------------------------------------------------------------------------------------------------------------------------------
+  //------------------------------------------------------------------------------------------------------------------------------------------
 
-inline pandora::StatusCode LArMCParticleFactory::Read(Parameters &parameters, pandora::FileReader &fileReader) const
-{
+  inline pandora::StatusCode LArMCParticleFactory::Read(Parameters& parameters,
+                                                        pandora::FileReader& fileReader) const
+  {
     // ATTN: To receive this call-back must have already set file reader mc particle factory to this factory
     int nuanceCode(0);
     int process(0);
 
-    if (pandora::BINARY == fileReader.GetFileType())
-    {
-        pandora::BinaryFileReader &binaryFileReader(dynamic_cast<pandora::BinaryFileReader &>(fileReader));
-        PANDORA_RETURN_RESULT_IF(pandora::STATUS_CODE_SUCCESS, !=, binaryFileReader.ReadVariable(nuanceCode));
+    if (pandora::BINARY == fileReader.GetFileType()) {
+      pandora::BinaryFileReader& binaryFileReader(
+        dynamic_cast<pandora::BinaryFileReader&>(fileReader));
+      PANDORA_RETURN_RESULT_IF(
+        pandora::STATUS_CODE_SUCCESS, !=, binaryFileReader.ReadVariable(nuanceCode));
 
-        if (m_version > 1)
-            PANDORA_RETURN_RESULT_IF(pandora::STATUS_CODE_SUCCESS, !=, binaryFileReader.ReadVariable(process));
+      if (m_version > 1)
+        PANDORA_RETURN_RESULT_IF(
+          pandora::STATUS_CODE_SUCCESS, !=, binaryFileReader.ReadVariable(process));
     }
-    else if (pandora::XML == fileReader.GetFileType())
-    {
-        pandora::XmlFileReader &xmlFileReader(dynamic_cast<pandora::XmlFileReader &>(fileReader));
-        PANDORA_RETURN_RESULT_IF(pandora::STATUS_CODE_SUCCESS, !=, xmlFileReader.ReadVariable("NuanceCode", nuanceCode));
+    else if (pandora::XML == fileReader.GetFileType()) {
+      pandora::XmlFileReader& xmlFileReader(dynamic_cast<pandora::XmlFileReader&>(fileReader));
+      PANDORA_RETURN_RESULT_IF(
+        pandora::STATUS_CODE_SUCCESS, !=, xmlFileReader.ReadVariable("NuanceCode", nuanceCode));
 
-        if (m_version > 1)
-            PANDORA_RETURN_RESULT_IF(pandora::STATUS_CODE_SUCCESS, !=, xmlFileReader.ReadVariable("Process", process));
+      if (m_version > 1)
+        PANDORA_RETURN_RESULT_IF(
+          pandora::STATUS_CODE_SUCCESS, !=, xmlFileReader.ReadVariable("Process", process));
     }
-    else
-    {
-        return pandora::STATUS_CODE_INVALID_PARAMETER;
+    else {
+      return pandora::STATUS_CODE_INVALID_PARAMETER;
     }
 
-    LArMCParticleParameters &larMCParticleParameters(dynamic_cast<LArMCParticleParameters &>(parameters));
+    LArMCParticleParameters& larMCParticleParameters(
+      dynamic_cast<LArMCParticleParameters&>(parameters));
     larMCParticleParameters.m_nuanceCode = nuanceCode;
     larMCParticleParameters.m_process = process;
 
     return pandora::STATUS_CODE_SUCCESS;
-}
+  }
 
-//------------------------------------------------------------------------------------------------------------------------------------------
+  //------------------------------------------------------------------------------------------------------------------------------------------
 
-inline pandora::StatusCode LArMCParticleFactory::Write(const Object *const pObject, pandora::FileWriter &fileWriter) const
-{
+  inline pandora::StatusCode LArMCParticleFactory::Write(const Object* const pObject,
+                                                         pandora::FileWriter& fileWriter) const
+  {
     // ATTN: To receive this call-back must have already set file writer mc particle factory to this factory
-    const LArMCParticle *const pLArMCParticle(dynamic_cast<const LArMCParticle *>(pObject));
+    const LArMCParticle* const pLArMCParticle(dynamic_cast<const LArMCParticle*>(pObject));
 
-    if (!pLArMCParticle)
-        return pandora::STATUS_CODE_INVALID_PARAMETER;
+    if (!pLArMCParticle) return pandora::STATUS_CODE_INVALID_PARAMETER;
 
-    if (pandora::BINARY == fileWriter.GetFileType())
-    {
-        pandora::BinaryFileWriter &binaryFileWriter(dynamic_cast<pandora::BinaryFileWriter &>(fileWriter));
-        PANDORA_RETURN_RESULT_IF(pandora::STATUS_CODE_SUCCESS, !=, binaryFileWriter.WriteVariable(pLArMCParticle->GetNuanceCode()));
+    if (pandora::BINARY == fileWriter.GetFileType()) {
+      pandora::BinaryFileWriter& binaryFileWriter(
+        dynamic_cast<pandora::BinaryFileWriter&>(fileWriter));
+      PANDORA_RETURN_RESULT_IF(pandora::STATUS_CODE_SUCCESS,
+                               !=,
+                               binaryFileWriter.WriteVariable(pLArMCParticle->GetNuanceCode()));
 
-        if (m_version > 1)
-            PANDORA_RETURN_RESULT_IF(
-                pandora::STATUS_CODE_SUCCESS, !=, binaryFileWriter.WriteVariable(static_cast<int>(pLArMCParticle->GetProcess())));
+      if (m_version > 1)
+        PANDORA_RETURN_RESULT_IF(
+          pandora::STATUS_CODE_SUCCESS,
+          !=,
+          binaryFileWriter.WriteVariable(static_cast<int>(pLArMCParticle->GetProcess())));
     }
-    else if (pandora::XML == fileWriter.GetFileType())
-    {
-        pandora::XmlFileWriter &xmlFileWriter(dynamic_cast<pandora::XmlFileWriter &>(fileWriter));
-        PANDORA_RETURN_RESULT_IF(pandora::STATUS_CODE_SUCCESS, !=, xmlFileWriter.WriteVariable("NuanceCode", pLArMCParticle->GetNuanceCode()));
+    else if (pandora::XML == fileWriter.GetFileType()) {
+      pandora::XmlFileWriter& xmlFileWriter(dynamic_cast<pandora::XmlFileWriter&>(fileWriter));
+      PANDORA_RETURN_RESULT_IF(
+        pandora::STATUS_CODE_SUCCESS,
+        !=,
+        xmlFileWriter.WriteVariable("NuanceCode", pLArMCParticle->GetNuanceCode()));
 
-        if (m_version > 1)
-            PANDORA_RETURN_RESULT_IF(
-                pandora::STATUS_CODE_SUCCESS, !=, xmlFileWriter.WriteVariable("Process", static_cast<int>(pLArMCParticle->GetProcess())));
+      if (m_version > 1)
+        PANDORA_RETURN_RESULT_IF(
+          pandora::STATUS_CODE_SUCCESS,
+          !=,
+          xmlFileWriter.WriteVariable("Process", static_cast<int>(pLArMCParticle->GetProcess())));
     }
-    else
-    {
-        return pandora::STATUS_CODE_INVALID_PARAMETER;
+    else {
+      return pandora::STATUS_CODE_INVALID_PARAMETER;
     }
 
     return pandora::STATUS_CODE_SUCCESS;
-}
+  }
 
 } // namespace lar_content
 

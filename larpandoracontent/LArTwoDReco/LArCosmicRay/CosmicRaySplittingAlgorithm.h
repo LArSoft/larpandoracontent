@@ -12,21 +12,19 @@
 
 #include "larpandoracontent/LArObjects/LArTwoDSlidingFitResult.h"
 
-namespace lar_content
-{
+namespace lar_content {
 
-/**
+  /**
  *  @brief  CosmicRaySplittingAlgorithm class
  */
-class CosmicRaySplittingAlgorithm : public pandora::Algorithm
-{
-public:
+  class CosmicRaySplittingAlgorithm : public pandora::Algorithm {
+  public:
     /**
      *  @brief  Default constructor
      */
     CosmicRaySplittingAlgorithm();
 
-private:
+  private:
     pandora::StatusCode Run();
     pandora::StatusCode ReadSettings(const pandora::TiXmlHandle xmlHandle);
 
@@ -36,7 +34,8 @@ private:
      *  @param  pClusterList address of the cluster list
      *  @param  clusterVector to receive the populated cluster vector
      */
-    void GetListOfCleanClusters(const pandora::ClusterList *const pClusterList, pandora::ClusterVector &clusterVector) const;
+    void GetListOfCleanClusters(const pandora::ClusterList* const pClusterList,
+                                pandora::ClusterVector& clusterVector) const;
 
     /**
      *  @brief  Build the map of sliding fit results
@@ -44,7 +43,8 @@ private:
      *  @param  clusterVector the input cluster vector
      *  @param  slidingFitResultMap the output sliding fit result map
      */
-    void BuildSlidingFitResultMap(const pandora::ClusterVector &clusterVector, TwoDSlidingFitResultMap &slidingFitResultMap) const;
+    void BuildSlidingFitResultMap(const pandora::ClusterVector& clusterVector,
+                                  TwoDSlidingFitResultMap& slidingFitResultMap) const;
 
     /**
      *  @brief  Find the position of greatest scatter along a sliding linear fit
@@ -54,8 +54,10 @@ private:
      *  @param  splitDirection1 the direction vector just above the scatter position
      *  @param  splitDirection2 the direction vector just below the scatter position
      */
-    pandora::StatusCode FindBestSplitPosition(const TwoDSlidingFitResult &slidingFitResult, pandora::CartesianVector &splitPosition,
-        pandora::CartesianVector &splitDirection1, pandora::CartesianVector &splitDirection2) const;
+    pandora::StatusCode FindBestSplitPosition(const TwoDSlidingFitResult& slidingFitResult,
+                                              pandora::CartesianVector& splitPosition,
+                                              pandora::CartesianVector& splitDirection1,
+                                              pandora::CartesianVector& splitDirection2) const;
 
     /**
      *  @brief  Find a second replacement cluster that aligns with the scatter of the first branch cluster
@@ -68,9 +70,14 @@ private:
      *  @param  lengthSquared1 figure of merit for association with first track direction
      *  @param  lengthSquared2 figure of merit for association with second track direction
      */
-    pandora::StatusCode ConfirmSplitPosition(const TwoDSlidingFitResult &branchSlidingFitResult, const TwoDSlidingFitResult &replacementSlidingFitResult,
-        const pandora::CartesianVector &splitPosition, const pandora::CartesianVector &splitDirection1,
-        const pandora::CartesianVector &splitDirection2, float &lengthSquared1, float &lengthSquared2) const;
+    pandora::StatusCode ConfirmSplitPosition(
+      const TwoDSlidingFitResult& branchSlidingFitResult,
+      const TwoDSlidingFitResult& replacementSlidingFitResult,
+      const pandora::CartesianVector& splitPosition,
+      const pandora::CartesianVector& splitDirection1,
+      const pandora::CartesianVector& splitDirection2,
+      float& lengthSquared1,
+      float& lengthSquared2) const;
 
     /**
      *  @brief  Split a branch cluster for case of one replacement cluster
@@ -81,9 +88,11 @@ private:
      *  @param  forwardDirection the direction of the branch cluster just above the split position
      *  @param  backwardDirection the direction of the branch cluster just below the split position
      */
-    pandora::StatusCode PerformSingleSplit(const pandora::Cluster *const pBranchCluster, const pandora::Cluster *const pReplacementCluster,
-        const pandora::CartesianVector &splitPosition, const pandora::CartesianVector &forwardDirection,
-        const pandora::CartesianVector &backwardDirection) const;
+    pandora::StatusCode PerformSingleSplit(const pandora::Cluster* const pBranchCluster,
+                                           const pandora::Cluster* const pReplacementCluster,
+                                           const pandora::CartesianVector& splitPosition,
+                                           const pandora::CartesianVector& forwardDirection,
+                                           const pandora::CartesianVector& backwardDirection) const;
 
     /**
      *  @brief  Split a branch cluster for case of two replacement clusters
@@ -95,9 +104,12 @@ private:
      *  @param  splitDirection1 the direction of the branch cluster just above the split position
      *  @param  splitDirection2 the direction of the branch cluster just below the split position
      */
-    pandora::StatusCode PerformDoubleSplit(const pandora::Cluster *const pBranchCluster, const pandora::Cluster *const pReplacementCluster1,
-        const pandora::Cluster *const pReplacementCluster2, const pandora::CartesianVector &splitPosition,
-        const pandora::CartesianVector &splitDirection1, const pandora::CartesianVector &splitDirection2) const;
+    pandora::StatusCode PerformDoubleSplit(const pandora::Cluster* const pBranchCluster,
+                                           const pandora::Cluster* const pReplacementCluster1,
+                                           const pandora::Cluster* const pReplacementCluster2,
+                                           const pandora::CartesianVector& splitPosition,
+                                           const pandora::CartesianVector& splitDirection1,
+                                           const pandora::CartesianVector& splitDirection2) const;
 
     /**
      *  @brief  Get list of calo hits to move in order to split a branch cluster into two segments for case of one replacement cluster
@@ -109,9 +121,12 @@ private:
      *  @param  backwardDirection the direction of the branch cluster just below the split position
      *  @param  caloHitList the output hits to be removed from the branch cluster
      */
-    void GetCaloHitListToMove(const pandora::Cluster *const pBranchCluster, const pandora::Cluster *const pReplacementCluster,
-        const pandora::CartesianVector &splitPosition, const pandora::CartesianVector &forwardDirection,
-        const pandora::CartesianVector &backwardDirection, pandora::CaloHitList &caloHitList) const;
+    void GetCaloHitListToMove(const pandora::Cluster* const pBranchCluster,
+                              const pandora::Cluster* const pReplacementCluster,
+                              const pandora::CartesianVector& splitPosition,
+                              const pandora::CartesianVector& forwardDirection,
+                              const pandora::CartesianVector& backwardDirection,
+                              pandora::CaloHitList& caloHitList) const;
 
     /**
      *  @brief  Get lists of calo hits to move in order to split a branch cluster into two segments for case of two replacement clusters
@@ -123,9 +138,12 @@ private:
      *  @param  caloHitList1 the first segment to be split from the branch cluster
      *  @param  caloHitList2 the second segment to be split from the branch cluster
      */
-    void GetCaloHitListsToMove(const pandora::Cluster *const pBranchCluster, const pandora::CartesianVector &splitPosition,
-        const pandora::CartesianVector &splitDirection1, const pandora::CartesianVector &splitDirection2,
-        pandora::CaloHitList &caloHitList1, pandora::CaloHitList &caloHitList2) const;
+    void GetCaloHitListsToMove(const pandora::Cluster* const pBranchCluster,
+                               const pandora::CartesianVector& splitPosition,
+                               const pandora::CartesianVector& splitDirection1,
+                               const pandora::CartesianVector& splitDirection2,
+                               pandora::CaloHitList& caloHitList1,
+                               pandora::CaloHitList& caloHitList2) const;
 
     /**
      *  @brief  Identify crossed tracks formed from the branch cluster and its replacement cluster
@@ -135,8 +153,10 @@ private:
      *  @param  pReplacementCluster2 the second replacement cluster
      *  @param  splitPosition the split position
      */
-    bool IdentifyCrossedTracks(const pandora::Cluster *const pBranchCluster, const pandora::Cluster *const pReplacementCluster1,
-        const pandora::Cluster *const pReplacementCluster2, const pandora::CartesianVector &splitPosition) const;
+    bool IdentifyCrossedTracks(const pandora::Cluster* const pBranchCluster,
+                               const pandora::Cluster* const pReplacementCluster1,
+                               const pandora::Cluster* const pReplacementCluster2,
+                               const pandora::CartesianVector& splitPosition) const;
 
     /**
      *  @brief  Split the branch cluster and add hits to the replacement cluster
@@ -145,8 +165,9 @@ private:
      *  @param  caloHitListToMove the list of hits to be removed from the branch cluster and added to the replacement cluster
      *  @param  caloHitListToKeep to receive the list of calo hits to keep
      */
-    pandora::StatusCode GetCaloHitListToKeep(const pandora::Cluster *const pBranchCluster, const pandora::CaloHitList &caloHitListToMove,
-        pandora::CaloHitList &caloHitListToKeep) const;
+    pandora::StatusCode GetCaloHitListToKeep(const pandora::Cluster* const pBranchCluster,
+                                             const pandora::CaloHitList& caloHitListToMove,
+                                             pandora::CaloHitList& caloHitListToKeep) const;
 
     /**
      *  @brief  Split the branch cluster and add hits to the replacement cluster
@@ -155,18 +176,20 @@ private:
      *  @param  pReplacementCluster the replacement cluster
      *  @param  caloHitListToMove the list of hits to be removed from the branch cluster and added to the replacement cluster
      */
-    pandora::StatusCode SplitCluster(const pandora::Cluster *const pBranchCluster, const pandora::Cluster *const pReplacementCluster,
-        const pandora::CaloHitList &caloHitListToMove) const;
+    pandora::StatusCode SplitCluster(const pandora::Cluster* const pBranchCluster,
+                                     const pandora::Cluster* const pReplacementCluster,
+                                     const pandora::CaloHitList& caloHitListToMove) const;
 
-    float m_clusterMinLength;                   ///< minimum length of clusters for this algorithm
-    unsigned int m_halfWindowLayers;            ///< number of layers to use for half-window of sliding fit
-    float m_samplingPitch;                      ///< sampling pitch for walking along sliding linear fit
-    float m_maxCosSplittingAngle;               ///< smallest scatter angle allowed when splitting cluster
-    float m_minCosMergingAngle;                 ///< largest relative angle allowed when merging clusters
-    float m_maxTransverseDisplacement;          ///< maximum transverse displacement of associated clusters
-    float m_maxLongitudinalDisplacement;        ///< maximum longitudinal displacement of associated clusters
+    float m_clusterMinLength;          ///< minimum length of clusters for this algorithm
+    unsigned int m_halfWindowLayers;   ///< number of layers to use for half-window of sliding fit
+    float m_samplingPitch;             ///< sampling pitch for walking along sliding linear fit
+    float m_maxCosSplittingAngle;      ///< smallest scatter angle allowed when splitting cluster
+    float m_minCosMergingAngle;        ///< largest relative angle allowed when merging clusters
+    float m_maxTransverseDisplacement; ///< maximum transverse displacement of associated clusters
+    float
+      m_maxLongitudinalDisplacement; ///< maximum longitudinal displacement of associated clusters
     float m_maxLongitudinalDisplacementSquared; ///< longitudinal displacement squared
-};
+  };
 
 } // namespace lar_content
 

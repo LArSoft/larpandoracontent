@@ -10,15 +10,13 @@
 
 #include "Pandora/Algorithm.h"
 
-namespace lar_content
-{
+namespace lar_content {
 
-/**
+  /**
  *  @brief  CustomParticleCreationAlgorithm class
  */
-class CustomParticleCreationAlgorithm : public pandora::Algorithm
-{
-protected:
+  class CustomParticleCreationAlgorithm : public pandora::Algorithm {
+  protected:
     virtual pandora::StatusCode Run();
     virtual pandora::StatusCode ReadSettings(const pandora::TiXmlHandle xmlHandle);
 
@@ -28,12 +26,13 @@ protected:
      *  @param  pInputPfo the address of the input Pfo
      *  @param  pOutputPfo the address of the output Pfo
      */
-    virtual void CreatePfo(const pandora::ParticleFlowObject *const pInputPfo, const pandora::ParticleFlowObject *&pOutputPfo) const = 0;
+    virtual void CreatePfo(const pandora::ParticleFlowObject* const pInputPfo,
+                           const pandora::ParticleFlowObject*& pOutputPfo) const = 0;
 
-private:
+  private:
     std::string m_pfoListName;    ///< The name of the input pfo list
     std::string m_vertexListName; ///< The name of the input vertex list
-};
+  };
 
 } // namespace lar_content
 

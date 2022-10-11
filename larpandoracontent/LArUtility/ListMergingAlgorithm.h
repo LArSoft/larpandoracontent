@@ -10,15 +10,13 @@
 
 #include "Pandora/Algorithm.h"
 
-namespace lar_content
-{
+namespace lar_content {
 
-/**
+  /**
  *  @brief  ListMergingAlgorithm class
  */
-class ListMergingAlgorithm : public pandora::Algorithm
-{
-private:
+  class ListMergingAlgorithm : public pandora::Algorithm {
+  private:
     pandora::StatusCode Run();
     pandora::StatusCode ReadSettings(const pandora::TiXmlHandle xmlHandle);
 
@@ -27,7 +25,7 @@ private:
 
     pandora::StringVector m_sourcePfoListNames; ///< The source pfo list names
     pandora::StringVector m_targetPfoListNames; ///< The target pfo list names
-};
+  };
 
 } // namespace lar_content
 

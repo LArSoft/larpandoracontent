@@ -10,27 +10,28 @@
 
 #include "larpandoracontent/LArThreeDReco/LArHitCreation/ShowerHitsBaseTool.h"
 
-namespace lar_content
-{
+namespace lar_content {
 
-/**
+  /**
  *  @brief  ThreeViewShowerHitsTool class
  */
-class ThreeViewShowerHitsTool : public ShowerHitsBaseTool
-{
-public:
+  class ThreeViewShowerHitsTool : public ShowerHitsBaseTool {
+  public:
     /**
      *  @brief  Default constructor
      */
     ThreeViewShowerHitsTool();
 
-private:
-    void GetShowerHit3D(const pandora::CaloHitVector &caloHitVector1, const pandora::CaloHitVector &caloHitVector2, ProtoHit &protoHit) const;
+  private:
+    void GetShowerHit3D(const pandora::CaloHitVector& caloHitVector1,
+                        const pandora::CaloHitVector& caloHitVector2,
+                        ProtoHit& protoHit) const;
 
     pandora::StatusCode ReadSettings(const pandora::TiXmlHandle xmlHandle);
 
-    float m_zTolerance; ///< The z tolerance to use when looking for associated calo hits between views
-};
+    float
+      m_zTolerance; ///< The z tolerance to use when looking for associated calo hits between views
+  };
 
 } // namespace lar_content
 

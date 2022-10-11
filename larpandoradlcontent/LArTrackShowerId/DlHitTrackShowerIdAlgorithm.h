@@ -12,15 +12,13 @@
 
 #include "larpandoradlcontent/LArHelpers/LArDLHelper.h"
 
-namespace lar_dl_content
-{
+namespace lar_dl_content {
 
-/**
+  /**
  *  @brief  DlHitTrackShowerIdAlgorithm class
  */
-class DlHitTrackShowerIdAlgorithm : public pandora::Algorithm
-{
-public:
+  class DlHitTrackShowerIdAlgorithm : public pandora::Algorithm {
+  public:
     /**
      *  @brief  Default constructor
      */
@@ -28,8 +26,8 @@ public:
 
     virtual ~DlHitTrackShowerIdAlgorithm();
 
-private:
-    typedef std::map<const pandora::CaloHit *, std::tuple<int, int, int, int>> CaloHitToPixelMap;
+  private:
+    typedef std::map<const pandora::CaloHit*, std::tuple<int, int, int, int>> CaloHitToPixelMap;
     typedef std::map<int, int> PixelToTileMap;
 
     pandora::StatusCode Run();
@@ -54,7 +52,11 @@ private:
      *  @param  zMin The output minimum z-coordinate
      *  @param  zMax The output maximum z-coordinate
      */
-    void GetHitRegion(const pandora::CaloHitList &caloHitList, float &xMin, float &xMax, float &zMin, float &zMax);
+    void GetHitRegion(const pandora::CaloHitList& caloHitList,
+                      float& xMin,
+                      float& xMax,
+                      float& zMin,
+                      float& zMax);
 
     /**
      *  @brief  Populate a map between pixels and tiles
@@ -65,7 +67,11 @@ private:
      *  @param  nTilesX The number of tiles in the x direction
      *  @param  sparseMap The output map between pixels and tiles
      */
-    void GetSparseTileMap(const pandora::CaloHitList &caloHitList, const float xMin, const float zMin, const int nTilesX, PixelToTileMap &sparseMap);
+    void GetSparseTileMap(const pandora::CaloHitList& caloHitList,
+                          const float xMin,
+                          const float zMin,
+                          const int nTilesX,
+                          PixelToTileMap& sparseMap);
 
     pandora::StringVector m_caloHitListNames; ///< Name of input calo hit list
     std::string m_modelFileNameU;             ///< Model file name for U view
@@ -80,7 +86,7 @@ private:
     bool m_visualize;                         ///< Whether to visualize the track shower ID scores
     bool m_useTrainingMode;                   ///< Training mode
     std::string m_trainingOutputFile;         ///< Output file name for training examples
-};
+  };
 
 } // namespace lar_dl_content
 

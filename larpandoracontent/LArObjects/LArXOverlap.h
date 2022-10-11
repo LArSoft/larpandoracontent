@@ -8,15 +8,13 @@
 #ifndef LAR_X_OVERLAP_H
 #define LAR_X_OVERLAP_H 1
 
-namespace lar_content
-{
+namespace lar_content {
 
-/**
+  /**
  *  @brief  XOverlap class
  */
-class XOverlap
-{
-public:
+  class XOverlap {
+  public:
     /**
      *  @brief  Constructor
      *
@@ -28,7 +26,13 @@ public:
      *  @param  wMaxX max x value in the w view
      *  @param  xOverlapSpan the x overlap span
      */
-    XOverlap(const float uMinX, const float uMaxX, const float vMinX, const float vMaxX, const float wMinX, const float wMaxX, const float xOverlapSpan);
+    XOverlap(const float uMinX,
+             const float uMaxX,
+             const float vMinX,
+             const float vMaxX,
+             const float wMinX,
+             const float wMaxX,
+             const float xOverlapSpan);
 
     /**
      *  @brief  Get the min x value in the u view
@@ -100,7 +104,7 @@ public:
      */
     float GetXOverlapSpan() const;
 
-private:
+  private:
     float m_uMinX;        ///< The min x value in the u view
     float m_uMaxX;        ///< The max x value in the u view
     float m_vMinX;        ///< The min x value in the v view
@@ -108,104 +112,78 @@ private:
     float m_wMinX;        ///< The min x value in the w view
     float m_wMaxX;        ///< The max x value in the w view
     float m_xOverlapSpan; ///< The x overlap span
-};
+  };
 
-/**
+  /**
  *  @brief  x overlap result + operator
  *
  *  @param  lhs the first x overlap result to add
  *  @param  rhs the second x overlap result to add
  */
-XOverlap operator+(const XOverlap &lhs, const XOverlap &rhs);
+  XOverlap operator+(const XOverlap& lhs, const XOverlap& rhs);
 
-//------------------------------------------------------------------------------------------------------------------------------------------
+  //------------------------------------------------------------------------------------------------------------------------------------------
 
-inline XOverlap::XOverlap(const float uMinX, const float uMaxX, const float vMinX, const float vMaxX, const float wMinX, const float wMaxX,
-    const float xOverlapSpan) :
-    m_uMinX(uMinX),
-    m_uMaxX(uMaxX),
-    m_vMinX(vMinX),
-    m_vMaxX(vMaxX),
-    m_wMinX(wMinX),
-    m_wMaxX(wMaxX),
-    m_xOverlapSpan(xOverlapSpan)
-{
-}
+  inline XOverlap::XOverlap(const float uMinX,
+                            const float uMaxX,
+                            const float vMinX,
+                            const float vMaxX,
+                            const float wMinX,
+                            const float wMaxX,
+                            const float xOverlapSpan)
+    : m_uMinX(uMinX)
+    , m_uMaxX(uMaxX)
+    , m_vMinX(vMinX)
+    , m_vMaxX(vMaxX)
+    , m_wMinX(wMinX)
+    , m_wMaxX(wMaxX)
+    , m_xOverlapSpan(xOverlapSpan)
+  {}
 
-//------------------------------------------------------------------------------------------------------------------------------------------
+  //------------------------------------------------------------------------------------------------------------------------------------------
 
-inline float XOverlap::GetUMinX() const
-{
-    return m_uMinX;
-}
+  inline float XOverlap::GetUMinX() const { return m_uMinX; }
 
-//------------------------------------------------------------------------------------------------------------------------------------------
+  //------------------------------------------------------------------------------------------------------------------------------------------
 
-inline float XOverlap::GetUMaxX() const
-{
-    return m_uMaxX;
-}
+  inline float XOverlap::GetUMaxX() const { return m_uMaxX; }
 
-//------------------------------------------------------------------------------------------------------------------------------------------
+  //------------------------------------------------------------------------------------------------------------------------------------------
 
-inline float XOverlap::GetVMinX() const
-{
-    return m_vMinX;
-}
+  inline float XOverlap::GetVMinX() const { return m_vMinX; }
 
-//------------------------------------------------------------------------------------------------------------------------------------------
+  //------------------------------------------------------------------------------------------------------------------------------------------
 
-inline float XOverlap::GetVMaxX() const
-{
-    return m_vMaxX;
-}
+  inline float XOverlap::GetVMaxX() const { return m_vMaxX; }
 
-//------------------------------------------------------------------------------------------------------------------------------------------
+  //------------------------------------------------------------------------------------------------------------------------------------------
 
-inline float XOverlap::GetWMinX() const
-{
-    return m_wMinX;
-}
+  inline float XOverlap::GetWMinX() const { return m_wMinX; }
 
-//------------------------------------------------------------------------------------------------------------------------------------------
+  //------------------------------------------------------------------------------------------------------------------------------------------
 
-inline float XOverlap::GetWMaxX() const
-{
-    return m_wMaxX;
-}
+  inline float XOverlap::GetWMaxX() const { return m_wMaxX; }
 
-//------------------------------------------------------------------------------------------------------------------------------------------
+  //------------------------------------------------------------------------------------------------------------------------------------------
 
-inline float XOverlap::GetXSpanU() const
-{
-    return std::fabs(m_uMaxX - m_uMinX);
-}
+  inline float XOverlap::GetXSpanU() const { return std::fabs(m_uMaxX - m_uMinX); }
 
-//------------------------------------------------------------------------------------------------------------------------------------------
+  //------------------------------------------------------------------------------------------------------------------------------------------
 
-inline float XOverlap::GetXSpanV() const
-{
-    return std::fabs(m_vMaxX - m_vMinX);
-}
+  inline float XOverlap::GetXSpanV() const { return std::fabs(m_vMaxX - m_vMinX); }
 
-//------------------------------------------------------------------------------------------------------------------------------------------
+  //------------------------------------------------------------------------------------------------------------------------------------------
 
-inline float XOverlap::GetXSpanW() const
-{
-    return std::fabs(m_wMaxX - m_wMinX);
-}
+  inline float XOverlap::GetXSpanW() const { return std::fabs(m_wMaxX - m_wMinX); }
 
-//------------------------------------------------------------------------------------------------------------------------------------------
+  //------------------------------------------------------------------------------------------------------------------------------------------
 
-inline float XOverlap::GetXOverlapSpan() const
-{
-    return m_xOverlapSpan;
-}
+  inline float XOverlap::GetXOverlapSpan() const { return m_xOverlapSpan; }
 
-//------------------------------------------------------------------------------------------------------------------------------------------
+  //------------------------------------------------------------------------------------------------------------------------------------------
 
-inline XOverlap operator+(const XOverlap &lhs, const XOverlap &rhs)
-{
+  inline XOverlap operator+(const XOverlap& lhs, const XOverlap& rhs)
+  {
     const float uMinX(std::min(lhs.GetUMinX(), rhs.GetUMinX()));
     const float uMaxX(std::max(lhs.GetUMaxX(), rhs.GetUMaxX()));
     const float vMinX(std::min(lhs.GetVMinX(), rhs.GetVMinX()));
@@ -217,7 +195,7 @@ inline XOverlap operator+(const XOverlap &lhs, const XOverlap &rhs)
     const float xOverlapSpan(maxX - minX);
 
     return XOverlap(uMinX, uMaxX, vMinX, vMaxX, wMinX, wMaxX, xOverlapSpan);
-}
+  }
 
 } // namespace lar_content
 

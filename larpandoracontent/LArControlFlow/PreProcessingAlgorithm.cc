@@ -16,123 +16,113 @@
 
 using namespace pandora;
 
-namespace lar_content
-{
+namespace lar_content {
 
-PreProcessingAlgorithm::PreProcessingAlgorithm() :
-    m_mipEquivalentCut(std::numeric_limits<float>::epsilon()),
-    m_minCellLengthScale(std::numeric_limits<float>::epsilon()),
-    m_maxCellLengthScale(3.f),
-    m_searchRegion1D(0.1f),
-    m_maxEventHits(std::numeric_limits<unsigned int>::max()),
-    m_onlyAvailableCaloHits(true),
-    m_inputCaloHitListName("Input")
-{
-}
+  PreProcessingAlgorithm::PreProcessingAlgorithm()
+    : m_mipEquivalentCut(std::numeric_limits<float>::epsilon())
+    , m_minCellLengthScale(std::numeric_limits<float>::epsilon())
+    , m_maxCellLengthScale(3.f)
+    , m_searchRegion1D(0.1f)
+    , m_maxEventHits(std::numeric_limits<unsigned int>::max())
+    , m_onlyAvailableCaloHits(true)
+    , m_inputCaloHitListName("Input")
+  {}
 
-//------------------------------------------------------------------------------------------------------------------------------------------
+  //------------------------------------------------------------------------------------------------------------------------------------------
 
-StatusCode PreProcessingAlgorithm::Reset()
-{
+  StatusCode PreProcessingAlgorithm::Reset()
+  {
     m_processedHits.clear();
     return STATUS_CODE_SUCCESS;
-}
+  }
 
-//------------------------------------------------------------------------------------------------------------------------------------------
+  //------------------------------------------------------------------------------------------------------------------------------------------
 
-StatusCode PreProcessingAlgorithm::Run()
-{
-    if (!this->GetPandora().GetSettings()->SingleHitTypeClusteringMode())
-    {
-        std::cout << "PreProcessingAlgorithm: expect Pandora to be configured in SingleHitTypeClusteringMode." << std::endl;
-        return STATUS_CODE_FAILURE;
+  StatusCode PreProcessingAlgorithm::Run()
+  {
+    if (!this->GetPandora().GetSettings()->SingleHitTypeClusteringMode()) {
+      std::cout
+        << "PreProcessingAlgorithm: expect Pandora to be configured in SingleHitTypeClusteringMode."
+        << std::endl;
+      return STATUS_CODE_FAILURE;
     }
 
-    try
-    {
-        this->ProcessCaloHits();
+    try {
+      this->ProcessCaloHits();
     }
-    catch (const StatusCodeException &statusCodeException)
-    {
-        if (STATUS_CODE_OUT_OF_RANGE == statusCodeException.GetStatusCode())
-        {
-            std::cout << "PreProcessingAlgorithm: Excessive number of hits in event, skipping the reconstruction" << std::endl;
-            this->PopulateVoidCaloHitLists();
-        }
+    catch (const StatusCodeException& statusCodeException) {
+      if (STATUS_CODE_OUT_OF_RANGE == statusCodeException.GetStatusCode()) {
+        std::cout << "PreProcessingAlgorithm: Excessive number of hits in event, skipping the "
+                     "reconstruction"
+                  << std::endl;
+        this->PopulateVoidCaloHitLists();
+      }
     }
 
-    if (!m_currentCaloHitListReplacement.empty())
-    {
-        if (STATUS_CODE_SUCCESS != PandoraContentApi::ReplaceCurrentList<CaloHit>(*this, m_currentCaloHitListReplacement))
-        {
-            if (PandoraContentApi::GetSettings(*this)->ShouldDisplayAlgorithmInfo())
-                std::cout << "PreProcessingAlgorithm: could not replace current calo hit list with list named: " << m_currentCaloHitListReplacement
-                          << std::endl;
-        }
+    if (!m_currentCaloHitListReplacement.empty()) {
+      if (STATUS_CODE_SUCCESS !=
+          PandoraContentApi::ReplaceCurrentList<CaloHit>(*this, m_currentCaloHitListReplacement)) {
+        if (PandoraContentApi::GetSettings(*this)->ShouldDisplayAlgorithmInfo())
+          std::cout
+            << "PreProcessingAlgorithm: could not replace current calo hit list with list named: "
+            << m_currentCaloHitListReplacement << std::endl;
+      }
     }
 
     return STATUS_CODE_SUCCESS;
-}
+  }
 
-//------------------------------------------------------------------------------------------------------------------------------------------
+  //------------------------------------------------------------------------------------------------------------------------------------------
 
-void PreProcessingAlgorithm::ProcessCaloHits()
-{
-    const CaloHitList *pCaloHitList(nullptr);
-    PANDORA_THROW_RESULT_IF(STATUS_CODE_SUCCESS, !=, PandoraContentApi::GetList(*this, m_inputCaloHitListName, pCaloHitList));
+  void PreProcessingAlgorithm::ProcessCaloHits()
+  {
+    const CaloHitList* pCaloHitList(nullptr);
+    PANDORA_THROW_RESULT_IF(
+      STATUS_CODE_SUCCESS,
+      !=,
+      PandoraContentApi::GetList(*this, m_inputCaloHitListName, pCaloHitList));
 
-    if (pCaloHitList->empty())
-        return;
+    if (pCaloHitList->empty()) return;
 
-    if (pCaloHitList->size() > m_maxEventHits)
-        throw StatusCodeException(STATUS_CODE_OUT_OF_RANGE);
+    if (pCaloHitList->size() > m_maxEventHits) throw StatusCodeException(STATUS_CODE_OUT_OF_RANGE);
 
     CaloHitList selectedCaloHitListU, selectedCaloHitListV, selectedCaloHitListW;
 
-    for (const CaloHit *const pCaloHit : *pCaloHitList)
-    {
-        if (m_processedHits.count(pCaloHit))
-            continue;
+    for (const CaloHit* const pCaloHit : *pCaloHitList) {
+      if (m_processedHits.count(pCaloHit)) continue;
 
-        (void)m_processedHits.insert(pCaloHit);
+      (void)m_processedHits.insert(pCaloHit);
 
-        if (m_onlyAvailableCaloHits && !PandoraContentApi::IsAvailable(*this, pCaloHit))
-            continue;
+      if (m_onlyAvailableCaloHits && !PandoraContentApi::IsAvailable(*this, pCaloHit)) continue;
 
-        if (pCaloHit->GetMipEquivalentEnergy() < m_mipEquivalentCut)
-            continue;
+      if (pCaloHit->GetMipEquivalentEnergy() < m_mipEquivalentCut) continue;
 
-        if (pCaloHit->GetInputEnergy() < std::numeric_limits<float>::epsilon())
-        {
-            if (PandoraContentApi::GetSettings(*this)->ShouldDisplayAlgorithmInfo())
-                std::cout << "PreProcessingAlgorithm: found a hit with zero energy, will remove it" << std::endl;
+      if (pCaloHit->GetInputEnergy() < std::numeric_limits<float>::epsilon()) {
+        if (PandoraContentApi::GetSettings(*this)->ShouldDisplayAlgorithmInfo())
+          std::cout << "PreProcessingAlgorithm: found a hit with zero energy, will remove it"
+                    << std::endl;
 
-            continue;
+        continue;
+      }
+
+      if ((pCaloHit->GetCellLengthScale() < m_minCellLengthScale) ||
+          (pCaloHit->GetCellLengthScale() > m_maxCellLengthScale)) {
+        if (PandoraContentApi::GetSettings(*this)->ShouldDisplayAlgorithmInfo()) {
+          std::cout << "PreProcessingAlgorithm: found a hit with extent "
+                    << pCaloHit->GetCellLengthScale() << ", require (" << m_minCellLengthScale
+                    << " - " << m_maxCellLengthScale << "), will remove it" << std::endl;
         }
 
-        if ((pCaloHit->GetCellLengthScale() < m_minCellLengthScale) || (pCaloHit->GetCellLengthScale() > m_maxCellLengthScale))
-        {
-            if (PandoraContentApi::GetSettings(*this)->ShouldDisplayAlgorithmInfo())
-            {
-                std::cout << "PreProcessingAlgorithm: found a hit with extent " << pCaloHit->GetCellLengthScale() << ", require ("
-                          << m_minCellLengthScale << " - " << m_maxCellLengthScale << "), will remove it" << std::endl;
-            }
+        continue;
+      }
 
-            continue;
-        }
-
-        if (TPC_VIEW_U == pCaloHit->GetHitType())
-        {
-            selectedCaloHitListU.push_back(pCaloHit);
-        }
-        else if (TPC_VIEW_V == pCaloHit->GetHitType())
-        {
-            selectedCaloHitListV.push_back(pCaloHit);
-        }
-        else if (TPC_VIEW_W == pCaloHit->GetHitType())
-        {
-            selectedCaloHitListW.push_back(pCaloHit);
-        }
+      if (TPC_VIEW_U == pCaloHit->GetHitType()) { selectedCaloHitListU.push_back(pCaloHit); }
+      else if (TPC_VIEW_V == pCaloHit->GetHitType()) {
+        selectedCaloHitListV.push_back(pCaloHit);
+      }
+      else if (TPC_VIEW_W == pCaloHit->GetHitType()) {
+        selectedCaloHitListW.push_back(pCaloHit);
+      }
     }
 
     CaloHitList filteredCaloHitListU, filteredCaloHitListV, filteredCaloHitListW;
@@ -141,53 +131,79 @@ void PreProcessingAlgorithm::ProcessCaloHits()
     this->GetFilteredCaloHitList(selectedCaloHitListW, filteredCaloHitListW);
 
     CaloHitList filteredInputList;
-    filteredInputList.insert(filteredInputList.end(), filteredCaloHitListU.begin(), filteredCaloHitListU.end());
-    filteredInputList.insert(filteredInputList.end(), filteredCaloHitListV.begin(), filteredCaloHitListV.end());
-    filteredInputList.insert(filteredInputList.end(), filteredCaloHitListW.begin(), filteredCaloHitListW.end());
+    filteredInputList.insert(
+      filteredInputList.end(), filteredCaloHitListU.begin(), filteredCaloHitListU.end());
+    filteredInputList.insert(
+      filteredInputList.end(), filteredCaloHitListV.begin(), filteredCaloHitListV.end());
+    filteredInputList.insert(
+      filteredInputList.end(), filteredCaloHitListW.begin(), filteredCaloHitListW.end());
 
     if (!filteredInputList.empty() && !m_filteredCaloHitListName.empty())
-        PANDORA_THROW_RESULT_IF(STATUS_CODE_SUCCESS, !=, PandoraContentApi::SaveList(*this, filteredInputList, m_filteredCaloHitListName));
+      PANDORA_THROW_RESULT_IF(
+        STATUS_CODE_SUCCESS,
+        !=,
+        PandoraContentApi::SaveList(*this, filteredInputList, m_filteredCaloHitListName));
 
     if (!filteredCaloHitListU.empty() && !m_outputCaloHitListNameU.empty())
-        PANDORA_THROW_RESULT_IF(STATUS_CODE_SUCCESS, !=, PandoraContentApi::SaveList(*this, filteredCaloHitListU, m_outputCaloHitListNameU));
+      PANDORA_THROW_RESULT_IF(
+        STATUS_CODE_SUCCESS,
+        !=,
+        PandoraContentApi::SaveList(*this, filteredCaloHitListU, m_outputCaloHitListNameU));
 
     if (!filteredCaloHitListV.empty() && !m_outputCaloHitListNameV.empty())
-        PANDORA_THROW_RESULT_IF(STATUS_CODE_SUCCESS, !=, PandoraContentApi::SaveList(*this, filteredCaloHitListV, m_outputCaloHitListNameV));
+      PANDORA_THROW_RESULT_IF(
+        STATUS_CODE_SUCCESS,
+        !=,
+        PandoraContentApi::SaveList(*this, filteredCaloHitListV, m_outputCaloHitListNameV));
 
     if (!filteredCaloHitListW.empty() && !m_outputCaloHitListNameW.empty())
-        PANDORA_THROW_RESULT_IF(STATUS_CODE_SUCCESS, !=, PandoraContentApi::SaveList(*this, filteredCaloHitListW, m_outputCaloHitListNameW));
-}
+      PANDORA_THROW_RESULT_IF(
+        STATUS_CODE_SUCCESS,
+        !=,
+        PandoraContentApi::SaveList(*this, filteredCaloHitListW, m_outputCaloHitListNameW));
+  }
 
-//------------------------------------------------------------------------------------------------------------------------------------------
+  //------------------------------------------------------------------------------------------------------------------------------------------
 
-void PreProcessingAlgorithm::PopulateVoidCaloHitLists() noexcept
-{
+  void PreProcessingAlgorithm::PopulateVoidCaloHitLists() noexcept
+  {
     CaloHitList emptyList;
 
-    try
-    {
-        if (!m_filteredCaloHitListName.empty())
-            PANDORA_THROW_RESULT_IF(STATUS_CODE_SUCCESS, !=, PandoraContentApi::SaveList(*this, emptyList, m_filteredCaloHitListName));
+    try {
+      if (!m_filteredCaloHitListName.empty())
+        PANDORA_THROW_RESULT_IF(
+          STATUS_CODE_SUCCESS,
+          !=,
+          PandoraContentApi::SaveList(*this, emptyList, m_filteredCaloHitListName));
 
-        if (!m_outputCaloHitListNameU.empty())
-            PANDORA_THROW_RESULT_IF(STATUS_CODE_SUCCESS, !=, PandoraContentApi::SaveList(*this, emptyList, m_outputCaloHitListNameU));
+      if (!m_outputCaloHitListNameU.empty())
+        PANDORA_THROW_RESULT_IF(
+          STATUS_CODE_SUCCESS,
+          !=,
+          PandoraContentApi::SaveList(*this, emptyList, m_outputCaloHitListNameU));
 
-        if (!m_outputCaloHitListNameV.empty())
-            PANDORA_THROW_RESULT_IF(STATUS_CODE_SUCCESS, !=, PandoraContentApi::SaveList(*this, emptyList, m_outputCaloHitListNameV));
+      if (!m_outputCaloHitListNameV.empty())
+        PANDORA_THROW_RESULT_IF(
+          STATUS_CODE_SUCCESS,
+          !=,
+          PandoraContentApi::SaveList(*this, emptyList, m_outputCaloHitListNameV));
 
-        if (!m_outputCaloHitListNameW.empty())
-            PANDORA_THROW_RESULT_IF(STATUS_CODE_SUCCESS, !=, PandoraContentApi::SaveList(*this, emptyList, m_outputCaloHitListNameW));
+      if (!m_outputCaloHitListNameW.empty())
+        PANDORA_THROW_RESULT_IF(
+          STATUS_CODE_SUCCESS,
+          !=,
+          PandoraContentApi::SaveList(*this, emptyList, m_outputCaloHitListNameW));
     }
-    catch (...)
-    {
-        std::cout << "PreProcessingAlgorithm: Unable to create void calo hit lists" << std::endl;
+    catch (...) {
+      std::cout << "PreProcessingAlgorithm: Unable to create void calo hit lists" << std::endl;
     }
-}
+  }
 
-//------------------------------------------------------------------------------------------------------------------------------------------
+  //------------------------------------------------------------------------------------------------------------------------------------------
 
-void PreProcessingAlgorithm::GetFilteredCaloHitList(const CaloHitList &inputList, CaloHitList &outputList)
-{
+  void PreProcessingAlgorithm::GetFilteredCaloHitList(const CaloHitList& inputList,
+                                                      CaloHitList& outputList)
+  {
     HitKDTree2D kdTree;
     HitKDNode2DList hitKDNode2DList;
 
@@ -195,83 +211,118 @@ void PreProcessingAlgorithm::GetFilteredCaloHitList(const CaloHitList &inputList
     kdTree.build(hitKDNode2DList, hitsBoundingRegion2D);
 
     // Remove hits that are in the same physical location!
-    for (const CaloHit *const pCaloHit1 : inputList)
-    {
-        bool isUnique(true);
-        KDTreeBox searchRegionHits(build_2d_kd_search_region(pCaloHit1, m_searchRegion1D, m_searchRegion1D));
+    for (const CaloHit* const pCaloHit1 : inputList) {
+      bool isUnique(true);
+      KDTreeBox searchRegionHits(
+        build_2d_kd_search_region(pCaloHit1, m_searchRegion1D, m_searchRegion1D));
 
-        HitKDNode2DList found;
-        kdTree.search(searchRegionHits, found);
+      HitKDNode2DList found;
+      kdTree.search(searchRegionHits, found);
 
-        for (const auto &hit : found)
-        {
-            const CaloHit *const pCaloHit2(hit.data);
+      for (const auto& hit : found) {
+        const CaloHit* const pCaloHit2(hit.data);
 
-            if (pCaloHit1 == pCaloHit2)
-                continue;
+        if (pCaloHit1 == pCaloHit2) continue;
 
-            const float displacementSquared((pCaloHit2->GetPositionVector() - pCaloHit1->GetPositionVector()).GetMagnitudeSquared());
+        const float displacementSquared(
+          (pCaloHit2->GetPositionVector() - pCaloHit1->GetPositionVector()).GetMagnitudeSquared());
 
-            if (displacementSquared < std::numeric_limits<float>::epsilon())
-            {
-                const float deltaMip(pCaloHit2->GetMipEquivalentEnergy() > pCaloHit1->GetMipEquivalentEnergy());
+        if (displacementSquared < std::numeric_limits<float>::epsilon()) {
+          const float deltaMip(pCaloHit2->GetMipEquivalentEnergy() >
+                               pCaloHit1->GetMipEquivalentEnergy());
 
-                if ((deltaMip > std::numeric_limits<float>::epsilon()) ||
-                    ((std::fabs(deltaMip) < std::numeric_limits<float>::epsilon()) &&
-                        (outputList.end() != std::find(outputList.begin(), outputList.end(), pCaloHit2))))
-                {
-                    isUnique = false;
-                    break;
-                }
-            }
+          if ((deltaMip > std::numeric_limits<float>::epsilon()) ||
+              ((std::fabs(deltaMip) < std::numeric_limits<float>::epsilon()) &&
+               (outputList.end() != std::find(outputList.begin(), outputList.end(), pCaloHit2)))) {
+            isUnique = false;
+            break;
+          }
         }
+      }
 
-        if (isUnique)
-        {
-            outputList.push_back(pCaloHit1);
-        }
-        else
-        {
-            if (PandoraContentApi::GetSettings(*this)->ShouldDisplayAlgorithmInfo())
-                std::cout << "PreProcessingAlgorithm: found two hits in same location, will remove lowest pulse height" << std::endl;
-        }
+      if (isUnique) { outputList.push_back(pCaloHit1); }
+      else {
+        if (PandoraContentApi::GetSettings(*this)->ShouldDisplayAlgorithmInfo())
+          std::cout << "PreProcessingAlgorithm: found two hits in same location, will remove "
+                       "lowest pulse height"
+                    << std::endl;
+      }
     }
-}
+  }
 
-//------------------------------------------------------------------------------------------------------------------------------------------
+  //------------------------------------------------------------------------------------------------------------------------------------------
 
-StatusCode PreProcessingAlgorithm::ReadSettings(const TiXmlHandle xmlHandle)
-{
+  StatusCode PreProcessingAlgorithm::ReadSettings(const TiXmlHandle xmlHandle)
+  {
     PANDORA_RETURN_RESULT_IF_AND_IF(
-        STATUS_CODE_SUCCESS, STATUS_CODE_NOT_FOUND, !=, XmlHelper::ReadValue(xmlHandle, "MipEquivalentCut", m_mipEquivalentCut));
-
-    PANDORA_RETURN_RESULT_IF_AND_IF(
-        STATUS_CODE_SUCCESS, STATUS_CODE_NOT_FOUND, !=, XmlHelper::ReadValue(xmlHandle, "MinCellLengthScale", m_minCellLengthScale));
-
-    PANDORA_RETURN_RESULT_IF_AND_IF(
-        STATUS_CODE_SUCCESS, STATUS_CODE_NOT_FOUND, !=, XmlHelper::ReadValue(xmlHandle, "MaxCellLengthScale", m_maxCellLengthScale));
-
-    PANDORA_RETURN_RESULT_IF_AND_IF(STATUS_CODE_SUCCESS, STATUS_CODE_NOT_FOUND, !=, XmlHelper::ReadValue(xmlHandle, "SearchRegion1D", m_searchRegion1D));
-
-    PANDORA_RETURN_RESULT_IF_AND_IF(STATUS_CODE_SUCCESS, STATUS_CODE_NOT_FOUND, !=, XmlHelper::ReadValue(xmlHandle, "MaxEventHits", m_maxEventHits));
+      STATUS_CODE_SUCCESS,
+      STATUS_CODE_NOT_FOUND,
+      !=,
+      XmlHelper::ReadValue(xmlHandle, "MipEquivalentCut", m_mipEquivalentCut));
 
     PANDORA_RETURN_RESULT_IF_AND_IF(
-        STATUS_CODE_SUCCESS, STATUS_CODE_NOT_FOUND, !=, XmlHelper::ReadValue(xmlHandle, "OnlyAvailableCaloHits", m_onlyAvailableCaloHits));
+      STATUS_CODE_SUCCESS,
+      STATUS_CODE_NOT_FOUND,
+      !=,
+      XmlHelper::ReadValue(xmlHandle, "MinCellLengthScale", m_minCellLengthScale));
 
     PANDORA_RETURN_RESULT_IF_AND_IF(
-        STATUS_CODE_SUCCESS, STATUS_CODE_NOT_FOUND, !=, XmlHelper::ReadValue(xmlHandle, "InputCaloHitListName", m_inputCaloHitListName));
+      STATUS_CODE_SUCCESS,
+      STATUS_CODE_NOT_FOUND,
+      !=,
+      XmlHelper::ReadValue(xmlHandle, "MaxCellLengthScale", m_maxCellLengthScale));
 
-    PANDORA_RETURN_RESULT_IF(STATUS_CODE_SUCCESS, !=, XmlHelper::ReadValue(xmlHandle, "OutputCaloHitListNameU", m_outputCaloHitListNameU));
+    PANDORA_RETURN_RESULT_IF_AND_IF(
+      STATUS_CODE_SUCCESS,
+      STATUS_CODE_NOT_FOUND,
+      !=,
+      XmlHelper::ReadValue(xmlHandle, "SearchRegion1D", m_searchRegion1D));
 
-    PANDORA_RETURN_RESULT_IF(STATUS_CODE_SUCCESS, !=, XmlHelper::ReadValue(xmlHandle, "OutputCaloHitListNameV", m_outputCaloHitListNameV));
+    PANDORA_RETURN_RESULT_IF_AND_IF(
+      STATUS_CODE_SUCCESS,
+      STATUS_CODE_NOT_FOUND,
+      !=,
+      XmlHelper::ReadValue(xmlHandle, "MaxEventHits", m_maxEventHits));
 
-    PANDORA_RETURN_RESULT_IF(STATUS_CODE_SUCCESS, !=, XmlHelper::ReadValue(xmlHandle, "OutputCaloHitListNameW", m_outputCaloHitListNameW));
+    PANDORA_RETURN_RESULT_IF_AND_IF(
+      STATUS_CODE_SUCCESS,
+      STATUS_CODE_NOT_FOUND,
+      !=,
+      XmlHelper::ReadValue(xmlHandle, "OnlyAvailableCaloHits", m_onlyAvailableCaloHits));
 
-    PANDORA_RETURN_RESULT_IF(STATUS_CODE_SUCCESS, !=, XmlHelper::ReadValue(xmlHandle, "FilteredCaloHitListName", m_filteredCaloHitListName));
+    PANDORA_RETURN_RESULT_IF_AND_IF(
+      STATUS_CODE_SUCCESS,
+      STATUS_CODE_NOT_FOUND,
+      !=,
+      XmlHelper::ReadValue(xmlHandle, "InputCaloHitListName", m_inputCaloHitListName));
 
-    PANDORA_RETURN_RESULT_IF(STATUS_CODE_SUCCESS, !=, XmlHelper::ReadValue(xmlHandle, "CurrentCaloHitListReplacement", m_currentCaloHitListReplacement));
+    PANDORA_RETURN_RESULT_IF(
+      STATUS_CODE_SUCCESS,
+      !=,
+      XmlHelper::ReadValue(xmlHandle, "OutputCaloHitListNameU", m_outputCaloHitListNameU));
+
+    PANDORA_RETURN_RESULT_IF(
+      STATUS_CODE_SUCCESS,
+      !=,
+      XmlHelper::ReadValue(xmlHandle, "OutputCaloHitListNameV", m_outputCaloHitListNameV));
+
+    PANDORA_RETURN_RESULT_IF(
+      STATUS_CODE_SUCCESS,
+      !=,
+      XmlHelper::ReadValue(xmlHandle, "OutputCaloHitListNameW", m_outputCaloHitListNameW));
+
+    PANDORA_RETURN_RESULT_IF(
+      STATUS_CODE_SUCCESS,
+      !=,
+      XmlHelper::ReadValue(xmlHandle, "FilteredCaloHitListName", m_filteredCaloHitListName));
+
+    PANDORA_RETURN_RESULT_IF(STATUS_CODE_SUCCESS,
+                             !=,
+                             XmlHelper::ReadValue(xmlHandle,
+                                                  "CurrentCaloHitListReplacement",
+                                                  m_currentCaloHitListReplacement));
 
     return STATUS_CODE_SUCCESS;
-}
+  }
 
 } // namespace lar_content

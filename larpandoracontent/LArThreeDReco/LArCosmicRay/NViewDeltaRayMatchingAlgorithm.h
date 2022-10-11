@@ -14,21 +14,19 @@
 
 #include "larpandoracontent/LArUtility/KDTreeLinkerAlgoT.h"
 
-namespace lar_content
-{
-/**
+namespace lar_content {
+  /**
  *  @brief  NViewDeltaRayMatchingAlgorithm class
  */
-template <typename T>
-class NViewDeltaRayMatchingAlgorithm : public NViewMatchingAlgorithm<T>
-{
-public:
-    typedef std::map<const pandora::CaloHit *, const pandora::Cluster *> HitToClusterMap;
-    typedef std::map<const pandora::Cluster *, const pandora::ParticleFlowObject *> ClusterToPfoMap;
-    typedef std::map<const pandora::Cluster *, pandora::ClusterList> ClusterProximityMap;
+  template <typename T>
+  class NViewDeltaRayMatchingAlgorithm : public NViewMatchingAlgorithm<T> {
+  public:
+    typedef std::map<const pandora::CaloHit*, const pandora::Cluster*> HitToClusterMap;
+    typedef std::map<const pandora::Cluster*, const pandora::ParticleFlowObject*> ClusterToPfoMap;
+    typedef std::map<const pandora::Cluster*, pandora::ClusterList> ClusterProximityMap;
 
-    typedef KDTreeLinkerAlgo<const pandora::CaloHit *, 2> HitKDTree2D;
-    typedef KDTreeNodeInfoT<const pandora::CaloHit *, 2> HitKDNode2D;
+    typedef KDTreeLinkerAlgo<const pandora::CaloHit*, 2> HitKDTree2D;
+    typedef KDTreeNodeInfoT<const pandora::CaloHit*, 2> HitKDNode2D;
     typedef std::vector<HitKDNode2D> HitKDNode2DList;
 
     typedef std::vector<pandora::HitType> HitTypeVector;
@@ -47,8 +45,9 @@ public:
      *
      *  @return  a status code reflecting if one and only one cosmic ray cluster was found
      */
-    pandora::StatusCode GetMuonCluster(
-        const pandora::PfoList &commonMuonPfoList, const pandora::HitType hitType, const pandora::Cluster *&pMuonCluster) const;
+    pandora::StatusCode GetMuonCluster(const pandora::PfoList& commonMuonPfoList,
+                                       const pandora::HitType hitType,
+                                       const pandora::Cluster*& pMuonCluster) const;
 
     /**
      *  @brief  To determine how well three clusters (one in each view) map onto one another expressing this in terms of a chi-squared like parameter
@@ -60,8 +59,10 @@ public:
      *
      *  @return  a status code reflecting whether the matching procedure ran smoothly and if the outcome is good
      */
-    pandora::StatusCode PerformThreeViewMatching(const pandora::Cluster *const pCluster1, const pandora::Cluster *const pCluster2,
-        const pandora::Cluster *const pCluster3, float &reducedChiSquared) const;
+    pandora::StatusCode PerformThreeViewMatching(const pandora::Cluster* const pCluster1,
+                                                 const pandora::Cluster* const pCluster2,
+                                                 const pandora::Cluster* const pCluster3,
+                                                 float& reducedChiSquared) const;
 
     /**
      *  @brief  To determine how well three clusters (one in each view) map onto one another expressing this in terms of a chi-squared like parameter
@@ -76,9 +77,13 @@ public:
      *
      *  @return  a status code reflecting whether the matching procedure ran smoothly and if the outcome is good
      */
-    pandora::StatusCode PerformThreeViewMatching(const pandora::Cluster *const pClusterU, const pandora::Cluster *const pClusterV,
-        const pandora::Cluster *const pClusterW, float &chiSquaredSum, unsigned int &nSamplingPoints, unsigned int &nMatchedSamplingPoints,
-        XOverlap &XOverlap) const;
+    pandora::StatusCode PerformThreeViewMatching(const pandora::Cluster* const pClusterU,
+                                                 const pandora::Cluster* const pClusterV,
+                                                 const pandora::Cluster* const pClusterW,
+                                                 float& chiSquaredSum,
+                                                 unsigned int& nSamplingPoints,
+                                                 unsigned int& nMatchedSamplingPoints,
+                                                 XOverlap& XOverlap) const;
 
     /**
      *  @brief  To determine how well three CaloHitLists (one in each view) map onto one another expressing this in terms of a chi-squared like parameter
@@ -90,8 +95,10 @@ public:
      *
      *  @return  a status code reflecting whether the matching procedure ran smoothly and if the outcome is good
      */
-    pandora::StatusCode PerformThreeViewMatching(const pandora::CaloHitList &pCluster1, const pandora::CaloHitList &pCluster2,
-        const pandora::CaloHitList &pCluster3, float &reducedChiSquared) const;
+    pandora::StatusCode PerformThreeViewMatching(const pandora::CaloHitList& pCluster1,
+                                                 const pandora::CaloHitList& pCluster2,
+                                                 const pandora::CaloHitList& pCluster3,
+                                                 float& reducedChiSquared) const;
 
     /**
      *  @brief  To determine how well three CaloHitLists (one for each view) map onto one another expressing this in terms of a chi-squared like parameter
@@ -106,9 +113,13 @@ public:
      *
      *  @return  a status code reflecting whether the matching procedure ran smoothly and if the outcome is good
      */
-    pandora::StatusCode PerformThreeViewMatching(const pandora::CaloHitList &clusterU, const pandora::CaloHitList &clusterV,
-        const pandora::CaloHitList &clusterW, float &chiSquaredSum, unsigned int &nSamplingPoints, unsigned int &nMatchedSamplingPoints,
-        XOverlap &XOverlap) const;
+    pandora::StatusCode PerformThreeViewMatching(const pandora::CaloHitList& clusterU,
+                                                 const pandora::CaloHitList& clusterV,
+                                                 const pandora::CaloHitList& clusterW,
+                                                 float& chiSquaredSum,
+                                                 unsigned int& nSamplingPoints,
+                                                 unsigned int& nMatchedSamplingPoints,
+                                                 XOverlap& XOverlap) const;
 
     /**
      *  @brief  Use two views of a cosmic ray pfo to calculate projected positions in a given the third view
@@ -119,8 +130,10 @@ public:
      *
      *  @return  a status code reflecting whether the procedure ran smoothly and if the outcome is good
      */
-    pandora::StatusCode ProjectMuonPositions(const pandora::HitType &thirdViewHitType, const pandora::ParticleFlowObject *const pParentMuon,
-        pandora::CartesianPointVector &projectedPositions) const;
+    pandora::StatusCode ProjectMuonPositions(
+      const pandora::HitType& thirdViewHitType,
+      const pandora::ParticleFlowObject* const pParentMuon,
+      pandora::CartesianPointVector& projectedPositions) const;
 
     /**
      *  @brief  Use two clusters from different views to calculate projected positions in the remaining third view
@@ -131,8 +144,10 @@ public:
      *
      *  @return  a status code reflecting whether the procedure ran smoothly and if the outcome is good
      */
-    pandora::StatusCode GetProjectedPositions(const pandora::Cluster *const pCluster1, const pandora::Cluster *const pCluster2,
-        pandora::CartesianPointVector &projectedPositions) const;
+    pandora::StatusCode GetProjectedPositions(
+      const pandora::Cluster* const pCluster1,
+      const pandora::Cluster* const pCluster2,
+      pandora::CartesianPointVector& projectedPositions) const;
 
     /**
      *  @brief  In one view, pull out any hits from a cosmic ray cluster that belong to the child delta ray cluster
@@ -147,9 +162,13 @@ public:
      *
      *  @return  a status code reflecting whether the procedure ran smoothly and if the outcome is good
      */
-    pandora::StatusCode CollectHitsFromMuon(const pandora::Cluster *const pCluster1, const pandora::Cluster *const pCluster2,
-        const pandora::Cluster *const pThirdViewCluster, const pandora::ParticleFlowObject *const pParentMuon,
-        const float minDistanceFromMuon, const float maxDistanceToCollected, pandora::CaloHitList &collectedHits) const;
+    pandora::StatusCode CollectHitsFromMuon(const pandora::Cluster* const pCluster1,
+                                            const pandora::Cluster* const pCluster2,
+                                            const pandora::Cluster* const pThirdViewCluster,
+                                            const pandora::ParticleFlowObject* const pParentMuon,
+                                            const float minDistanceFromMuon,
+                                            const float maxDistanceToCollected,
+                                            pandora::CaloHitList& collectedHits) const;
 
     /**
      *  @brief  In one view, pull out any hits from a cosmic ray cluster that belong to the child delta ray cluster
@@ -162,9 +181,13 @@ public:
      *  @param  maxDistanceToCollected the maximim distance of a hit from the projected delta ray hits required for removal
      *  @param  collectedHits the list of hits to be removed from the cosmic ray
      */
-    void CollectHitsFromMuon(const pandora::CartesianVector &positionOnMuon, const pandora::CartesianVector &muonDirection,
-        const pandora::Cluster *const pMuonCluster, const pandora::CartesianPointVector &deltaRayProjectedPositions,
-        const float &minDistanceFromMuon, const float maxDistanceToCollected, pandora::CaloHitList &collectedHits) const;
+    void CollectHitsFromMuon(const pandora::CartesianVector& positionOnMuon,
+                             const pandora::CartesianVector& muonDirection,
+                             const pandora::Cluster* const pMuonCluster,
+                             const pandora::CartesianPointVector& deltaRayProjectedPositions,
+                             const float& minDistanceFromMuon,
+                             const float maxDistanceToCollected,
+                             pandora::CaloHitList& collectedHits) const;
 
     /**
      *  @brief  Parameterise the projection of a cosmic ray track in order to avoid poor/sparse projections
@@ -176,8 +199,10 @@ public:
      *
      *  @return  a status code reflecting whether the procedure ran smoothly and if the outcome is good
      */
-    pandora::StatusCode ParameteriseMuon(const pandora::ParticleFlowObject *const pParentMuon, const pandora::Cluster *const pDeltaRayCluster,
-        pandora::CartesianVector &positionOnMuon, pandora::CartesianVector &muonDirection) const;
+    pandora::StatusCode ParameteriseMuon(const pandora::ParticleFlowObject* const pParentMuon,
+                                         const pandora::Cluster* const pDeltaRayCluster,
+                                         pandora::CartesianVector& positionOnMuon,
+                                         pandora::CartesianVector& muonDirection) const;
 
     /**
      *  @brief  Parameterise the projection of a cosmic ray track in order to avoid poor/sparse projections
@@ -190,8 +215,12 @@ public:
      *
      *  @return  a status code reflecting whether the procedure ran smoothly and if the outcome is good
      */
-    pandora::StatusCode ParameteriseMuon(const pandora::ParticleFlowObject *const pParentMuon, const pandora::CartesianPointVector &deltaRayProjectedPositions,
-        const pandora::HitType hitType, pandora::CartesianVector &positionOnMuon, pandora::CartesianVector &muonDirection) const;
+    pandora::StatusCode ParameteriseMuon(
+      const pandora::ParticleFlowObject* const pParentMuon,
+      const pandora::CartesianPointVector& deltaRayProjectedPositions,
+      const pandora::HitType hitType,
+      pandora::CartesianVector& positionOnMuon,
+      pandora::CartesianVector& muonDirection) const;
 
     /**
      *  @brief  Move a list of hits from a cosmic ray cluster into the given child delta ray cluster
@@ -201,8 +230,10 @@ public:
      *  @param  collectedHits the list of hits to reassign
      *  @param  pDeltaRayCluster the address of the delta ray cluster (may be a nullptr if cluster is yet to be made)
      */
-    void SplitMuonCluster(const std::string &clusterListName, const pandora::Cluster *const pMuonCluster,
-        const pandora::CaloHitList &collectedHits, const pandora::Cluster *&pDeltaRayCluster) const;
+    void SplitMuonCluster(const std::string& clusterListName,
+                          const pandora::Cluster* const pMuonCluster,
+                          const pandora::CaloHitList& collectedHits,
+                          const pandora::Cluster*& pDeltaRayCluster) const;
 
     /**
      *  @brief  Create delta ray pfos maxmising completeness by searching for and merging in any stray clusters
@@ -211,7 +242,7 @@ public:
      *
      *  @return  whether any pfos were created
      */
-    bool CreatePfos(ProtoParticleVector &protoParticleVector);
+    bool CreatePfos(ProtoParticleVector& protoParticleVector);
 
     /**
      *  @brief  Add a new cluster to algorithm ownership maps and, if it a delta ray cluster, to the underlying matches container (tensor/matrix)
@@ -219,13 +250,15 @@ public:
      *  @param  newClusterVector the vector of clusters to add - the order must match the pfoVector
      *  @param  pfoVector the vector of cosmic ray pfos to which the new clusters belong (nullptr for delta ray cluster)
      */
-    void UpdateForNewClusters(const pandora::ClusterVector &newClusterVector, const pandora::PfoVector &pfoVector);
+    void UpdateForNewClusters(const pandora::ClusterVector& newClusterVector,
+                              const pandora::PfoVector& pfoVector);
 
-    void UpdateUponDeletion(const pandora::Cluster *const pDeletedCluster);
-    void SelectInputClusters(const pandora::ClusterList *const pInputClusterList, pandora::ClusterList &selectedClusterList) const;
-    void PrepareInputClusters(pandora::ClusterList &preparedClusterList);
+    void UpdateUponDeletion(const pandora::Cluster* const pDeletedCluster);
+    void SelectInputClusters(const pandora::ClusterList* const pInputClusterList,
+                             pandora::ClusterList& selectedClusterList) const;
+    void PrepareInputClusters(pandora::ClusterList& preparedClusterList);
 
-protected:
+  protected:
     /**
      *  @brief  To check whether a given cluster meets the requirements to be added into the matching container (tensor/matrix)
      *
@@ -233,7 +266,7 @@ protected:
      *
      *  @return  whether the checks were met
      */
-    virtual bool DoesClusterPassTensorThreshold(const pandora::Cluster *const pCluster) const = 0;
+    virtual bool DoesClusterPassTensorThreshold(const pandora::Cluster* const pCluster) const = 0;
 
     /**
      *  @brief  Fill the stray cluster list with clusters that do not pass the tensor threshold requirement
@@ -249,7 +282,9 @@ protected:
      *  @param  consideredClusters the list of investigated clusters
      *  @param  nearbyMuonPfos the output list of the cosmic ray pfos to which the nearby cosmic ray clusters belong
      */
-    void GetNearbyMuonPfos(const pandora::Cluster *const pCluster, pandora::ClusterList &consideredClusters, pandora::PfoList &nearbyMuonPfos) const;
+    void GetNearbyMuonPfos(const pandora::Cluster* const pCluster,
+                           pandora::ClusterList& consideredClusters,
+                           pandora::PfoList& nearbyMuonPfos) const;
 
     /**
      *  @brief  Calculate the xSpan of a list of CaloHits
@@ -258,7 +293,7 @@ protected:
      *  @param  xMin the output minimum x coordinate
      *  @param  xMax the output maximum x coordinate
      */
-    void GetClusterSpanX(const pandora::CaloHitList &caloHitList, float &xMin, float &xMax) const;
+    void GetClusterSpanX(const pandora::CaloHitList& caloHitList, float& xMin, float& xMax) const;
 
     /**
      *  @brief  Calculate the zSpan of a list of CaloHits in a specified x range
@@ -269,7 +304,11 @@ protected:
      *  @param  zMin the output minimum z coordinate
      *  @param  zMax the output maximum z coordinate
      */
-    pandora::StatusCode GetClusterSpanZ(const pandora::CaloHitList &caloHitList, const float xMin, const float xMax, float &zMin, float &zMax) const;
+    pandora::StatusCode GetClusterSpanZ(const pandora::CaloHitList& caloHitList,
+                                        const float xMin,
+                                        const float xMax,
+                                        float& zMin,
+                                        float& zMax) const;
 
     /**
      *  @brief  Collect the stray clusters that are close to a specified cluster and that lie within a given x range
@@ -279,8 +318,10 @@ protected:
      *  @param  rangeMaxX the maximum x coordinate of the region of interest
      *  @param  collectedClusters the list of collected stray clusters
      */
-    void CollectStrayClusters(const pandora::Cluster *const pClusterToEnlarge, const float rangeMinX, const float rangeMaxX,
-        pandora::ClusterList &collectedClusters);
+    void CollectStrayClusters(const pandora::Cluster* const pClusterToEnlarge,
+                              const float rangeMinX,
+                              const float rangeMaxX,
+                              pandora::ClusterList& collectedClusters);
 
     /**
      *  @brief  Merge in the collected stray clusters of a given delta ray cluster
@@ -288,26 +329,38 @@ protected:
      *  @param  pClusterToEnlarge the delta ray cluster to enlarge
      *  @param  collectedClusters the list of collected stray clusters
      */
-    void AddInStrayClusters(const pandora::Cluster *const pClusterToEnlarge, const pandora::ClusterList &collectedClusters);
+    void AddInStrayClusters(const pandora::Cluster* const pClusterToEnlarge,
+                            const pandora::ClusterList& collectedClusters);
 
     void TidyUp();
     pandora::StatusCode ReadSettings(const pandora::TiXmlHandle xmlHandle);
 
-    std::string m_muonPfoListName;                           ///< The list of reconstructed cosmic ray pfos
-    pandora::ClusterList m_strayClusterListU;                ///< The list of U clusters that do not pass the tensor threshold requirement
-    pandora::ClusterList m_strayClusterListV;                ///< The list of V clusters that do not pass the tensor threshold requirement
-    pandora::ClusterList m_strayClusterListW;                ///< The list of W clusters that do not pass the tensor threshold requirement
-    DeltaRayMatchingContainers m_deltaRayMatchingContainers; ///< The class of hit, cluster and pfo ownership and proximity maps
-    float m_pseudoChi2Cut;                                   ///< Pseudo chi2 cut for three view matching
-    float m_xOverlapWindow;                                  ///< The maximum allowed displacement in x position
-    float m_minMatchedFraction;                              ///< The threshold matched fraction of sampling points for a good match
-    unsigned int m_minMatchedPoints;                         ///< The threshold number of matched sampling points for a good match
-    unsigned int m_minProjectedPositions;                    ///< The threshold number of projected points for a good projection
-    float m_maxCosmicRayHitFraction; ///< The maximum allowed fraction of hits to be removed from the cosmic ray track
-    float m_maxDistanceToCluster; ///< the maximum distance of a projected point to the cosmic ray cluster used when parameterising the cosmic ray cluster
-    float m_maxDistanceToReferencePoint; ///< the maximum distance of a projected point to the cosmic ray vertex used when parameterising the cosmic ray cluster
-    float m_strayClusterSeparation; ///< The maximum allowed separation of a stray cluster and a delta ray cluster for merge
-};
+    std::string m_muonPfoListName; ///< The list of reconstructed cosmic ray pfos
+    pandora::ClusterList
+      m_strayClusterListU; ///< The list of U clusters that do not pass the tensor threshold requirement
+    pandora::ClusterList
+      m_strayClusterListV; ///< The list of V clusters that do not pass the tensor threshold requirement
+    pandora::ClusterList
+      m_strayClusterListW; ///< The list of W clusters that do not pass the tensor threshold requirement
+    DeltaRayMatchingContainers
+      m_deltaRayMatchingContainers; ///< The class of hit, cluster and pfo ownership and proximity maps
+    float m_pseudoChi2Cut;          ///< Pseudo chi2 cut for three view matching
+    float m_xOverlapWindow;         ///< The maximum allowed displacement in x position
+    float
+      m_minMatchedFraction; ///< The threshold matched fraction of sampling points for a good match
+    unsigned int
+      m_minMatchedPoints; ///< The threshold number of matched sampling points for a good match
+    unsigned int
+      m_minProjectedPositions; ///< The threshold number of projected points for a good projection
+    float
+      m_maxCosmicRayHitFraction; ///< The maximum allowed fraction of hits to be removed from the cosmic ray track
+    float
+      m_maxDistanceToCluster; ///< the maximum distance of a projected point to the cosmic ray cluster used when parameterising the cosmic ray cluster
+    float
+      m_maxDistanceToReferencePoint; ///< the maximum distance of a projected point to the cosmic ray vertex used when parameterising the cosmic ray cluster
+    float
+      m_strayClusterSeparation; ///< The maximum allowed separation of a stray cluster and a delta ray cluster for merge
+  };
 
 } // namespace lar_content
 

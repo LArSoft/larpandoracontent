@@ -20,14 +20,12 @@
 
 #include <map>
 
-namespace lar_content
-{
-/**
+namespace lar_content {
+  /**
  *  @brief  MuonLeadingEventValidationAlgorithm class
  */
-class MuonLeadingEventValidationAlgorithm : public EventValidationBaseAlgorithm
-{
-public:
+  class MuonLeadingEventValidationAlgorithm : public EventValidationBaseAlgorithm {
+  public:
     /**
      *  @brief  Default constructor
      */
@@ -38,7 +36,7 @@ public:
      */
     virtual ~MuonLeadingEventValidationAlgorithm();
 
-private:
+  private:
     /**
      *  @brief  Fill the validation info containers
      *
@@ -47,8 +45,10 @@ private:
      *  @param  pPfoList the address of the pfo list
      *  @param  validationInfo to receive the validation info
      */
-    void FillValidationInfo(const pandora::MCParticleList *const pMCParticleList, const pandora::CaloHitList *const pCaloHitList,
-        const pandora::PfoList *const pPfoList, ValidationInfo &validationInfo) const;
+    void FillValidationInfo(const pandora::MCParticleList* const pMCParticleList,
+                            const pandora::CaloHitList* const pCaloHitList,
+                            const pandora::PfoList* const pPfoList,
+                            ValidationInfo& validationInfo) const;
 
     /**
      *  @brief  Determine all reconstructable hits in cosmic ray pfos
@@ -58,8 +58,10 @@ private:
      *  @param  pPfoList the address of the pfo list
      *  @param  recoCosmicRayHitList the output list of cosmic ray pfo reconstructable hits
      */
-    void GetRecoCosmicRayHits(const pandora::MCParticleList *const pMCParticleList, const pandora::CaloHitList *const pCaloHitList,
-        const pandora::PfoList *const pPfoList, pandora::CaloHitList &recoCosmicRayHitList) const;
+    void GetRecoCosmicRayHits(const pandora::MCParticleList* const pMCParticleList,
+                              const pandora::CaloHitList* const pCaloHitList,
+                              const pandora::PfoList* const pPfoList,
+                              pandora::CaloHitList& recoCosmicRayHitList) const;
 
     /**
      *  @brief  Perform the main matching procedure
@@ -71,9 +73,12 @@ private:
      *  @param  minHitSharingFraction the minimum hit share fraction of a reconstructable hit
      *  @param  validationInfo to receive the validation info
      */
-    void PerformUnfoldedMatching(const pandora::MCParticleList *const pMCParticleList, const pandora::CaloHitList *const pCaloHitList,
-        const pandora::PfoList *const pPfoList, const pandora::CaloHitList &recoCosmicRayHitList, const float minHitSharingFraction,
-        ValidationInfo &validationInfo) const;
+    void PerformUnfoldedMatching(const pandora::MCParticleList* const pMCParticleList,
+                                 const pandora::CaloHitList* const pCaloHitList,
+                                 const pandora::PfoList* const pPfoList,
+                                 const pandora::CaloHitList& recoCosmicRayHitList,
+                                 const float minHitSharingFraction,
+                                 ValidationInfo& validationInfo) const;
 
     /**
      *  @brief  Remove incorrectly reconstructed cosmic rays from main matching maps
@@ -83,8 +88,11 @@ private:
      *  @param  pPfoList the address of the pfo list
      *  @param  validationInfo to receive the updated validation info
      */
-    void RemoveIncorrectlyReconstructedCosmicRays(const pandora::MCParticleList *const pMCParticleList,
-        const pandora::CaloHitList *const pCaloHitList, const pandora::PfoList *const pPfoList, ValidationInfo &validationInfo) const;
+    void RemoveIncorrectlyReconstructedCosmicRays(
+      const pandora::MCParticleList* const pMCParticleList,
+      const pandora::CaloHitList* const pCaloHitList,
+      const pandora::PfoList* const pPfoList,
+      ValidationInfo& validationInfo) const;
 
     /**
      *  @brief  Perform the cosmic ray matching procedure and identify incorrectly reconstructed cosmic rays
@@ -94,8 +102,11 @@ private:
      *  @param  pPfoList the address of the pfo list
      *  @param  incorrectlyReconstructedCosmicRays the output list of incorrectly reconstructed cosmic rays
      */
-    void DetermineIncorrectlyReconstructedCosmicRays(const pandora::MCParticleList *const pMCParticleList, const pandora::CaloHitList *const pCaloHitList,
-        const pandora::PfoList *const pPfoList, pandora::MCParticleList &incorrectlyReconstructedCosmicRays) const;
+    void DetermineIncorrectlyReconstructedCosmicRays(
+      const pandora::MCParticleList* const pMCParticleList,
+      const pandora::CaloHitList* const pCaloHitList,
+      const pandora::PfoList* const pPfoList,
+      pandora::MCParticleList& incorrectlyReconstructedCosmicRays) const;
 
     /**
      *  @brief  Print matching information in a provided validation info object, and write information to tree if configured to do so
@@ -105,7 +116,10 @@ private:
      *  @param  printToScreen whether to print the information to screen
      *  @param  fillTree whether to write the information to tree
      */
-    void ProcessOutput(const ValidationInfo &validationInfo, const bool useInterpretedMatching, const bool printToScreen, const bool fillTree) const;
+    void ProcessOutput(const ValidationInfo& validationInfo,
+                       const bool useInterpretedMatching,
+                       const bool printToScreen,
+                       const bool fillTree) const;
 
     /**
      *  @brief  Print leading MCParticle hits
@@ -127,8 +141,11 @@ private:
      *  @param  stringTag the event display marker string
      */
 #ifdef MONITORING
-    void PrintHits(const pandora::CaloHitList totalCaloHitList, const pandora::CaloHitList otherShowerCaloHitList,
-        const pandora::CaloHitList otherTrackCaloHitList, const pandora::CaloHitList parentTrackCaloHitList, const std::string &stringTag) const;
+    void PrintHits(const pandora::CaloHitList totalCaloHitList,
+                   const pandora::CaloHitList otherShowerCaloHitList,
+                   const pandora::CaloHitList otherTrackCaloHitList,
+                   const pandora::CaloHitList parentTrackCaloHitList,
+                   const std::string& stringTag) const;
 #endif
 
     /**
@@ -138,7 +155,9 @@ private:
      *  @param  leadingCaloHitList the list of hits that in truth belong to the child hierarchy
      *  @param  stringTag the event display marker string
      */
-    void PrintHits(const pandora::CaloHitList totalCaloHitList, const pandora::CaloHitList leadingCaloHitList, const std::string &stringTag) const;
+    void PrintHits(const pandora::CaloHitList totalCaloHitList,
+                   const pandora::CaloHitList leadingCaloHitList,
+                   const std::string& stringTag) const;
 
     /**
      *  @brief  Fill an input contamination hit distance vector with the closest distance of each contaminant hit to the true leading particle hits
@@ -147,8 +166,10 @@ private:
      *  @param  leadingMCHitList the list of true MCParticles hits
      *  @param  bestMatchContaminationHitsDistance the output contaminant hit distance vector
      */
-    void FillContaminationHitsDistance(const pandora::CaloHitList &contaminationHits, const pandora::CaloHitList &leadingMCHits,
-        pandora::FloatVector &bestMatchContaminationHitsDistance) const;
+    void FillContaminationHitsDistance(
+      const pandora::CaloHitList& contaminationHits,
+      const pandora::CaloHitList& leadingMCHits,
+      pandora::FloatVector& bestMatchContaminationHitsDistance) const;
 
     /**
      *  @brief  To filter out the hits of a given type from an input list
@@ -157,20 +178,26 @@ private:
      *  @param  hitType the specified TPC view
      *  @param  outputList the output list of hits of the specified list
      */
-    void GetHitsOfType(const pandora::CaloHitList &inputList, const pandora::HitType hitType, pandora::CaloHitList &outputList) const;
+    void GetHitsOfType(const pandora::CaloHitList& inputList,
+                       const pandora::HitType hitType,
+                       pandora::CaloHitList& outputList) const;
 
     pandora::StatusCode ReadSettings(const pandora::TiXmlHandle xmlHandle);
 
-    LArMuonLeadingHelper::ValidationParameters m_validationParameters; ///< The definition of a reconstructable MCParticle
-    bool m_removeRecoCosmicRayHits;   ///< Whether to remove the reconstructed cosmic ray hits from leading particle metrics
-    bool m_deltaRayMode;              ///< Whether to run in delta ray mode
-    bool m_michelMode;                ///< Whether to run in michel mode
-    int m_cosmicRaysToSkip;           ///< The number of reconstructable cosmic rays to skip
-    bool m_visualize;                 ///< Whether to visualize the MC and reco leading particles
-    bool m_ignoreIncorrectCosmicRays; ///< Whether to remove the leading particles with incorrrectly reconstructed parents from metrics
-    bool m_writeRawMatchesToTree;     ///< Whether to write all matches to output tree
-    std::vector<int> m_deltaRayIDs;   ///< If filled, to contain the list leading particles to run metrics over
-};
+    LArMuonLeadingHelper::ValidationParameters
+      m_validationParameters; ///< The definition of a reconstructable MCParticle
+    bool
+      m_removeRecoCosmicRayHits; ///< Whether to remove the reconstructed cosmic ray hits from leading particle metrics
+    bool m_deltaRayMode;    ///< Whether to run in delta ray mode
+    bool m_michelMode;      ///< Whether to run in michel mode
+    int m_cosmicRaysToSkip; ///< The number of reconstructable cosmic rays to skip
+    bool m_visualize;       ///< Whether to visualize the MC and reco leading particles
+    bool
+      m_ignoreIncorrectCosmicRays; ///< Whether to remove the leading particles with incorrrectly reconstructed parents from metrics
+    bool m_writeRawMatchesToTree; ///< Whether to write all matches to output tree
+    std::vector<int>
+      m_deltaRayIDs; ///< If filled, to contain the list leading particles to run metrics over
+  };
 
 } // namespace lar_content
 

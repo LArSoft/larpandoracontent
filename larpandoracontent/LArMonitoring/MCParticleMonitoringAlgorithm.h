@@ -12,21 +12,19 @@
 
 #include "larpandoracontent/LArHelpers/LArMCParticleHelper.h"
 
-namespace lar_content
-{
+namespace lar_content {
 
-/**
+  /**
  *  @brief  MCParticleMonitoringAlgorithm class
  */
-class MCParticleMonitoringAlgorithm : public pandora::Algorithm
-{
-public:
+  class MCParticleMonitoringAlgorithm : public pandora::Algorithm {
+  public:
     /**
      *  @brief  Default constructor
      */
     MCParticleMonitoringAlgorithm();
 
-private:
+  private:
     pandora::StatusCode Run();
     pandora::StatusCode ReadSettings(const pandora::TiXmlHandle xmlHandle);
 
@@ -35,7 +33,8 @@ private:
      *
      *  @param  mcContributionMap the mc contribution map
      */
-    void PrintPrimaryMCParticles(const LArMCParticleHelper::MCContributionMap &mcContributionMap) const;
+    void PrintPrimaryMCParticles(
+      const LArMCParticleHelper::MCContributionMap& mcContributionMap) const;
 
     /**
      *  @brief  Print information for a given mc particle to screen
@@ -44,15 +43,18 @@ private:
      *  @param  mcToTrueHitListMap the mc to true hit list map
      *  @param  depth the depth in the mc particle decay hierarchy
      */
-    void PrintMCParticle(const pandora::MCParticle *const pMCParticle, const LArMCParticleHelper::MCContributionMap &mcToTrueHitListMap,
-        const int depth) const;
+    void PrintMCParticle(const pandora::MCParticle* const pMCParticle,
+                         const LArMCParticleHelper::MCContributionMap& mcToTrueHitListMap,
+                         const int depth) const;
 
     std::string m_caloHitListName;    ///< Name of input calo hit list
     std::string m_mcParticleListName; ///< Name of input MC particle list
 
-    bool m_useTrueNeutrinosOnly;      ///< Whether to consider only mc particles that were neutrino induced
-    unsigned int m_minHitsForDisplay; ///< Min hits associated with mc particle to warrant display to terminal
-};
+    bool
+      m_useTrueNeutrinosOnly; ///< Whether to consider only mc particles that were neutrino induced
+    unsigned int
+      m_minHitsForDisplay; ///< Min hits associated with mc particle to warrant display to terminal
+  };
 
 } // namespace lar_content
 

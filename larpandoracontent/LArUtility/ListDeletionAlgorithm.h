@@ -10,22 +10,20 @@
 
 #include "Pandora/Algorithm.h"
 
-namespace lar_content
-{
+namespace lar_content {
 
-/**
+  /**
  *  @brief  ListDeletionAlgorithm class
  */
-class ListDeletionAlgorithm : public pandora::Algorithm
-{
-private:
+  class ListDeletionAlgorithm : public pandora::Algorithm {
+  private:
     pandora::StatusCode Run();
     pandora::StatusCode ReadSettings(const pandora::TiXmlHandle xmlHandle);
 
     pandora::StringVector m_pfoListNames;     ///< The list of pfo list names
     pandora::StringVector m_clusterListNames; ///< The list of cluster list names
     pandora::StringVector m_vertexListNames;  ///< The list of vertex list names
-};
+  };
 
 } // namespace lar_content
 

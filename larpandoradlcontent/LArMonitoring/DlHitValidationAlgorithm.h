@@ -10,15 +10,13 @@
 
 #include "Pandora/Algorithm.h"
 
-namespace lar_dl_content
-{
+namespace lar_dl_content {
 
-/**
+  /**
  *  @brief  DlHitValidationlgorithm class
  */
-class DlHitValidationAlgorithm : public pandora::Algorithm
-{
-public:
+  class DlHitValidationAlgorithm : public pandora::Algorithm {
+  public:
     /**
      *  @brief  Default constructor
      */
@@ -26,7 +24,7 @@ public:
 
     virtual ~DlHitValidationAlgorithm();
 
-private:
+  private:
     pandora::StatusCode Run();
     pandora::StatusCode ReadSettings(const pandora::TiXmlHandle xmlHandle);
 
@@ -34,7 +32,7 @@ private:
     int m_confusionU[2][2];                   ///< Confusion matrix for the U view
     int m_confusionV[2][2];                   ///< Confusion matrix for the V view
     int m_confusionW[2][2];                   ///< Confusion matrix for the W view
-};
+  };
 
 } // namespace lar_dl_content
 

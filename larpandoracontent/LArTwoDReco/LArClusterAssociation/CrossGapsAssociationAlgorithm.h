@@ -14,24 +14,26 @@
 
 #include "larpandoracontent/LArTwoDReco/LArClusterAssociation/ClusterAssociationAlgorithm.h"
 
-namespace lar_content
-{
+namespace lar_content {
 
-/**
+  /**
  *  @brief  CrossGapsAssociationAlgorithm class
  */
-class CrossGapsAssociationAlgorithm : public ClusterAssociationAlgorithm
-{
-public:
+  class CrossGapsAssociationAlgorithm : public ClusterAssociationAlgorithm {
+  public:
     /**
      *  @brief  Default constructor
      */
     CrossGapsAssociationAlgorithm();
 
-private:
-    void GetListOfCleanClusters(const pandora::ClusterList *const pClusterList, pandora::ClusterVector &clusterVector) const;
-    void PopulateClusterAssociationMap(const pandora::ClusterVector &clusterVector, ClusterAssociationMap &clusterAssociationMap) const;
-    bool IsExtremalCluster(const bool isForward, const pandora::Cluster *const pCurrentCluster, const pandora::Cluster *const pTestCluster) const;
+  private:
+    void GetListOfCleanClusters(const pandora::ClusterList* const pClusterList,
+                                pandora::ClusterVector& clusterVector) const;
+    void PopulateClusterAssociationMap(const pandora::ClusterVector& clusterVector,
+                                       ClusterAssociationMap& clusterAssociationMap) const;
+    bool IsExtremalCluster(const bool isForward,
+                           const pandora::Cluster* const pCurrentCluster,
+                           const pandora::Cluster* const pTestCluster) const;
 
     /**
      *  @brief  Determine whether two clusters are associated
@@ -41,7 +43,8 @@ private:
      *
      *  @return boolean
      */
-    bool AreClustersAssociated(const TwoDSlidingFitResult &innerFitResult, const TwoDSlidingFitResult &outerFitResult) const;
+    bool AreClustersAssociated(const TwoDSlidingFitResult& innerFitResult,
+                               const TwoDSlidingFitResult& outerFitResult) const;
 
     /**
      *  @brief  Sample points along the extrapolation from a starting position to a target fit result to declare cluster association
@@ -52,8 +55,9 @@ private:
      *
      *  @return boolean
      */
-    bool IsAssociated(const pandora::CartesianVector &startPosition, const pandora::CartesianVector &startDirection,
-        const TwoDSlidingFitResult &targetFitResult) const;
+    bool IsAssociated(const pandora::CartesianVector& startPosition,
+                      const pandora::CartesianVector& startDirection,
+                      const TwoDSlidingFitResult& targetFitResult) const;
 
     /**
      *  @brief  Whether a sampling point lies near a target 2d sliding fit result
@@ -63,21 +67,28 @@ private:
      *
      *  @return boolean
      */
-    bool IsNearCluster(const pandora::CartesianVector &samplingPoint, const TwoDSlidingFitResult &targetFitResult) const;
+    bool IsNearCluster(const pandora::CartesianVector& samplingPoint,
+                       const TwoDSlidingFitResult& targetFitResult) const;
 
     pandora::StatusCode ReadSettings(const pandora::TiXmlHandle xmlHandle);
 
-    unsigned int m_minClusterHits;           ///< The minimum allowed number of hits in a clean cluster
-    unsigned int m_minClusterLayers;         ///< The minimum allowed number of layers for a clean cluster
-    unsigned int m_slidingFitWindow;         ///< The layer window for the sliding linear fits
-    unsigned int m_maxSamplingPoints;        ///< The maximum number of extension sampling points considered per association check
-    float m_sampleStepSize;                  ///< The sampling step size used in association checks, units cm
-    unsigned int m_maxUnmatchedSampleRun;    ///< The maximum run of unmatched (and non-gap) samples to consider before stopping
-    float m_maxOnClusterDistance;            ///< The maximum distance between a sampling point and sliding fit to target cluster
-    unsigned int m_minMatchedSamplingPoints; ///< Minimum number of matched sampling points to declare association
-    float m_minMatchedSamplingFraction;      ///< Minimum ratio between matched sampling points and expectation to declare association
-    float m_gapTolerance;                    ///< The tolerance to use when querying whether a sampling point is in a gap, units cm
-};
+    unsigned int m_minClusterHits;   ///< The minimum allowed number of hits in a clean cluster
+    unsigned int m_minClusterLayers; ///< The minimum allowed number of layers for a clean cluster
+    unsigned int m_slidingFitWindow; ///< The layer window for the sliding linear fits
+    unsigned int
+      m_maxSamplingPoints; ///< The maximum number of extension sampling points considered per association check
+    float m_sampleStepSize; ///< The sampling step size used in association checks, units cm
+    unsigned int
+      m_maxUnmatchedSampleRun; ///< The maximum run of unmatched (and non-gap) samples to consider before stopping
+    float
+      m_maxOnClusterDistance; ///< The maximum distance between a sampling point and sliding fit to target cluster
+    unsigned int
+      m_minMatchedSamplingPoints; ///< Minimum number of matched sampling points to declare association
+    float
+      m_minMatchedSamplingFraction; ///< Minimum ratio between matched sampling points and expectation to declare association
+    float
+      m_gapTolerance; ///< The tolerance to use when querying whether a sampling point is in a gap, units cm
+  };
 
 } // namespace lar_content
 

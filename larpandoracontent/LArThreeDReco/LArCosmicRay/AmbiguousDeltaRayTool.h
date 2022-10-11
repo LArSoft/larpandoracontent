@@ -10,21 +10,19 @@
 
 #include "larpandoracontent/LArThreeDReco/LArCosmicRay/ThreeViewDeltaRayMatchingAlgorithm.h"
 
-namespace lar_content
-{
-/**
+namespace lar_content {
+  /**
  *  @brief  AmbiguousDeltaRayTool class
  */
-class AmbiguousDeltaRayTool : public DeltaRayTensorTool
-{
-public:
+  class AmbiguousDeltaRayTool : public DeltaRayTensorTool {
+  public:
     /**
      *  @brief  Default constructor
      */
     AmbiguousDeltaRayTool();
 
-private:
-    bool Run(ThreeViewDeltaRayMatchingAlgorithm *const pAlgorithm, TensorType &overlapTensor);
+  private:
+    bool Run(ThreeViewDeltaRayMatchingAlgorithm* const pAlgorithm, TensorType& overlapTensor);
     pandora::StatusCode ReadSettings(const pandora::TiXmlHandle xmlHandle);
 
     /**
@@ -32,7 +30,7 @@ private:
      *
      *  @param  overlapTensor the overlap tensor
      */
-    void ExamineConnectedElements(TensorType &overlapTensor) const;
+    void ExamineConnectedElements(TensorType& overlapTensor) const;
 
     /**
      *  @brief  Identify the best 1:1:1 match in a group of connected elements and from it create a pfo
@@ -41,10 +39,13 @@ private:
      *  @param  usedClusters the output list of clusters contained within to be created pfos
      *  @param  protoParticleVector the output vector of ProtoParticles
      */
-    void PickOutGoodMatches(const TensorType::ElementList &elementList, pandora::ClusterSet &usedClusters, ProtoParticleVector &protoParticleVector) const;
+    void PickOutGoodMatches(const TensorType::ElementList& elementList,
+                            pandora::ClusterSet& usedClusters,
+                            ProtoParticleVector& protoParticleVector) const;
 
-    float m_maxGoodMatchReducedChiSquared; ///< The maximum reduced chi squared value of a good 1:1:1 match
-};
+    float
+      m_maxGoodMatchReducedChiSquared; ///< The maximum reduced chi squared value of a good 1:1:1 match
+  };
 
 } // namespace lar_content
 

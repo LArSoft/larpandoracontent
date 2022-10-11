@@ -12,27 +12,26 @@
 
 #include "larpandoracontent/LArCustomParticles/CustomParticleCreationAlgorithm.h"
 
-namespace lar_content
-{
+namespace lar_content {
 
-/**
+  /**
  *  @brief  TrackParticleBuildingAlgorithm class
  */
-class TrackParticleBuildingAlgorithm : public CustomParticleCreationAlgorithm
-{
-public:
+  class TrackParticleBuildingAlgorithm : public CustomParticleCreationAlgorithm {
+  public:
     /**
      *  @brief  Default constructor
      */
     TrackParticleBuildingAlgorithm();
 
-private:
+  private:
     pandora::StatusCode ReadSettings(const pandora::TiXmlHandle xmlHandle);
 
-    void CreatePfo(const pandora::ParticleFlowObject *const pInputPfo, const pandora::ParticleFlowObject *&pOutputPfo) const;
+    void CreatePfo(const pandora::ParticleFlowObject* const pInputPfo,
+                   const pandora::ParticleFlowObject*& pOutputPfo) const;
 
     unsigned int m_slidingFitHalfWindow; ///<
-};
+  };
 
 } // namespace lar_content
 

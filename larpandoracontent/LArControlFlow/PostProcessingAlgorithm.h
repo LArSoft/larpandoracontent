@@ -10,21 +10,19 @@
 
 #include "Pandora/Algorithm.h"
 
-namespace lar_content
-{
+namespace lar_content {
 
-/**
+  /**
  *  @brief  PostProcessingAlgorithm class
  */
-class PostProcessingAlgorithm : public pandora::Algorithm
-{
-public:
+  class PostProcessingAlgorithm : public pandora::Algorithm {
+  public:
     /**
      *  @brief  Default constructor
      */
     PostProcessingAlgorithm();
 
-private:
+  private:
     pandora::StatusCode Reset();
     pandora::StatusCode Run();
 
@@ -34,7 +32,7 @@ private:
      *  @param  oldListName the old list name
      */
     template <typename T>
-    pandora::StatusCode RenameList(const std::string &oldListName) const;
+    pandora::StatusCode RenameList(const std::string& oldListName) const;
 
     pandora::StatusCode ReadSettings(const pandora::TiXmlHandle xmlHandle);
 
@@ -43,10 +41,12 @@ private:
     pandora::StringVector m_vertexListNames;  ///< The list of vertex list names
     pandora::StringVector m_caloHitListNames; ///< The list of calo hit list names
 
-    std::string m_currentPfoListReplacement; ///< The name of the pfo list to replace the current list
+    std::string
+      m_currentPfoListReplacement; ///< The name of the pfo list to replace the current list
 
-    unsigned int m_listCounter; ///< The counter appended to output (and replacement current) list names and reset each event
-};
+    unsigned int
+      m_listCounter; ///< The counter appended to output (and replacement current) list names and reset each event
+  };
 
 } // namespace lar_content
 

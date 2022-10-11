@@ -10,21 +10,19 @@
 
 #include "larpandoracontent/LArVertex/GlobalAsymmetryFeatureTool.h"
 
-namespace lar_content
-{
+namespace lar_content {
 
-/**
+  /**
  *  @brief  EnergyDepositionAsymmetryFeatureTool class
  */
-class EnergyDepositionAsymmetryFeatureTool : public GlobalAsymmetryFeatureTool
-{
-public:
+  class EnergyDepositionAsymmetryFeatureTool : public GlobalAsymmetryFeatureTool {
+  public:
     /**
      *  @brief  Default constructor
      */
     EnergyDepositionAsymmetryFeatureTool();
 
-private:
+  private:
     pandora::StatusCode ReadSettings(const pandora::TiXmlHandle xmlHandle) override;
 
     /**
@@ -37,9 +35,12 @@ private:
      *
      *  @return the energy deposition asymmetry feature
      */
-    float CalculateAsymmetry(const bool useEnergyMetrics, const pandora::CartesianVector &vertexPosition2D,
-        const pandora::ClusterVector &clusterVector, const pandora::CartesianVector &localWeightedDirectionSum) const override;
-};
+    float CalculateAsymmetry(
+      const bool useEnergyMetrics,
+      const pandora::CartesianVector& vertexPosition2D,
+      const pandora::ClusterVector& clusterVector,
+      const pandora::CartesianVector& localWeightedDirectionSum) const override;
+  };
 
 } // namespace lar_content
 

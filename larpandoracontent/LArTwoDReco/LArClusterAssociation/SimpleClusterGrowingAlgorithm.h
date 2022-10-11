@@ -12,28 +12,28 @@
 
 #include "larpandoracontent/LArTwoDReco/LArClusterAssociation/ClusterGrowingAlgorithm.h"
 
-namespace lar_content
-{
+namespace lar_content {
 
-/**
+  /**
  *  @brief  SimpleClusterGrowingAlgorithm class
  */
-class SimpleClusterGrowingAlgorithm : public ClusterGrowingAlgorithm
-{
-public:
+  class SimpleClusterGrowingAlgorithm : public ClusterGrowingAlgorithm {
+  public:
     /**
      *  @brief  Default constructor
      */
     SimpleClusterGrowingAlgorithm();
 
-private:
-    void GetListOfCleanClusters(const pandora::ClusterList *const pClusterList, pandora::ClusterVector &cleanClusters) const;
-    void GetListOfSeedClusters(const pandora::ClusterVector &inputClusters, pandora::ClusterVector &seedClusters) const;
+  private:
+    void GetListOfCleanClusters(const pandora::ClusterList* const pClusterList,
+                                pandora::ClusterVector& cleanClusters) const;
+    void GetListOfSeedClusters(const pandora::ClusterVector& inputClusters,
+                               pandora::ClusterVector& seedClusters) const;
 
     pandora::StatusCode ReadSettings(const pandora::TiXmlHandle xmlHandle);
 
     unsigned int m_minCaloHitsPerCluster; ///< The minimum number of calo hits per seed cluster
-};
+  };
 
 } // namespace lar_content
 

@@ -12,52 +12,48 @@
 
 using namespace pandora;
 
-namespace lar_content
-{
+namespace lar_content {
 
-void TwoViewShowerHitsTool::GetShowerHit3D(const CaloHitVector &caloHitVector1, const CaloHitVector &caloHitVector2, ProtoHit &protoHit) const
-{
-    if (!caloHitVector1.empty() && caloHitVector2.empty())
-    {
-        this->GetShowerHit3D(caloHitVector1, protoHit);
+  void TwoViewShowerHitsTool::GetShowerHit3D(const CaloHitVector& caloHitVector1,
+                                             const CaloHitVector& caloHitVector2,
+                                             ProtoHit& protoHit) const
+  {
+    if (!caloHitVector1.empty() && caloHitVector2.empty()) {
+      this->GetShowerHit3D(caloHitVector1, protoHit);
     }
-    else if (caloHitVector1.empty() && !caloHitVector2.empty())
-    {
-        this->GetShowerHit3D(caloHitVector2, protoHit);
+    else if (caloHitVector1.empty() && !caloHitVector2.empty()) {
+      this->GetShowerHit3D(caloHitVector2, protoHit);
     }
-    else
-    {
-        throw StatusCodeException(STATUS_CODE_NOT_FOUND);
+    else {
+      throw StatusCodeException(STATUS_CODE_NOT_FOUND);
     }
-}
+  }
 
-//------------------------------------------------------------------------------------------------------------------------------------------
+  //------------------------------------------------------------------------------------------------------------------------------------------
 
-void TwoViewShowerHitsTool::GetShowerHit3D(const CaloHitVector &caloHitVector, ProtoHit &protoHit) const
-{
-    if (caloHitVector.empty())
-        throw StatusCodeException(STATUS_CODE_NOT_FOUND);
+  void TwoViewShowerHitsTool::GetShowerHit3D(const CaloHitVector& caloHitVector,
+                                             ProtoHit& protoHit) const
+  {
+    if (caloHitVector.empty()) throw StatusCodeException(STATUS_CODE_NOT_FOUND);
 
-    const CaloHit *const pCaloHit2D(protoHit.GetParentCaloHit2D());
+    const CaloHit* const pCaloHit2D(protoHit.GetParentCaloHit2D());
     const HitType hitType(caloHitVector.at(0)->GetHitType());
 
     if (pCaloHit2D->GetHitType() == hitType)
-        throw StatusCodeException(STATUS_CODE_INVALID_PARAMETER);
+      throw StatusCodeException(STATUS_CODE_INVALID_PARAMETER);
 
     double Sqz(0.), Sqx(0.), Sq(0.);
 
-    for (const CaloHit *const pCaloHit : caloHitVector)
-    {
-        Sqx += pCaloHit->GetMipEquivalentEnergy() * pCaloHit->GetPositionVector().GetX();
-        Sqz += pCaloHit->GetMipEquivalentEnergy() * pCaloHit->GetPositionVector().GetZ();
-        Sq += pCaloHit->GetMipEquivalentEnergy();
+    for (const CaloHit* const pCaloHit : caloHitVector) {
+      Sqx += pCaloHit->GetMipEquivalentEnergy() * pCaloHit->GetPositionVector().GetX();
+      Sqz += pCaloHit->GetMipEquivalentEnergy() * pCaloHit->GetPositionVector().GetZ();
+      Sq += pCaloHit->GetMipEquivalentEnergy();
     }
 
-    if (Sq < std::numeric_limits<double>::epsilon())
-        throw StatusCodeException(STATUS_CODE_FAILURE);
+    if (Sq < std::numeric_limits<double>::epsilon()) throw StatusCodeException(STATUS_CODE_FAILURE);
 
     const CartesianVector position(static_cast<float>(Sqx / Sq), 0.f, static_cast<float>(Sqz / Sq));
     this->GetBestPosition3D(hitType, position, protoHit);
-}
+  }
 
 } // namespace lar_content

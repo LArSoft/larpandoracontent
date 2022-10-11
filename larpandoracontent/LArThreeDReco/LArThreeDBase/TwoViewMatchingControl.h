@@ -14,16 +14,14 @@
 
 #include <unordered_map>
 
-namespace lar_content
-{
+namespace lar_content {
 
-/**
+  /**
  *  @brief  TwoViewMatchingControl class
  */
-template <typename T>
-class TwoViewMatchingControl : public NViewMatchingControl
-{
-public:
+  template <typename T>
+  class TwoViewMatchingControl : public NViewMatchingControl {
+  public:
     typedef OverlapMatrix<T> MatrixType;
 
     /**
@@ -31,7 +29,7 @@ public:
      *
      *  @param  pAlgorithm address of the matching base algorithm
      */
-    TwoViewMatchingControl(MatchingBaseAlgorithm *const pAlgorithm);
+    TwoViewMatchingControl(MatchingBaseAlgorithm* const pAlgorithm);
 
     /**
      *  @brief  Destructor
@@ -43,7 +41,7 @@ public:
      *
      *  @return the overlap matrix
      */
-    MatrixType &GetOverlapMatrix();
+    MatrixType& GetOverlapMatrix();
 
     /**
      *  @brief  Get the index of an input hit type returning 0 if not found in map
@@ -52,20 +50,20 @@ public:
      */
     unsigned int GetHitTypeIndex(const pandora::HitType hitType);
 
-private:
-    void UpdateForNewCluster(const pandora::Cluster *const pNewCluster);
-    void UpdateUponDeletion(const pandora::Cluster *const pDeletedCluster);
-    const std::string &GetClusterListName(const pandora::HitType hitType) const;
-    const pandora::ClusterList &GetInputClusterList(const pandora::HitType hitType) const;
-    const pandora::ClusterList &GetSelectedClusterList(const pandora::HitType hitType) const;
+  private:
+    void UpdateForNewCluster(const pandora::Cluster* const pNewCluster);
+    void UpdateUponDeletion(const pandora::Cluster* const pDeletedCluster);
+    const std::string& GetClusterListName(const pandora::HitType hitType) const;
+    const pandora::ClusterList& GetInputClusterList(const pandora::HitType hitType) const;
+    const pandora::ClusterList& GetSelectedClusterList(const pandora::HitType hitType) const;
     void SelectAllInputClusters();
     void PrepareAllInputClusters();
     void PerformMainLoop();
     void TidyUp();
     pandora::StatusCode ReadSettings(const pandora::TiXmlHandle xmlHandle);
 
-    const pandora::ClusterList *m_pInputClusterList1; ///< Address of the input cluster list 1
-    const pandora::ClusterList *m_pInputClusterList2; ///< Address of the input cluster list 2
+    const pandora::ClusterList* m_pInputClusterList1; ///< Address of the input cluster list 1
+    const pandora::ClusterList* m_pInputClusterList2; ///< Address of the input cluster list 2
 
     pandora::ClusterList m_clusterList1; ///< The selected modified cluster list 1
     pandora::ClusterList m_clusterList2; ///< The selected modified cluster list 2
@@ -80,7 +78,7 @@ private:
 
     template <typename U>
     friend class NViewMatchingAlgorithm;
-};
+  };
 
 } // namespace lar_content
 

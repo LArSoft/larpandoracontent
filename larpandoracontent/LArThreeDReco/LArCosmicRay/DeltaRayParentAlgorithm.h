@@ -10,16 +10,14 @@
 
 #include "Pandora/Algorithm.h"
 
-namespace lar_content
-{
+namespace lar_content {
 
-/**
+  /**
  *  @brief  DeltaRayParentAlgorithm class
  */
-class DeltaRayParentAlgorithm : public pandora::Algorithm
-{
-public:
-    typedef std::map<const pandora::ParticleFlowObject *, float> PfoLengthMap;
+  class DeltaRayParentAlgorithm : public pandora::Algorithm {
+  public:
+    typedef std::map<const pandora::ParticleFlowObject*, float> PfoLengthMap;
 
     /**
      *  @brief  Default constructor
@@ -28,7 +26,7 @@ public:
 
     pandora::StatusCode Run();
 
-private:
+  private:
     /**
      *  @brief  Initialise the delta ray pfo length map
      *
@@ -36,7 +34,9 @@ private:
      *  @param  deltaRayPfoList the list of all delta ray pfos
      *  @param  pfoLengthMap the output mapping of pfos to their 2D length
      */
-    void InitialisePfoLengthMap(const pandora::PfoList *const muonPfoList, const pandora::PfoList *const deltaRayPfoList, PfoLengthMap &pfoLengthMap) const;
+    void InitialisePfoLengthMap(const pandora::PfoList* const muonPfoList,
+                                const pandora::PfoList* const deltaRayPfoList,
+                                PfoLengthMap& pfoLengthMap) const;
 
     /**
      *  @brief  Identify the parent pfo of a given delta ray pfo (can be either a cosmic ray or delta ray pfo)
@@ -45,7 +45,9 @@ private:
      *  @param  pPfo the address of the input delta ray pfo
      *  @param  pParentPfo the output address of the parent pfo
      */
-    void FindParentPfo(const PfoLengthMap &pfoLengthMap, const pandora::ParticleFlowObject *const pPfo, const pandora::ParticleFlowObject *&pParentPfo) const;
+    void FindParentPfo(const PfoLengthMap& pfoLengthMap,
+                       const pandora::ParticleFlowObject* const pPfo,
+                       const pandora::ParticleFlowObject*& pParentPfo) const;
 
     /**
      *  @brief  Get distance between two Pfos using 2D clusters
@@ -56,8 +58,9 @@ private:
      *
      *  @return  whether the pfo separation could be calculated
      */
-    pandora::StatusCode GetTwoDSeparation(
-        const pandora::ParticleFlowObject *const pPfo1, const pandora::ParticleFlowObject *const pPfo2, float &separation) const;
+    pandora::StatusCode GetTwoDSeparation(const pandora::ParticleFlowObject* const pPfo1,
+                                          const pandora::ParticleFlowObject* const pPfo2,
+                                          float& separation) const;
 
     /**
      *  @brief  Apply parent-child link (if parent is a cosmic ray create parent-child link else merge the delta ray cluster into parent delta ray pfo)
@@ -68,8 +71,11 @@ private:
      *  @param  pParentPfo the address of the parent pfo
      *  @param  pfoLengthMap the mapping of pfos to their 2D length
      */
-    void AssignToParentPfo(const pandora::PfoList *const muonPfoList, const pandora::PfoList *const deltaRayPfoList,
-        const pandora::ParticleFlowObject *const pPfo, const pandora::ParticleFlowObject *const pParentPfo, PfoLengthMap &pfoLengthMap) const;
+    void AssignToParentPfo(const pandora::PfoList* const muonPfoList,
+                           const pandora::PfoList* const deltaRayPfoList,
+                           const pandora::ParticleFlowObject* const pPfo,
+                           const pandora::ParticleFlowObject* const pParentPfo,
+                           PfoLengthMap& pfoLengthMap) const;
 
     /**
      *  @brief  Update the pfo length map after a parent-child delta ray merge
@@ -78,14 +84,16 @@ private:
      *  @param  pPfoToAdd the address of the pfo to add to the map
      *  @param  pfoLengthMap the mapping of pfos to their 2D length
      */
-    void UpdatePfoLengthMap(const pandora::PfoList &pfosToRemove, const pandora::ParticleFlowObject *const pPfoToAdd, PfoLengthMap &pfoLengthMap) const;
+    void UpdatePfoLengthMap(const pandora::PfoList& pfosToRemove,
+                            const pandora::ParticleFlowObject* const pPfoToAdd,
+                            PfoLengthMap& pfoLengthMap) const;
 
     pandora::StatusCode ReadSettings(const pandora::TiXmlHandle xmlHandle);
 
     std::string m_muonPfoListName;     ///< The list of reconstructed muon pfos
     std::string m_deltaRayPfoListName; ///< The list of reconstructed delta ray pfos
-    float m_distanceForMatching;       ///< The maximum separation of a delta ray pfo from its parent
-};
+    float m_distanceForMatching; ///< The maximum separation of a delta ray pfo from its parent
+  };
 
 } // namespace lar_content
 

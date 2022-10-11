@@ -12,21 +12,19 @@
 
 #include "larpandoracontent/LArObjects/LArPointingCluster.h"
 
-namespace lar_content
-{
+namespace lar_content {
 
-/**
+  /**
  *  @brief  CosmicRayVertexBuildingAlgorithm class
  */
-class CosmicRayVertexBuildingAlgorithm : public pandora::Algorithm
-{
-public:
+  class CosmicRayVertexBuildingAlgorithm : public pandora::Algorithm {
+  public:
     /**
      *  @brief  Default constructor
      */
     CosmicRayVertexBuildingAlgorithm();
 
-private:
+  private:
     pandora::StatusCode Run();
     pandora::StatusCode ReadSettings(const pandora::TiXmlHandle xmlHandle);
 
@@ -35,7 +33,7 @@ private:
      *
      *  @param  pfoList to receive the list of input pfos
      */
-    void GetCosmicPfos(const pandora::PfoList *const pPfoList, pandora::PfoVector &pfoVector) const;
+    void GetCosmicPfos(const pandora::PfoList* const pPfoList, pandora::PfoVector& pfoVector) const;
 
     /**
      *  @brief  Build a map of 3D sliding fits from the input Pfos.
@@ -43,7 +41,8 @@ private:
      *  @param  pfoList the input particle flow objects
      *  @param  pointingClusterMap the output map of 3D pointing clusters
      */
-    void BuildPointingClusterMap(const pandora::PfoVector &pfoVector, LArPointingClusterMap &pointingClusterMap) const;
+    void BuildPointingClusterMap(const pandora::PfoVector& pfoVector,
+                                 LArPointingClusterMap& pointingClusterMap) const;
 
     /**
      *  @brief  Reconstruct the vertex and direction of a list of cosmic-ray Pfos
@@ -51,7 +50,8 @@ private:
      *  @param  pointingClusterMap the input map of 3D pointing clusters
      *  @param  pfoList the input list of Pfos
      */
-    void BuildCosmicRayParticles(const LArPointingClusterMap &pointingClusterMap, const pandora::PfoVector &pfoVector) const;
+    void BuildCosmicRayParticles(const LArPointingClusterMap& pointingClusterMap,
+                                 const pandora::PfoVector& pfoVector) const;
 
     /**
      *  @brief  Reconstruct the vertex and direction of a parent cosmic-ray Pfo
@@ -59,14 +59,15 @@ private:
      *  @param  pointingClusterMap the input map of 3D pointing clusters
      *  @param  pPfo the input Pfo
      */
-    void BuildCosmicRayParent(const LArPointingClusterMap &pointingClusterMap, const pandora::ParticleFlowObject *const pPfo) const;
+    void BuildCosmicRayParent(const LArPointingClusterMap& pointingClusterMap,
+                              const pandora::ParticleFlowObject* const pPfo) const;
 
     /**
      *  @brief  Reconstruct the vertex and direction of a daughter cosmic-ray Pfo
      *
      *  @param  pPfo the daughter Pfo
      */
-    void BuildCosmicRayDaughter(const pandora::ParticleFlowObject *const pPfo) const;
+    void BuildCosmicRayDaughter(const pandora::ParticleFlowObject* const pPfo) const;
 
     /**
      *  @brief  Set the vertex and direction of the Pfos
@@ -75,16 +76,18 @@ private:
      *  @param  vtxDirection the input vertex direction
      *  @param  pPfo the input Pfo
      */
-    void SetParticleParameters(const pandora::CartesianVector &vtxPosition, const pandora::CartesianVector &vtxDirection,
-        const pandora::ParticleFlowObject *const pPfo) const;
+    void SetParticleParameters(const pandora::CartesianVector& vtxPosition,
+                               const pandora::CartesianVector& vtxDirection,
+                               const pandora::ParticleFlowObject* const pPfo) const;
 
-    bool m_useParentShowerVertex;           ///< use the parent pfo for the shower vertices
-    bool m_isDualPhase;                     ///< type of geometry
-    unsigned int m_halfWindowLayers;        ///< number of layers to use for half-window of sliding fit
-    std::string m_parentPfoListName;        ///< The name of the input pfo list
-    std::string m_vertexListName;           ///< The name of the output vertex list
-    float m_maxVertexDisplacementFromTrack; ///< The maximum separation of a close vertex from the cosmic ray track
-};
+    bool m_useParentShowerVertex;    ///< use the parent pfo for the shower vertices
+    bool m_isDualPhase;              ///< type of geometry
+    unsigned int m_halfWindowLayers; ///< number of layers to use for half-window of sliding fit
+    std::string m_parentPfoListName; ///< The name of the input pfo list
+    std::string m_vertexListName;    ///< The name of the output vertex list
+    float
+      m_maxVertexDisplacementFromTrack; ///< The maximum separation of a close vertex from the cosmic ray track
+  };
 
 } // namespace lar_content
 

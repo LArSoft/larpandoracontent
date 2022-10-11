@@ -12,15 +12,14 @@
 
 #include "larpandoracontent/LArTrackShowerId/ClusterCharacterisationBaseAlgorithm.h"
 
-namespace lar_dl_content
-{
+namespace lar_dl_content {
 
-/**
+  /**
  *  @brief  DlClusterCharacterisationBaseAlgorithm class
  */
-class DlClusterCharacterisationAlgorithm : public lar_content::ClusterCharacterisationBaseAlgorithm
-{
-public:
+  class DlClusterCharacterisationAlgorithm
+    : public lar_content::ClusterCharacterisationBaseAlgorithm {
+  public:
     /**
      *  @brief  Default constructor
      */
@@ -31,7 +30,7 @@ public:
      */
     ~DlClusterCharacterisationAlgorithm();
 
-protected:
+  protected:
     /**
      *  @brief  Whether cluster is identified as a clear track
      *
@@ -39,10 +38,10 @@ protected:
      *
      *  @return boolean
      */
-    bool IsClearTrack(const pandora::Cluster *const pCluster) const;
+    bool IsClearTrack(const pandora::Cluster* const pCluster) const;
 
     pandora::StatusCode ReadSettings(const pandora::TiXmlHandle xmlHandle);
-};
+  };
 
 } // namespace lar_dl_content
 

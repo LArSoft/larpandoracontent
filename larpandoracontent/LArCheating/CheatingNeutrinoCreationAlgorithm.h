@@ -14,21 +14,19 @@
 
 #include <unordered_map>
 
-namespace lar_content
-{
+namespace lar_content {
 
-/**
+  /**
  *  @brief  CheatingNeutrinoCreationAlgorithm::Algorithm class
  */
-class CheatingNeutrinoCreationAlgorithm : public pandora::Algorithm
-{
-public:
+  class CheatingNeutrinoCreationAlgorithm : public pandora::Algorithm {
+  public:
     /**
      *  @brief  Default constructor
      */
     CheatingNeutrinoCreationAlgorithm();
 
-private:
+  private:
     pandora::StatusCode Run();
 
     /**
@@ -36,7 +34,7 @@ private:
      *
      *  @param  mcNeutrinoVector to receive the mc neutrino vector
      */
-    void GetMCNeutrinoVector(pandora::MCParticleVector &mcNeutrinoVector) const;
+    void GetMCNeutrinoVector(pandora::MCParticleVector& mcNeutrinoVector) const;
 
     /**
      *  @brief  Create and save a neutrino pfo with properties dictated by the mc neutrino
@@ -44,7 +42,8 @@ private:
      *  @param  pMCNeutrino the address of the mc neutrino
      *  @param  pNeutrinoPfo to receive the address of the neutrino pfo
      */
-    void CreateAndSaveNeutrinoPfo(const pandora::MCParticle *const pMCNeutrino, const pandora::ParticleFlowObject *&pNeutrinoPfo) const;
+    void CreateAndSaveNeutrinoPfo(const pandora::MCParticle* const pMCNeutrino,
+                                  const pandora::ParticleFlowObject*& pNeutrinoPfo) const;
 
     /**
      *  @brief  Extract reconstructed vertex from external list, check its position agrees with mc neutrino, and add to pfo
@@ -52,16 +51,18 @@ private:
      *  @param  pMCNeutrino the address of the mc neutrino
      *  @param  pNeutrinoPfo the address of the neutrino pfo
      */
-    void AddNeutrinoVertex(const pandora::MCParticle *const pMCNeutrino, const pandora::ParticleFlowObject *const pNeutrinoPfo) const;
+    void AddNeutrinoVertex(const pandora::MCParticle* const pMCNeutrino,
+                           const pandora::ParticleFlowObject* const pNeutrinoPfo) const;
 
-    typedef std::unordered_map<const pandora::MCParticle *, const pandora::ParticleFlowObject *> MCParticleToPfoMap;
+    typedef std::unordered_map<const pandora::MCParticle*, const pandora::ParticleFlowObject*>
+      MCParticleToPfoMap;
 
     /**
      *  @brief  Extract candidate daughter pfos from external lists and populate a map from main mc particle (or primary) to pfo
      *
      *  @param  mcParticleToPfoMap to receive the mc particle to pfo map
      */
-    void GetMCParticleToDaughterPfoMap(MCParticleToPfoMap &mcParticleToPfoMap) const;
+    void GetMCParticleToDaughterPfoMap(MCParticleToPfoMap& mcParticleToPfoMap) const;
 
     /**
      *  @brief  Use information from mc particles and the mc particle to pfo map to fully-reconstruct the daughter pfo hierarchy
@@ -70,12 +71,14 @@ private:
      *  @param  pParentPfo the address of the (current) parent pfo
      *  @param  mcParticleToPfoMap the mc particle to pfo map
      */
-    void CreatePfoHierarchy(const pandora::MCParticle *const pParentMCParticle, const pandora::ParticleFlowObject *const pParentPfo,
-        const MCParticleToPfoMap &mcParticleToPfoMap) const;
+    void CreatePfoHierarchy(const pandora::MCParticle* const pParentMCParticle,
+                            const pandora::ParticleFlowObject* const pParentPfo,
+                            const MCParticleToPfoMap& mcParticleToPfoMap) const;
 
     pandora::StatusCode ReadSettings(const pandora::TiXmlHandle xmlHandle);
 
-    bool m_collapseToPrimaryMCParticles; ///< Whether to collapse mc particle hierarchies to primary particles
+    bool
+      m_collapseToPrimaryMCParticles; ///< Whether to collapse mc particle hierarchies to primary particles
 
     std::string m_mcParticleListName;  ///< The name of the three d mc particle list name
     std::string m_neutrinoPfoListName; ///< The name of the neutrino pfo list
@@ -83,8 +86,9 @@ private:
     std::string m_vertexListName;                 ///< The name of the neutrino vertex list
     pandora::StringVector m_daughterPfoListNames; ///< The list of daughter pfo list names
 
-    float m_vertexTolerance; ///< Tolerance, 3d displacement, allowed between reco neutrino vertex and mc neutrino endpoint
-};
+    float
+      m_vertexTolerance; ///< Tolerance, 3d displacement, allowed between reco neutrino vertex and mc neutrino endpoint
+  };
 
 } // namespace lar_content
 

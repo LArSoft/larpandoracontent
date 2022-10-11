@@ -10,15 +10,13 @@
 
 #include "larpandoracontent/LArVertex/VertexSelectionBaseAlgorithm.h"
 
-namespace lar_content
-{
+namespace lar_content {
 
-/**
+  /**
  *  @brief  EnergyKickFeatureTool class
  */
-class EnergyKickFeatureTool : public VertexSelectionBaseAlgorithm::VertexFeatureTool
-{
-public:
+  class EnergyKickFeatureTool : public VertexSelectionBaseAlgorithm::VertexFeatureTool {
+  public:
     /**
      *  @brief  Default constructor
      */
@@ -33,11 +31,17 @@ public:
      *
      *  @return the energy kick feature
      */
-    void Run(LArMvaHelper::MvaFeatureVector &featureVector, const VertexSelectionBaseAlgorithm *const pAlgorithm, const pandora::Vertex *const pVertex,
-        const VertexSelectionBaseAlgorithm::SlidingFitDataListMap &slidingFitDataListMap, const VertexSelectionBaseAlgorithm::ClusterListMap &,
-        const VertexSelectionBaseAlgorithm::KDTreeMap &, const VertexSelectionBaseAlgorithm::ShowerClusterListMap &, const float, float &);
+    void Run(LArMvaHelper::MvaFeatureVector& featureVector,
+             const VertexSelectionBaseAlgorithm* const pAlgorithm,
+             const pandora::Vertex* const pVertex,
+             const VertexSelectionBaseAlgorithm::SlidingFitDataListMap& slidingFitDataListMap,
+             const VertexSelectionBaseAlgorithm::ClusterListMap&,
+             const VertexSelectionBaseAlgorithm::KDTreeMap&,
+             const VertexSelectionBaseAlgorithm::ShowerClusterListMap&,
+             const float,
+             float&);
 
-private:
+  private:
     pandora::StatusCode ReadSettings(const pandora::TiXmlHandle xmlHandle);
 
     /**
@@ -49,7 +53,8 @@ private:
      *  @return the energy kick feature
      */
     float GetEnergyKickForView(
-        const pandora::CartesianVector &vertexPosition2D, const VertexSelectionBaseAlgorithm::SlidingFitDataList &slidingFitDataList) const;
+      const pandora::CartesianVector& vertexPosition2D,
+      const VertexSelectionBaseAlgorithm::SlidingFitDataList& slidingFitDataList) const;
 
     /**
      *  @brief  Increment the energy kick parameters for a given cluster
@@ -62,12 +67,17 @@ private:
      *  @param  totHitKick the total hit kick
      *  @param  totHits the total number of hits
      */
-    void IncrementEnergyKickParameters(const pandora::Cluster *const pCluster, const pandora::CartesianVector &clusterDisplacement,
-        const pandora::CartesianVector &clusterDirection, float &totEnergyKick, float &totEnergy, float &totHitKick, unsigned int &totHits) const;
+    void IncrementEnergyKickParameters(const pandora::Cluster* const pCluster,
+                                       const pandora::CartesianVector& clusterDisplacement,
+                                       const pandora::CartesianVector& clusterDirection,
+                                       float& totEnergyKick,
+                                       float& totEnergy,
+                                       float& totHitKick,
+                                       unsigned int& totHits) const;
 
     float m_rOffset; ///< The r offset parameter in the energy score
     float m_xOffset; ///< The x offset parameter in the energy score
-};
+  };
 
 } // namespace lar_content
 

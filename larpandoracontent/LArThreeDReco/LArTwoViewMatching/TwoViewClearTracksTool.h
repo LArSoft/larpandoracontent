@@ -10,23 +10,21 @@
 
 #include "larpandoracontent/LArThreeDReco/LArTwoViewMatching/TwoViewTransverseTracksAlgorithm.h"
 
-namespace lar_content
-{
+namespace lar_content {
 
-/**
+  /**
  *  @brief  TwoViewClearTracksTool class
  */
-class TwoViewClearTracksTool : public TransverseMatrixTool
-{
-public:
+  class TwoViewClearTracksTool : public TransverseMatrixTool {
+  public:
     /**
      *  @brief  Default constructor
      */
     TwoViewClearTracksTool();
 
-    bool Run(TwoViewTransverseTracksAlgorithm *const pAlgorithm, MatrixType &overlapMatrix);
+    bool Run(TwoViewTransverseTracksAlgorithm* const pAlgorithm, MatrixType& overlapMatrix);
 
-private:
+  private:
     pandora::StatusCode ReadSettings(const pandora::TiXmlHandle xmlHandle);
 
     /**
@@ -36,12 +34,14 @@ private:
      *  @param  elementList the tensor element list
      *  @param  particlesMade receive boolean indicating whether particles have been made
      */
-    void CreateThreeDParticles(TwoViewTransverseTracksAlgorithm *const pAlgorithm, const MatrixType::ElementList &elementList, bool &particlesMade) const;
+    void CreateThreeDParticles(TwoViewTransverseTracksAlgorithm* const pAlgorithm,
+                               const MatrixType::ElementList& elementList,
+                               bool& particlesMade) const;
 
     float m_minXOverlapFraction;       ///< The min x overlap fraction value for particle creation
     float m_minMatchingScore;          ///< The min global matching score for particle creation
     float m_minLocallyMatchedFraction; ///< The min locally matched fraction for particle creation
-};
+  };
 
 } // namespace lar_content
 

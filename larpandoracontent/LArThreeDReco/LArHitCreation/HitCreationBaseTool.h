@@ -12,15 +12,13 @@
 
 #include "larpandoracontent/LArThreeDReco/LArHitCreation/ThreeDHitCreationAlgorithm.h"
 
-namespace lar_content
-{
+namespace lar_content {
 
-/**
+  /**
  *  @brief  HitCreationBaseTool class
  */
-class HitCreationBaseTool : public pandora::AlgorithmTool
-{
-public:
+  class HitCreationBaseTool : public pandora::AlgorithmTool {
+  public:
     typedef ThreeDHitCreationAlgorithm::ProtoHit ProtoHit;
     typedef ThreeDHitCreationAlgorithm::ProtoHitVector ProtoHitVector;
     typedef ThreeDHitCreationAlgorithm::TrajectorySample TrajectorySample;
@@ -43,10 +41,12 @@ public:
      *  @param  inputTwoDHits the vector of input two dimensional hits
      *  @param  protoHitVector to receive the new three dimensional proto hits
      */
-    virtual void Run(ThreeDHitCreationAlgorithm *const pAlgorithm, const pandora::ParticleFlowObject *const pPfo,
-        const pandora::CaloHitVector &inputTwoDHits, ProtoHitVector &protoHitVector) = 0;
+    virtual void Run(ThreeDHitCreationAlgorithm* const pAlgorithm,
+                     const pandora::ParticleFlowObject* const pPfo,
+                     const pandora::CaloHitVector& inputTwoDHits,
+                     ProtoHitVector& protoHitVector) = 0;
 
-protected:
+  protected:
     /**
      *  @brief  Get the three dimensional position using a provided two dimensional calo hit and candidate fit positions from the other two views
      *
@@ -56,8 +56,11 @@ protected:
      *  @param  fitPositionList2 the candidate sliding fit position in the second view
      *  @param  protoHit to receive the populated proto hit
      */
-    virtual void GetBestPosition3D(const pandora::HitType hitType1, const pandora::HitType hitType2,
-        const pandora::CartesianPointVector &fitPositionList1, const pandora::CartesianPointVector &fitPositionList2, ProtoHit &protoHit) const;
+    virtual void GetBestPosition3D(const pandora::HitType hitType1,
+                                   const pandora::HitType hitType2,
+                                   const pandora::CartesianPointVector& fitPositionList1,
+                                   const pandora::CartesianPointVector& fitPositionList2,
+                                   ProtoHit& protoHit) const;
 
     /**
      *  @brief  Get the three dimensional position using a provided two dimensional calo hit and candidate fit positions from the other two views
@@ -68,8 +71,11 @@ protected:
      *  @param  fitPosition2 the candidate sliding fit position in the second view
      *  @param  protoHit to receive the populated proto hit
      */
-    virtual void GetBestPosition3D(const pandora::HitType hitType1, const pandora::HitType hitType2,
-        const pandora::CartesianVector &fitPosition1, const pandora::CartesianVector &fitPosition2, ProtoHit &protoHit) const;
+    virtual void GetBestPosition3D(const pandora::HitType hitType1,
+                                   const pandora::HitType hitType2,
+                                   const pandora::CartesianVector& fitPosition1,
+                                   const pandora::CartesianVector& fitPosition2,
+                                   ProtoHit& protoHit) const;
 
     /**
      *  @brief  Get the three dimensional position using a provided two dimensional calo hit and a candidate fit position from another view
@@ -78,13 +84,15 @@ protected:
      *  @param  fitPosition the candidate sliding fit position in the other view
      *  @param  protoHit to receive the populated proto hit
      */
-    virtual void GetBestPosition3D(const pandora::HitType hitType, const pandora::CartesianVector &fitPosition, ProtoHit &protoHit) const;
+    virtual void GetBestPosition3D(const pandora::HitType hitType,
+                                   const pandora::CartesianVector& fitPosition,
+                                   ProtoHit& protoHit) const;
 
     virtual pandora::StatusCode ReadSettings(const pandora::TiXmlHandle xmlHandle);
 
     double m_sigmaX2;       ///< The sigmaX squared value, for calculation of chi2 deltaX term
     double m_chiSquaredCut; ///< The chi squared cut (accept only values below the cut value)
-};
+  };
 
 } // namespace lar_content
 

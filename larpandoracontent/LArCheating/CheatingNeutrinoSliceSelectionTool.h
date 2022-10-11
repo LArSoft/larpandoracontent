@@ -10,25 +10,23 @@
 
 #include "larpandoracontent/LArCheating/CheatingSliceSelectionTool.h"
 
-namespace lar_content
-{
+namespace lar_content {
 
-/**
+  /**
  *  @brief  CheatingNeutrinoSliceSelectionTool class
  */
-class CheatingNeutrinoSliceSelectionTool : public CheatingSliceSelectionTool
-{
-protected:
+  class CheatingNeutrinoSliceSelectionTool : public CheatingSliceSelectionTool {
+  protected:
     /**
      *  @brief  Template method to determine if an MC particle matches the target criteria for slice selection. Return true if match.
      *
      *  @param  mcParticle the MC particle to check
      */
-    bool IsTarget(const pandora::MCParticle *const mcParticle) const;
+    bool IsTarget(const pandora::MCParticle* const mcParticle) const;
 
-private:
+  private:
     pandora::StatusCode ReadSettings(const pandora::TiXmlHandle xmlHandle);
-};
+  };
 
 } // namespace lar_content
 

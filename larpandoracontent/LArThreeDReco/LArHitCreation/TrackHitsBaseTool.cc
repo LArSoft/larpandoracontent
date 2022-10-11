@@ -17,85 +17,84 @@
 
 using namespace pandora;
 
-namespace lar_content
-{
+namespace lar_content {
 
-TrackHitsBaseTool::TrackHitsBaseTool() : m_minViews(2), m_slidingFitWindow(20)
-{
-}
+  TrackHitsBaseTool::TrackHitsBaseTool() : m_minViews(2), m_slidingFitWindow(20) {}
 
-//------------------------------------------------------------------------------------------------------------------------------------------
+  //------------------------------------------------------------------------------------------------------------------------------------------
 
-void TrackHitsBaseTool::Run(ThreeDHitCreationAlgorithm *const pAlgorithm, const ParticleFlowObject *const pPfo,
-    const CaloHitVector &inputTwoDHits, ProtoHitVector &protoHitVector)
-{
+  void TrackHitsBaseTool::Run(ThreeDHitCreationAlgorithm* const pAlgorithm,
+                              const ParticleFlowObject* const pPfo,
+                              const CaloHitVector& inputTwoDHits,
+                              ProtoHitVector& protoHitVector)
+  {
     if (PandoraContentApi::GetSettings(*pAlgorithm)->ShouldDisplayAlgorithmInfo())
-        std::cout << "----> Running Algorithm Tool: " << this->GetInstanceName() << ", " << this->GetType() << std::endl;
+      std::cout << "----> Running Algorithm Tool: " << this->GetInstanceName() << ", "
+                << this->GetType() << std::endl;
 
-    try
-    {
-        if (!LArPfoHelper::IsTrack(pPfo))
-            return;
+    try {
+      if (!LArPfoHelper::IsTrack(pPfo)) return;
 
-        MatchedSlidingFitMap matchedSlidingFitMap;
-        this->BuildSlidingFitMap(pPfo, matchedSlidingFitMap);
+      MatchedSlidingFitMap matchedSlidingFitMap;
+      this->BuildSlidingFitMap(pPfo, matchedSlidingFitMap);
 
-        if (matchedSlidingFitMap.size() < 2)
-            return;
+      if (matchedSlidingFitMap.size() < 2) return;
 
-        this->GetTrackHits3D(inputTwoDHits, matchedSlidingFitMap, protoHitVector);
+      this->GetTrackHits3D(inputTwoDHits, matchedSlidingFitMap, protoHitVector);
     }
-    catch (StatusCodeException &)
-    {
+    catch (StatusCodeException&) {
     }
-}
+  }
 
-//------------------------------------------------------------------------------------------------------------------------------------------
+  //------------------------------------------------------------------------------------------------------------------------------------------
 
-void TrackHitsBaseTool::BuildSlidingFitMap(const ParticleFlowObject *const pPfo, MatchedSlidingFitMap &matchedSlidingFitMap) const
-{
-    const ClusterList &pfoClusterList(pPfo->GetClusterList());
+  void TrackHitsBaseTool::BuildSlidingFitMap(const ParticleFlowObject* const pPfo,
+                                             MatchedSlidingFitMap& matchedSlidingFitMap) const
+  {
+    const ClusterList& pfoClusterList(pPfo->GetClusterList());
     const float slidingFitPitch(LArGeometryHelper::GetWireZPitch(this->GetPandora()));
 
     ClusterVector pfoClusterVector;
     pfoClusterVector.insert(pfoClusterVector.end(), pfoClusterList.begin(), pfoClusterList.end());
     std::sort(pfoClusterVector.begin(), pfoClusterVector.end(), LArClusterHelper::SortByNHits);
 
-    for (const Cluster *const pCluster : pfoClusterVector)
-    {
-        const HitType hitType(LArClusterHelper::GetClusterHitType(pCluster));
+    for (const Cluster* const pCluster : pfoClusterVector) {
+      const HitType hitType(LArClusterHelper::GetClusterHitType(pCluster));
 
-        if (TPC_3D == hitType)
-            continue;
+      if (TPC_3D == hitType) continue;
 
-        if (matchedSlidingFitMap.end() != matchedSlidingFitMap.find(hitType))
-            continue;
+      if (matchedSlidingFitMap.end() != matchedSlidingFitMap.find(hitType)) continue;
 
-        try
-        {
-            const TwoDSlidingFitResult slidingFitResult(pCluster, m_slidingFitWindow, slidingFitPitch);
+      try {
+        const TwoDSlidingFitResult slidingFitResult(pCluster, m_slidingFitWindow, slidingFitPitch);
 
-            if (!matchedSlidingFitMap.insert(MatchedSlidingFitMap::value_type(hitType, slidingFitResult)).second)
-                throw StatusCodeException(STATUS_CODE_FAILURE);
-        }
-        catch (StatusCodeException &statusCodeException)
-        {
-            if (STATUS_CODE_FAILURE == statusCodeException.GetStatusCode())
-                throw statusCodeException;
-        }
+        if (!matchedSlidingFitMap
+               .insert(MatchedSlidingFitMap::value_type(hitType, slidingFitResult))
+               .second)
+          throw StatusCodeException(STATUS_CODE_FAILURE);
+      }
+      catch (StatusCodeException& statusCodeException) {
+        if (STATUS_CODE_FAILURE == statusCodeException.GetStatusCode()) throw statusCodeException;
+      }
     }
-}
+  }
 
-//------------------------------------------------------------------------------------------------------------------------------------------
+  //------------------------------------------------------------------------------------------------------------------------------------------
 
-StatusCode TrackHitsBaseTool::ReadSettings(const TiXmlHandle xmlHandle)
-{
-    PANDORA_RETURN_RESULT_IF_AND_IF(STATUS_CODE_SUCCESS, STATUS_CODE_NOT_FOUND, !=, XmlHelper::ReadValue(xmlHandle, "MinViews", m_minViews));
+  StatusCode TrackHitsBaseTool::ReadSettings(const TiXmlHandle xmlHandle)
+  {
+    PANDORA_RETURN_RESULT_IF_AND_IF(STATUS_CODE_SUCCESS,
+                                    STATUS_CODE_NOT_FOUND,
+                                    !=,
+                                    XmlHelper::ReadValue(xmlHandle, "MinViews", m_minViews));
 
     PANDORA_RETURN_RESULT_IF_AND_IF(
-        STATUS_CODE_SUCCESS, STATUS_CODE_NOT_FOUND, !=, XmlHelper::ReadValue(xmlHandle, "SlidingFitWindow", m_slidingFitWindow));
+      STATUS_CODE_SUCCESS,
+      STATUS_CODE_NOT_FOUND,
+      !=,
+      XmlHelper::ReadValue(xmlHandle, "SlidingFitWindow", m_slidingFitWindow));
 
     return HitCreationBaseTool::ReadSettings(xmlHandle);
-}
+  }
 
 } // namespace lar_content

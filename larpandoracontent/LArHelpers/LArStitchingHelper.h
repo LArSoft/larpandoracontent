@@ -14,15 +14,13 @@
 
 #include "larpandoracontent/LArObjects/LArPointingCluster.h"
 
-namespace lar_content
-{
+namespace lar_content {
 
-/**
+  /**
  *  @brief  LArStitchingHelper class
  */
-class LArStitchingHelper
-{
-public:
+  class LArStitchingHelper {
+  public:
     /**
      *  @brief  Find closest tpc to a specified input tpc
      *
@@ -32,7 +30,9 @@ public:
      *
      *  @return the closest tpc
      */
-    static const pandora::LArTPC &FindClosestTPC(const pandora::Pandora &pandora, const pandora::LArTPC &inputTPC, const bool checkPositive);
+    static const pandora::LArTPC& FindClosestTPC(const pandora::Pandora& pandora,
+                                                 const pandora::LArTPC& inputTPC,
+                                                 const bool checkPositive);
 
     /**
      *  @brief  Whether particles from a given pair of tpcs can be stitched together
@@ -42,7 +42,8 @@ public:
      *
      *  @return boolean
      */
-    static bool CanTPCsBeStitched(const pandora::LArTPC &firstTPC, const pandora::LArTPC &secondTPC);
+    static bool CanTPCsBeStitched(const pandora::LArTPC& firstTPC,
+                                  const pandora::LArTPC& secondTPC);
 
     /**
      *  @brief  Whether a pair of drift volumes are adjacent to each other
@@ -52,7 +53,7 @@ public:
      *
      *  @return boolean
      */
-    static bool AreTPCsAdjacent(const pandora::LArTPC &firstTPC, const pandora::LArTPC &secondTPC);
+    static bool AreTPCsAdjacent(const pandora::LArTPC& firstTPC, const pandora::LArTPC& secondTPC);
 
     /**
      *  @brief  Whether a pair of drift volumes are adjacent to each other
@@ -63,7 +64,9 @@ public:
      *
      *  @return boolean
      */
-    static bool AreTPCsAdjacent(const pandora::Pandora &pandora, const pandora::LArTPC &firstTPC, const pandora::LArTPC &secondTPC);
+    static bool AreTPCsAdjacent(const pandora::Pandora& pandora,
+                                const pandora::LArTPC& firstTPC,
+                                const pandora::LArTPC& secondTPC);
 
     /**
      *  @brief  Determine centre in X at the boundary between a pair of tpcs
@@ -73,7 +76,8 @@ public:
      *
      *  @return boundary X centre
      */
-    static float GetTPCBoundaryCenterX(const pandora::LArTPC &firstTPC, const pandora::LArTPC &secondTPC);
+    static float GetTPCBoundaryCenterX(const pandora::LArTPC& firstTPC,
+                                       const pandora::LArTPC& secondTPC);
 
     /**
      *  @brief  Determine width in X at the boundary between a pair of tpcs
@@ -83,7 +87,8 @@ public:
      *
      *  @return boundary X width
      */
-    static float GetTPCBoundaryWidthX(const pandora::LArTPC &firstTPC, const pandora::LArTPC &secondTPC);
+    static float GetTPCBoundaryWidthX(const pandora::LArTPC& firstTPC,
+                                      const pandora::LArTPC& secondTPC);
 
     /**
      *  @brief  Calculate distance between central positions of a pair of tpcs
@@ -93,7 +98,8 @@ public:
      *
      *  @return the distance
      */
-    static float GetTPCDisplacement(const pandora::LArTPC &firstTPC, const pandora::LArTPC &secondTPC);
+    static float GetTPCDisplacement(const pandora::LArTPC& firstTPC,
+                                    const pandora::LArTPC& secondTPC);
 
     /**
      *  @brief  Given a pair of pointing clusters, find the pair of vertices with smallest yz-separation
@@ -105,8 +111,12 @@ public:
      *  @param  closestVertex1 to receive the relevant vertex from the first pointing cluster
      *  @param  closestVertex2 to receive the relevant vertex from the second pointing cluster
      */
-    static void GetClosestVertices(const pandora::LArTPC &larTPC1, const pandora::LArTPC &larTPC2, const LArPointingCluster &pointingCluster1,
-        const LArPointingCluster &pointingCluster2, LArPointingCluster::Vertex &closestVertex1, LArPointingCluster::Vertex &closestVertex2);
+    static void GetClosestVertices(const pandora::LArTPC& larTPC1,
+                                   const pandora::LArTPC& larTPC2,
+                                   const LArPointingCluster& pointingCluster1,
+                                   const LArPointingCluster& pointingCluster2,
+                                   LArPointingCluster::Vertex& closestVertex1,
+                                   LArPointingCluster::Vertex& closestVertex2);
 
     /**
      *  @brief  Calculate X0 for a pair of vertices
@@ -118,8 +128,10 @@ public:
      *
      *  @return X0 value for this pair of vertices
      */
-    static float CalculateX0(const pandora::LArTPC &firstTPC, const pandora::LArTPC &secondTPC,
-        const LArPointingCluster::Vertex &firstVertex, const LArPointingCluster::Vertex &secondVertex);
+    static float CalculateX0(const pandora::LArTPC& firstTPC,
+                             const pandora::LArTPC& secondTPC,
+                             const LArPointingCluster::Vertex& firstVertex,
+                             const LArPointingCluster::Vertex& secondVertex);
 
     /**
      *  @brief  Sort tpcs by central positions
@@ -127,7 +139,7 @@ public:
      *  @param  pLhs address of first tpc
      *  @param  pRhs address of second tpc
      */
-    static bool SortTPCs(const pandora::LArTPC *const pLhs, const pandora::LArTPC *const pRhs);
+    static bool SortTPCs(const pandora::LArTPC* const pLhs, const pandora::LArTPC* const pRhs);
 
     /**
      *  @brief  Whether a pfo has been stitched
@@ -136,15 +148,15 @@ public:
      *
      *  @return boolean
      */
-    static bool HasPfoBeenStitched(const pandora::ParticleFlowObject *const pPfo);
+    static bool HasPfoBeenStitched(const pandora::ParticleFlowObject* const pPfo);
 
     /**
      *  @brief  Return the x0 for a pfo
      *
      *  @param  pPfo the address of the Pfo
      */
-    static float GetPfoX0(const pandora::ParticleFlowObject *const pPfo);
-};
+    static float GetPfoX0(const pandora::ParticleFlowObject* const pPfo);
+  };
 
 } // namespace lar_content
 

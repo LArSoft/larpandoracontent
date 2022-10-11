@@ -16,28 +16,27 @@
 
 #include <unordered_map>
 
-namespace lar_content
-{
+namespace lar_content {
 
-class StitchingBaseTool;
-class CosmicRayTaggingBaseTool;
-class SliceIdBaseTool;
-class SliceSelectionBaseTool;
-class LArMCParticleFactory;
+  class StitchingBaseTool;
+  class CosmicRayTaggingBaseTool;
+  class SliceIdBaseTool;
+  class SliceSelectionBaseTool;
+  class LArMCParticleFactory;
 
-typedef std::vector<pandora::CaloHitList> SliceVector;
-typedef std::vector<pandora::PfoList> SliceHypotheses;
-typedef std::unordered_map<const pandora::ParticleFlowObject *, const pandora::LArTPC *> PfoToLArTPCMap;
-typedef std::unordered_map<const pandora::ParticleFlowObject *, float> PfoToFloatMap;
+  typedef std::vector<pandora::CaloHitList> SliceVector;
+  typedef std::vector<pandora::PfoList> SliceHypotheses;
+  typedef std::unordered_map<const pandora::ParticleFlowObject*, const pandora::LArTPC*>
+    PfoToLArTPCMap;
+  typedef std::unordered_map<const pandora::ParticleFlowObject*, float> PfoToFloatMap;
 
-//------------------------------------------------------------------------------------------------------------------------------------------
+  //------------------------------------------------------------------------------------------------------------------------------------------
 
-/**
+  /**
  *  @brief  MasterAlgorithm class
  */
-class MasterAlgorithm : public pandora::ExternallyConfiguredAlgorithm
-{
-public:
+  class MasterAlgorithm : public pandora::ExternallyConfiguredAlgorithm {
+  public:
     /**
      *  @brief  Default constructor
      */
@@ -46,20 +45,28 @@ public:
     /**
      *  @brief  External steering parameters class
      */
-    class ExternalSteeringParameters : public pandora::ExternalParameters
-    {
+    class ExternalSteeringParameters : public pandora::ExternalParameters {
     public:
-        pandora::InputBool m_shouldRunAllHitsCosmicReco;  ///< Whether to run all hits cosmic-ray reconstruction
-        pandora::InputBool m_shouldRunStitching;          ///< Whether to stitch cosmic-ray muons crossing between volumes
-        pandora::InputBool m_shouldRunCosmicHitRemoval;   ///< Whether to remove hits from tagged cosmic-rays
-        pandora::InputBool m_shouldRunSlicing;            ///< Whether to slice events into separate regions for processing
-        pandora::InputBool m_shouldRunNeutrinoRecoOption; ///< Whether to run neutrino reconstruction for each slice
-        pandora::InputBool m_shouldRunCosmicRecoOption;   ///< Whether to run cosmic-ray reconstruction for each slice
-        pandora::InputBool m_shouldPerformSliceId;        ///< Whether to identify slices and select most appropriate pfos
-        pandora::InputBool m_printOverallRecoStatus;      ///< Whether to print current operation status messages
+      pandora::InputBool
+        m_shouldRunAllHitsCosmicReco; ///< Whether to run all hits cosmic-ray reconstruction
+      pandora::InputBool
+        m_shouldRunStitching; ///< Whether to stitch cosmic-ray muons crossing between volumes
+      pandora::InputBool
+        m_shouldRunCosmicHitRemoval; ///< Whether to remove hits from tagged cosmic-rays
+      pandora::InputBool
+        m_shouldRunSlicing; ///< Whether to slice events into separate regions for processing
+      pandora::InputBool
+        m_shouldRunNeutrinoRecoOption; ///< Whether to run neutrino reconstruction for each slice
+      pandora::InputBool
+        m_shouldRunCosmicRecoOption; ///< Whether to run cosmic-ray reconstruction for each slice
+      pandora::InputBool
+        m_shouldPerformSliceId; ///< Whether to identify slices and select most appropriate pfos
+      pandora::InputBool
+        m_printOverallRecoStatus; ///< Whether to print current operation status messages
     };
 
-    typedef std::unordered_map<const pandora::ParticleFlowObject *, const pandora::LArTPC *> PfoToLArTPCMap;
+    typedef std::unordered_map<const pandora::ParticleFlowObject*, const pandora::LArTPC*>
+      PfoToLArTPCMap;
 
     /**
      *  @brief  Shift a Pfo hierarchy by a specified x0 value
@@ -68,7 +75,9 @@ public:
      *  @param  stitchingInfo  the source for additional, local, stitching information
      *  @param  x0 the x0 correction relative to the input pfo
      */
-    void ShiftPfoHierarchy(const pandora::ParticleFlowObject *const pParentPfo, const PfoToLArTPCMap &pfoToLArTPCMap, const float x0) const;
+    void ShiftPfoHierarchy(const pandora::ParticleFlowObject* const pParentPfo,
+                           const PfoToLArTPCMap& pfoToLArTPCMap,
+                           const float x0) const;
 
     /**
      *  @brief  Stitch together a pair of pfos
@@ -77,18 +86,19 @@ public:
      *  @param  pPfoToDelete the address of the pfo to delete (will become a dangling pointer)
      *  @param  stitchingInfo the source for additional, local, stitching information
      */
-    void StitchPfos(const pandora::ParticleFlowObject *const pPfoToEnlarge, const pandora::ParticleFlowObject *const pPfoToDelete,
-        PfoToLArTPCMap &pfoToLArTPCMap) const;
+    void StitchPfos(const pandora::ParticleFlowObject* const pPfoToEnlarge,
+                    const pandora::ParticleFlowObject* const pPfoToDelete,
+                    PfoToLArTPCMap& pfoToLArTPCMap) const;
 
-protected:
+  protected:
     /**
      *  @brief  LArTPCHitList class
      */
-    class LArTPCHitList
-    {
+    class LArTPCHitList {
     public:
-        pandora::CaloHitList m_allHitList;       ///< The list of all hits originating from a given LArTPC
-        pandora::CaloHitList m_truncatedHitList; ///< The list of hits confined within LArTPC boundaries for given beam t0 value
+      pandora::CaloHitList m_allHitList; ///< The list of all hits originating from a given LArTPC
+      pandora::CaloHitList
+        m_truncatedHitList; ///< The list of hits confined within LArTPC boundaries for given beam t0 value
     };
 
     typedef std::map<unsigned int, LArTPCHitList> VolumeIdToHitListMap;
@@ -110,21 +120,22 @@ protected:
      *
      *  @param  volumeIdToHitListMap to receive the populated volume id to hit list map
      */
-    pandora::StatusCode GetVolumeIdToHitListMap(VolumeIdToHitListMap &volumeIdToHitListMap) const;
+    pandora::StatusCode GetVolumeIdToHitListMap(VolumeIdToHitListMap& volumeIdToHitListMap) const;
 
     /**
      *  @brief  Run the cosmic-ray reconstruction worker instances
      *
      *  @param  volumeIdToHitListMap the volume id to hit list map
      */
-    pandora::StatusCode RunCosmicRayReconstruction(const VolumeIdToHitListMap &volumeIdToHitListMap) const;
+    pandora::StatusCode RunCosmicRayReconstruction(
+      const VolumeIdToHitListMap& volumeIdToHitListMap) const;
 
     /**
      *  @brief  Recreate cosmic-ray pfos (created by worker instances) in the master instance
      *
      *  @param  pfoToLArTPCMap to receive the populated pfo to lar tpc map
      */
-    pandora::StatusCode RecreateCosmicRayPfos(PfoToLArTPCMap &pfoToLArTPCMap) const;
+    pandora::StatusCode RecreateCosmicRayPfos(PfoToLArTPCMap& pfoToLArTPCMap) const;
 
     /**
      *  @brief  Stitch together cosmic-ray pfos crossing between adjacent lar tpcs
@@ -132,7 +143,8 @@ protected:
      *  @param  pfoToLArTPCMap the pfo to lar tpc map
      *  @param  stitchedPfosToX0Map to receive the map of cosmic-ray pfos that have been stitched between lar tpcs to the X0 shift
      */
-    pandora::StatusCode StitchCosmicRayPfos(PfoToLArTPCMap &pfoToLArTPCMap, PfoToFloatMap &stitchedPfosToX0Map) const;
+    pandora::StatusCode StitchCosmicRayPfos(PfoToLArTPCMap& pfoToLArTPCMap,
+                                            PfoToFloatMap& stitchedPfosToX0Map) const;
 
     /**
      *  @brief  Tag clear, unambiguous cosmic-ray pfos
@@ -141,15 +153,16 @@ protected:
      *  @param  clearCosmicRayPfos to receive the list of clear cosmic-ray pfos
      *  @param  ambiguousPfos to receive the list of ambiguous cosmic-ray pfos for further analysis
      */
-    pandora::StatusCode TagCosmicRayPfos(
-        const PfoToFloatMap &stitchedPfosToX0Map, pandora::PfoList &clearCosmicRayPfos, pandora::PfoList &ambiguousPfos) const;
+    pandora::StatusCode TagCosmicRayPfos(const PfoToFloatMap& stitchedPfosToX0Map,
+                                         pandora::PfoList& clearCosmicRayPfos,
+                                         pandora::PfoList& ambiguousPfos) const;
 
     /**
      *  @brief  Run cosmic-ray hit removal, freeing hits in ambiguous pfos for further processing
      *
      *  @param  ambiguousPfos the list of ambiguous cosmic-ray pfos
      */
-    pandora::StatusCode RunCosmicRayHitRemoval(const pandora::PfoList &ambiguousPfos) const;
+    pandora::StatusCode RunCosmicRayHitRemoval(const pandora::PfoList& ambiguousPfos) const;
 
     /**
      *  @brief  Run the event slicing procedures, dividing available hits up into distinct 3D regions
@@ -157,7 +170,8 @@ protected:
      *  @param  volumeIdToHitListMap the volume id to hit list map
      *  @param  sliceVector to receive the populated slice vector
      */
-    pandora::StatusCode RunSlicing(const VolumeIdToHitListMap &volumeIdToHitListMap, SliceVector &sliceVector) const;
+    pandora::StatusCode RunSlicing(const VolumeIdToHitListMap& volumeIdToHitListMap,
+                                   SliceVector& sliceVector) const;
 
     /**
      *  @brief  Process each slice under different reconstruction hypotheses
@@ -166,7 +180,9 @@ protected:
      *  @param  nuSliceHypotheses to receive the vector of slice neutrino hypotheses
      *  @param  crSliceHypotheses to receive the vector of slice cosmic-ray hypotheses
      */
-    pandora::StatusCode RunSliceReconstruction(SliceVector &sliceVector, SliceHypotheses &nuSliceHypotheses, SliceHypotheses &crSliceHypotheses) const;
+    pandora::StatusCode RunSliceReconstruction(SliceVector& sliceVector,
+                                               SliceHypotheses& nuSliceHypotheses,
+                                               SliceHypotheses& crSliceHypotheses) const;
 
     /**
      *  @brief  Examine slice hypotheses to identify the most appropriate to provide in final event output
@@ -174,7 +190,8 @@ protected:
      *  @param  nuSliceHypotheses the vector of slice neutrino hypotheses
      *  @param  crSliceHypotheses the vector of slice cosmic-ray hypotheses
      */
-    pandora::StatusCode SelectBestSliceHypotheses(const SliceHypotheses &nuSliceHypotheses, const SliceHypotheses &crSliceHypotheses) const;
+    pandora::StatusCode SelectBestSliceHypotheses(const SliceHypotheses& nuSliceHypotheses,
+                                                  const SliceHypotheses& crSliceHypotheses) const;
 
     /**
      *  @brief  Reset all worker instances
@@ -187,7 +204,8 @@ protected:
      *  @param  pPandora the address of the target pandora instance
      *  @param  pCaloHit the address of the calo hit
      */
-    pandora::StatusCode Copy(const pandora::Pandora *const pPandora, const pandora::CaloHit *const pCaloHit) const;
+    pandora::StatusCode Copy(const pandora::Pandora* const pPandora,
+                             const pandora::CaloHit* const pCaloHit) const;
 
     /**
      *  @brief  Copy a specified mc particle to the provided pandora instance
@@ -196,8 +214,9 @@ protected:
      *  @param  pMCParticle the address of the mc particle
      *  @param  pMCParticleFactory the address of the mc particle factory, allowing decoration of instances with information beyond that expected by sdk
      */
-    pandora::StatusCode Copy(const pandora::Pandora *const pPandora, const pandora::MCParticle *const pMCParticle,
-        const LArMCParticleFactory *const pMCParticleFactory) const;
+    pandora::StatusCode Copy(const pandora::Pandora* const pPandora,
+                             const pandora::MCParticle* const pMCParticle,
+                             const LArMCParticleFactory* const pMCParticleFactory) const;
 
     /**
      *  @brief  Recreate a specified list of pfos in the current pandora instance
@@ -205,7 +224,8 @@ protected:
      *  @param  inputPfoList the input pfo list
      *  @param  newPfoList to receive the list of new pfos
      */
-    pandora::StatusCode Recreate(const pandora::PfoList &inputPfoList, pandora::PfoList &newPfoList) const;
+    pandora::StatusCode Recreate(const pandora::PfoList& inputPfoList,
+                                 pandora::PfoList& newPfoList) const;
 
     /**
      *  @brief  Recreate a specified pfo in the current pandora instance
@@ -214,8 +234,9 @@ protected:
      *  @param  pNewParentPfo the new parent of the new output pfo (nullptr if none)
      *  @param  newPfoList to receive the list of new pfos
      */
-    pandora::StatusCode Recreate(const pandora::ParticleFlowObject *const pInputPfo, const pandora::ParticleFlowObject *const pNewParentPfo,
-        pandora::PfoList &newPfoList) const;
+    pandora::StatusCode Recreate(const pandora::ParticleFlowObject* const pInputPfo,
+                                 const pandora::ParticleFlowObject* const pNewParentPfo,
+                                 pandora::PfoList& newPfoList) const;
 
     /**
      *  @brief  Create a new calo hit in the current pandora instance, based upon the provided input calo hit
@@ -225,7 +246,8 @@ protected:
      *
      *  @return the address of the new calo hit
      */
-    const pandora::CaloHit *CreateCaloHit(const pandora::CaloHit *const pInputCaloHit, const pandora::CaloHit *const pParentCaloHit) const;
+    const pandora::CaloHit* CreateCaloHit(const pandora::CaloHit* const pInputCaloHit,
+                                          const pandora::CaloHit* const pParentCaloHit) const;
 
     /**
      *  @brief  Create a new cluster in the current pandora instance, based upon the provided input cluster
@@ -236,8 +258,9 @@ protected:
      *
      *  @return the address of the new cluster
      */
-    const pandora::Cluster *CreateCluster(const pandora::Cluster *const pInputCluster, const pandora::CaloHitList &newCaloHitList,
-        const pandora::CaloHitList &newIsolatedCaloHitList) const;
+    const pandora::Cluster* CreateCluster(const pandora::Cluster* const pInputCluster,
+                                          const pandora::CaloHitList& newCaloHitList,
+                                          const pandora::CaloHitList& newIsolatedCaloHitList) const;
 
     /**
      *  @brief  Create a new vertex in the current pandora instance, based upon the provided input vertex
@@ -246,7 +269,7 @@ protected:
      *
      *  @return the address of the new vertex
      */
-    const pandora::Vertex *CreateVertex(const pandora::Vertex *const pInputVertex) const;
+    const pandora::Vertex* CreateVertex(const pandora::Vertex* const pInputVertex) const;
 
     /**
      *  @brief  Create a new pfo in the current pandora instance, based upon the provided input pfo
@@ -257,8 +280,9 @@ protected:
      *
      *  @return the address of the new pfo
      */
-    const pandora::ParticleFlowObject *CreatePfo(const pandora::ParticleFlowObject *const pInputPfo,
-        const pandora::ClusterList &newClusterList, const pandora::VertexList &newVertexList) const;
+    const pandora::ParticleFlowObject* CreatePfo(const pandora::ParticleFlowObject* const pInputPfo,
+                                                 const pandora::ClusterList& newClusterList,
+                                                 const pandora::VertexList& newVertexList) const;
 
     /**
      *  @brief  Create a pandora worker instance to handle a single LArTPC
@@ -270,8 +294,10 @@ protected:
      *
      *  @return the address of the pandora instance
      */
-    const pandora::Pandora *CreateWorkerInstance(const pandora::LArTPC &larTPC, const pandora::DetectorGapList &gapList,
-        const std::string &settingsFile, const std::string &name) const;
+    const pandora::Pandora* CreateWorkerInstance(const pandora::LArTPC& larTPC,
+                                                 const pandora::DetectorGapList& gapList,
+                                                 const std::string& settingsFile,
+                                                 const std::string& name) const;
 
     /**
      *  @brief  Create a pandora worker instance to handle a number of LArTPCs
@@ -283,15 +309,17 @@ protected:
      *
      *  @return the address of the pandora instance
      */
-    const pandora::Pandora *CreateWorkerInstance(const pandora::LArTPCMap &larTPCMap, const pandora::DetectorGapList &gapList,
-        const std::string &settingsFile, const std::string &name) const;
+    const pandora::Pandora* CreateWorkerInstance(const pandora::LArTPCMap& larTPCMap,
+                                                 const pandora::DetectorGapList& gapList,
+                                                 const std::string& settingsFile,
+                                                 const std::string& name) const;
 
     /**
      *  @brief  Register custom content, such as algorithms or algorithm tools, with a specified pandora instance
      *
      *  @param  pPandora the address of the pandora instance
      */
-    virtual pandora::StatusCode RegisterCustomContent(const pandora::Pandora *const pPandora) const;
+    virtual pandora::StatusCode RegisterCustomContent(const pandora::Pandora* const pPandora) const;
 
     pandora::StatusCode ReadSettings(const pandora::TiXmlHandle xmlHandle);
 
@@ -304,46 +332,56 @@ protected:
      *  @param  xmlTag the xml tag
      *  @param  outputBool to receive the output boolean value
      */
-    pandora::StatusCode ReadExternalSettings(const ExternalSteeringParameters *const pExternalParameters,
-        const pandora::InputBool inputBool, const pandora::TiXmlHandle xmlHandle, const std::string &xmlTag, bool &outputBool);
+    pandora::StatusCode ReadExternalSettings(
+      const ExternalSteeringParameters* const pExternalParameters,
+      const pandora::InputBool inputBool,
+      const pandora::TiXmlHandle xmlHandle,
+      const std::string& xmlTag,
+      bool& outputBool);
 
     bool m_workerInstancesInitialized; ///< Whether all worker instances have been initialized
 
     unsigned int m_larCaloHitVersion; ///< The LArCaloHit version for LArCaloHitFactory
 
-    bool m_shouldRunAllHitsCosmicReco;  ///< Whether to run all hits cosmic-ray reconstruction
-    bool m_shouldRunStitching;          ///< Whether to stitch cosmic-ray muons crossing between volumes
-    bool m_shouldRunCosmicHitRemoval;   ///< Whether to remove hits from tagged cosmic-rays
-    bool m_shouldRunSlicing;            ///< Whether to slice events into separate regions for processing
+    bool m_shouldRunAllHitsCosmicReco; ///< Whether to run all hits cosmic-ray reconstruction
+    bool m_shouldRunStitching; ///< Whether to stitch cosmic-ray muons crossing between volumes
+    bool m_shouldRunCosmicHitRemoval; ///< Whether to remove hits from tagged cosmic-rays
+    bool m_shouldRunSlicing; ///< Whether to slice events into separate regions for processing
     bool m_shouldRunNeutrinoRecoOption; ///< Whether to run neutrino reconstruction for each slice
     bool m_shouldRunCosmicRecoOption;   ///< Whether to run cosmic-ray reconstruction for each slice
-    bool m_shouldPerformSliceId;        ///< Whether to identify slices and select most appropriate pfos
-    bool m_printOverallRecoStatus;      ///< Whether to print current operation status messages
-    bool m_visualizeOverallRecoStatus;  ///< Whether to display results of current operations
-    bool m_shouldRemoveOutOfTimeHits;   ///< Whether to remove out of time hits
+    bool m_shouldPerformSliceId;   ///< Whether to identify slices and select most appropriate pfos
+    bool m_printOverallRecoStatus; ///< Whether to print current operation status messages
+    bool m_visualizeOverallRecoStatus; ///< Whether to display results of current operations
+    bool m_shouldRemoveOutOfTimeHits;  ///< Whether to remove out of time hits
 
-    PandoraInstanceList m_crWorkerInstances;          ///< The list of cosmic-ray reconstruction worker instances
-    const pandora::Pandora *m_pSlicingWorkerInstance; ///< The slicing worker instance
-    const pandora::Pandora *m_pSliceNuWorkerInstance; ///< The per-slice neutrino reconstruction worker instance
-    const pandora::Pandora *m_pSliceCRWorkerInstance; ///< The per-slice cosmic-ray reconstruction worker instance
+    PandoraInstanceList
+      m_crWorkerInstances; ///< The list of cosmic-ray reconstruction worker instances
+    const pandora::Pandora* m_pSlicingWorkerInstance; ///< The slicing worker instance
+    const pandora::Pandora*
+      m_pSliceNuWorkerInstance; ///< The per-slice neutrino reconstruction worker instance
+    const pandora::Pandora*
+      m_pSliceCRWorkerInstance; ///< The per-slice cosmic-ray reconstruction worker instance
 
-    bool m_fullWidthCRWorkerWireGaps;        ///< Whether wire-type line gaps in cosmic-ray worker instances should cover all drift time
-    bool m_passMCParticlesToWorkerInstances; ///< Whether to pass mc particle details (and links to calo hits) to worker instances
+    bool
+      m_fullWidthCRWorkerWireGaps; ///< Whether wire-type line gaps in cosmic-ray worker instances should cover all drift time
+    bool
+      m_passMCParticlesToWorkerInstances; ///< Whether to pass mc particle details (and links to calo hits) to worker instances
 
-    typedef std::vector<StitchingBaseTool *> StitchingToolVector;
-    typedef std::vector<CosmicRayTaggingBaseTool *> CosmicRayTaggingToolVector;
-    typedef std::vector<SliceIdBaseTool *> SliceIdToolVector;
-    typedef std::vector<SliceSelectionBaseTool *> SliceSelectionToolVector;
+    typedef std::vector<StitchingBaseTool*> StitchingToolVector;
+    typedef std::vector<CosmicRayTaggingBaseTool*> CosmicRayTaggingToolVector;
+    typedef std::vector<SliceIdBaseTool*> SliceIdToolVector;
+    typedef std::vector<SliceSelectionBaseTool*> SliceSelectionToolVector;
 
     StitchingToolVector m_stitchingToolVector;               ///< The stitching tool vector
     CosmicRayTaggingToolVector m_cosmicRayTaggingToolVector; ///< The cosmic-ray tagging tool vector
     SliceIdToolVector m_sliceIdToolVector;                   ///< The slice id tool vector
     SliceSelectionToolVector m_sliceSelectionToolVector;     ///< The slice selection tool vector
 
-    std::string m_filePathEnvironmentVariable; ///< The environment variable providing a list of paths to xml files
-    std::string m_crSettingsFile;              ///< The cosmic-ray reconstruction settings file
-    std::string m_nuSettingsFile;              ///< The neutrino reconstruction settings file
-    std::string m_slicingSettingsFile;         ///< The slicing settings file
+    std::string
+      m_filePathEnvironmentVariable; ///< The environment variable providing a list of paths to xml files
+    std::string m_crSettingsFile;      ///< The cosmic-ray reconstruction settings file
+    std::string m_nuSettingsFile;      ///< The neutrino reconstruction settings file
+    std::string m_slicingSettingsFile; ///< The slicing settings file
 
     std::string m_inputMCParticleListName;  ///< The input mc particle list name
     std::string m_inputHitListName;         ///< The input hit list name
@@ -351,19 +389,18 @@ protected:
     std::string m_recreatedClusterListName; ///< The output recreated cluster list name
     std::string m_recreatedVertexListName;  ///< The output recreated vertex list name
 
-    float m_inTimeMaxX0;                   ///< Cut on X0 to determine whether particle is clear cosmic ray
+    float m_inTimeMaxX0; ///< Cut on X0 to determine whether particle is clear cosmic ray
     LArCaloHitFactory m_larCaloHitFactory; ///< Factory for creating LArCaloHits during hit copying
-};
+  };
 
-//------------------------------------------------------------------------------------------------------------------------------------------
-//------------------------------------------------------------------------------------------------------------------------------------------
+  //------------------------------------------------------------------------------------------------------------------------------------------
+  //------------------------------------------------------------------------------------------------------------------------------------------
 
-/**
+  /**
  *  @brief  StitchingBaseTool class
  */
-class StitchingBaseTool : public pandora::AlgorithmTool
-{
-public:
+  class StitchingBaseTool : public pandora::AlgorithmTool {
+  public:
     /**
      *  @brief  Run the algorithm tool
      *
@@ -372,19 +409,20 @@ public:
      *  @param  pfoToLArTPCMap the pfo to lar tpc map
      *  @param  stitchedPfosToX0Map a map of cosmic-ray pfos that have been stitched between lar tpcs to the X0 shift
      */
-    virtual void Run(const MasterAlgorithm *const pAlgorithm, const pandora::PfoList *const pMultiPfoList, PfoToLArTPCMap &pfoToLArTPCMap,
-        PfoToFloatMap &stitchedPfosToX0Map) = 0;
-};
+    virtual void Run(const MasterAlgorithm* const pAlgorithm,
+                     const pandora::PfoList* const pMultiPfoList,
+                     PfoToLArTPCMap& pfoToLArTPCMap,
+                     PfoToFloatMap& stitchedPfosToX0Map) = 0;
+  };
 
-//------------------------------------------------------------------------------------------------------------------------------------------
-//------------------------------------------------------------------------------------------------------------------------------------------
+  //------------------------------------------------------------------------------------------------------------------------------------------
+  //------------------------------------------------------------------------------------------------------------------------------------------
 
-/**
+  /**
  *  @brief  CosmicRayTaggingBaseTool class
  */
-class CosmicRayTaggingBaseTool : public pandora::AlgorithmTool
-{
-public:
+  class CosmicRayTaggingBaseTool : public pandora::AlgorithmTool {
+  public:
     /**
      *  @brief  Find the list of ambiguous pfos (could represent cosmic-ray muons or neutrinos)
      *
@@ -392,19 +430,19 @@ public:
      *  @param  ambiguousPfos to receive the list of ambiguous pfos
      *  @param  pAlgorithm the address of this master algorithm
      */
-    virtual void FindAmbiguousPfos(
-        const pandora::PfoList &parentCosmicRayPfos, pandora::PfoList &ambiguousPfos, const MasterAlgorithm *const pAlgorithm) = 0;
-};
+    virtual void FindAmbiguousPfos(const pandora::PfoList& parentCosmicRayPfos,
+                                   pandora::PfoList& ambiguousPfos,
+                                   const MasterAlgorithm* const pAlgorithm) = 0;
+  };
 
-//------------------------------------------------------------------------------------------------------------------------------------------
-//------------------------------------------------------------------------------------------------------------------------------------------
+  //------------------------------------------------------------------------------------------------------------------------------------------
+  //------------------------------------------------------------------------------------------------------------------------------------------
 
-/**
+  /**
  *  @brief  SliceIdBaseTool class
  */
-class SliceIdBaseTool : public pandora::AlgorithmTool
-{
-public:
+  class SliceIdBaseTool : public pandora::AlgorithmTool {
+  public:
     /**
      *  @brief  Select which reconstruction hypotheses to use; neutrino outcomes or cosmic-ray muon outcomes for each slice
      *
@@ -413,19 +451,20 @@ public:
      *  @param  crSliceHypotheses the parent pfos representing the cosmic-ray muon outcome for each slice
      *  @param  sliceNuPfos to receive the list of selected pfos
      */
-    virtual void SelectOutputPfos(const pandora::Algorithm *const pAlgorithm, const SliceHypotheses &nuSliceHypotheses,
-        const SliceHypotheses &crSliceHypotheses, pandora::PfoList &selectedPfos) = 0;
-};
+    virtual void SelectOutputPfos(const pandora::Algorithm* const pAlgorithm,
+                                  const SliceHypotheses& nuSliceHypotheses,
+                                  const SliceHypotheses& crSliceHypotheses,
+                                  pandora::PfoList& selectedPfos) = 0;
+  };
 
-//------------------------------------------------------------------------------------------------------------------------------------------
-//------------------------------------------------------------------------------------------------------------------------------------------
+  //------------------------------------------------------------------------------------------------------------------------------------------
+  //------------------------------------------------------------------------------------------------------------------------------------------
 
-/**
+  /**
  *  @brief  SliceSelectionBaseTool class
  */
-class SliceSelectionBaseTool : public pandora::AlgorithmTool
-{
-public:
+  class SliceSelectionBaseTool : public pandora::AlgorithmTool {
+  public:
     /**
      *  @brief  Select which slice(s) to use; neutrino or beam slices
      *
@@ -433,8 +472,10 @@ public:
      *  @param  inputSliceVector the initial slice vector
      *  @param  outputSliceVector the output slice vector
      */
-    virtual void SelectSlices(const pandora::Algorithm *const pAlgorithm, const SliceVector &inputSliceVector, SliceVector &outputSliceVector) = 0;
-};
+    virtual void SelectSlices(const pandora::Algorithm* const pAlgorithm,
+                              const SliceVector& inputSliceVector,
+                              SliceVector& outputSliceVector) = 0;
+  };
 
 } // namespace lar_content
 

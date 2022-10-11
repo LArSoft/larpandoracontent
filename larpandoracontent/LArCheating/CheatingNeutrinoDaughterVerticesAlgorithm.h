@@ -12,21 +12,19 @@
 
 #include "larpandoracontent/LArHelpers/LArMCParticleHelper.h"
 
-namespace lar_content
-{
+namespace lar_content {
 
-/**
+  /**
  *  @brief  CheatingNeutrinoDaughterVerticesAlgorithm::Algorithm class
  */
-class CheatingNeutrinoDaughterVerticesAlgorithm : public pandora::Algorithm
-{
-public:
+  class CheatingNeutrinoDaughterVerticesAlgorithm : public pandora::Algorithm {
+  public:
     /**
      *  @brief  Default constructor
      */
     CheatingNeutrinoDaughterVerticesAlgorithm();
 
-private:
+  private:
     pandora::StatusCode Run();
 
     /**
@@ -34,7 +32,7 @@ private:
      *
      *  @param  mcPrimaryMap to receive the mapping from mc particle to primary
      */
-    void GetMCPrimaryMap(LArMCParticleHelper::MCRelationMap &mcPrimaryMap) const;
+    void GetMCPrimaryMap(LArMCParticleHelper::MCRelationMap& mcPrimaryMap) const;
 
     /**
      *  @brief  Process the list of reconstructed neutrinos
@@ -42,7 +40,8 @@ private:
      *  @param  neutrinoPfos the list of neutrino pfos
      *  @param  mcPrimaryMap the mapping from mc particle to primary, only required if collapsed mc particle hierarchy specified
      */
-    void ProcessRecoNeutrinos(const pandora::PfoList &neutrinoPfos, const LArMCParticleHelper::MCRelationMap &mcPrimaryMap) const;
+    void ProcessRecoNeutrinos(const pandora::PfoList& neutrinoPfos,
+                              const LArMCParticleHelper::MCRelationMap& mcPrimaryMap) const;
 
     /**
      *  @brief  Process a daughter pfo
@@ -50,16 +49,19 @@ private:
      *  @param  pDaughterPfo the address of a daughter pfo
      *  @param  mcPrimaryMap the mapping from mc particle to primary, only required if collapsed mc particle hierarchy specified
      */
-    void ProcessDaughterPfo(const pandora::ParticleFlowObject *const pDaughterPfo, const LArMCParticleHelper::MCRelationMap &mcPrimaryMap) const;
+    void ProcessDaughterPfo(const pandora::ParticleFlowObject* const pDaughterPfo,
+                            const LArMCParticleHelper::MCRelationMap& mcPrimaryMap) const;
 
     pandora::StatusCode ReadSettings(const pandora::TiXmlHandle xmlHandle);
 
-    bool m_collapseToPrimaryMCParticles; ///< Whether to collapse mc particle hierarchies to primary particles
-    std::string m_mcParticleListName;    ///< The mc particle list name, required if want to collapse mc particle hierarchy
+    bool
+      m_collapseToPrimaryMCParticles; ///< Whether to collapse mc particle hierarchies to primary particles
+    std::string
+      m_mcParticleListName; ///< The mc particle list name, required if want to collapse mc particle hierarchy
 
     std::string m_neutrinoListName; ///< The input list of pfo list names
     std::string m_vertexListName;   ///< The name of the output cosmic-ray vertex list
-};
+  };
 
 } // namespace lar_content
 

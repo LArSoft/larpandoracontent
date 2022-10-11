@@ -12,15 +12,13 @@
 
 #include "larpandoracontent/LArTwoDReco/StreamSelectionAlgorithm.h"
 
-namespace lar_dl_content
-{
+namespace lar_dl_content {
 
-/**
+  /**
  *  @brief  DlTrackShowerStreamSelectionAlgorithm class
  */
-class DlTrackShowerStreamSelectionAlgorithm : public lar_content::StreamSelectionAlgorithm
-{
-public:
+  class DlTrackShowerStreamSelectionAlgorithm : public lar_content::StreamSelectionAlgorithm {
+  public:
     /**
      *  @brief  Default constructor
      */
@@ -28,7 +26,7 @@ public:
 
     virtual ~DlTrackShowerStreamSelectionAlgorithm() = default;
 
-protected:
+  protected:
     /**
      *  @brief  Allocate a cluster to the appropriate streams.
      *
@@ -36,14 +34,14 @@ protected:
      *
      *  @return The StatusCode
      */
-    virtual pandora::StatusCode AllocateToStreams(const pandora::Cluster *const pCluster);
+    virtual pandora::StatusCode AllocateToStreams(const pandora::Cluster* const pCluster);
 
-private:
+  private:
     pandora::StatusCode ReadSettings(const pandora::TiXmlHandle xmlHandle);
 
     std::string m_trackListName;  ///< The name of the track list
     std::string m_showerListName; ///< The name of the shower list
-};
+  };
 
 } // namespace lar_dl_content
 

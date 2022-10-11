@@ -10,31 +10,33 @@
 
 #include "larpandoracontent/LArThreeDReco/LArEventBuilding/NeutrinoHierarchyAlgorithm.h"
 
-namespace lar_content
-{
+namespace lar_content {
 
-/**
+  /**
  *  @brief  VertexAssociatedPfosTool class
  */
-class VertexAssociatedPfosTool : public PfoRelationTool
-{
-public:
+  class VertexAssociatedPfosTool : public PfoRelationTool {
+  public:
     /**
      *  @brief  Default constructor
      */
     VertexAssociatedPfosTool();
 
-    void Run(const NeutrinoHierarchyAlgorithm *const pAlgorithm, const pandora::Vertex *const pNeutrinoVertex,
-        NeutrinoHierarchyAlgorithm::PfoInfoMap &pfoInfoMap);
+    void Run(const NeutrinoHierarchyAlgorithm* const pAlgorithm,
+             const pandora::Vertex* const pNeutrinoVertex,
+             NeutrinoHierarchyAlgorithm::PfoInfoMap& pfoInfoMap);
 
-private:
+  private:
     pandora::StatusCode ReadSettings(const pandora::TiXmlHandle xmlHandle);
 
-    float m_minVertexLongitudinalDistance; ///< Vertex association check: min longitudinal distance cut
-    float m_maxVertexLongitudinalDistance; ///< Vertex association check: max longitudinal distance cut
-    float m_maxVertexTransverseDistance;   ///< Vertex association check: max transverse distance cut
-    float m_vertexAngularAllowance;        ///< Vertex association check: pointing angular allowance in degrees
-};
+    float
+      m_minVertexLongitudinalDistance; ///< Vertex association check: min longitudinal distance cut
+    float
+      m_maxVertexLongitudinalDistance; ///< Vertex association check: max longitudinal distance cut
+    float m_maxVertexTransverseDistance; ///< Vertex association check: max transverse distance cut
+    float
+      m_vertexAngularAllowance; ///< Vertex association check: pointing angular allowance in degrees
+  };
 
 } // namespace lar_content
 

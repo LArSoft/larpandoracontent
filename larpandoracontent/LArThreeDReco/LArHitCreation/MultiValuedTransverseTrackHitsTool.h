@@ -10,17 +10,16 @@
 
 #include "larpandoracontent/LArThreeDReco/LArHitCreation/TransverseTrackHitsBaseTool.h"
 
-namespace lar_content
-{
+namespace lar_content {
 
-/**
+  /**
  *  @brief  MultiValuedTransverseTrackHitsTool class
  */
-class MultiValuedTransverseTrackHitsTool : public TransverseTrackHitsBaseTool
-{
-private:
-    void GetTransverseTrackHit3D(const MatchedSlidingFitMap &matchedSlidingFitMap, ProtoHit &protoHit) const;
-};
+  class MultiValuedTransverseTrackHitsTool : public TransverseTrackHitsBaseTool {
+  private:
+    void GetTransverseTrackHit3D(const MatchedSlidingFitMap& matchedSlidingFitMap,
+                                 ProtoHit& protoHit) const;
+  };
 
 } // namespace lar_content
 

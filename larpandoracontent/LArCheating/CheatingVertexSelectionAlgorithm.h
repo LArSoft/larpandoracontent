@@ -10,20 +10,22 @@
 
 #include "larpandoracontent/LArVertex/TrainedVertexSelectionAlgorithm.h"
 
-namespace lar_content
-{
+namespace lar_content {
 
-/**
+  /**
  *  @brief  CheatingVertexSelectionAlgorithm class
  */
-class CheatingVertexSelectionAlgorithm : public TrainedVertexSelectionAlgorithm
-{
-private:
-    void GetVertexScoreList(const pandora::VertexVector &vertexVector, const BeamConstants &beamConstants, HitKDTree2D &kdTreeU,
-        HitKDTree2D &kdTreeV, HitKDTree2D &kdTreeW, VertexScoreList &vertexScoreList) const;
+  class CheatingVertexSelectionAlgorithm : public TrainedVertexSelectionAlgorithm {
+  private:
+    void GetVertexScoreList(const pandora::VertexVector& vertexVector,
+                            const BeamConstants& beamConstants,
+                            HitKDTree2D& kdTreeU,
+                            HitKDTree2D& kdTreeV,
+                            HitKDTree2D& kdTreeW,
+                            VertexScoreList& vertexScoreList) const;
 
     pandora::StatusCode ReadSettings(const pandora::TiXmlHandle xmlHandle);
-};
+  };
 
 } // namespace lar_content
 

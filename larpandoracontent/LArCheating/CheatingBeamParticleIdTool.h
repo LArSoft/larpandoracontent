@@ -11,28 +11,29 @@
 #include "larpandoracontent/LArCheating/CheatingSliceIdBaseTool.h"
 #include "larpandoracontent/LArControlFlow/MasterAlgorithm.h"
 
-namespace lar_content
-{
+namespace lar_content {
 
-/**
+  /**
  *  @brief  CheatingBeamParticleIdTool class
  */
-class CheatingBeamParticleIdTool : public CheatingSliceIdBaseTool
-{
-public:
+  class CheatingBeamParticleIdTool : public CheatingSliceIdBaseTool {
+  public:
     /**
      *  @brief  Constructor
      */
     CheatingBeamParticleIdTool();
 
-    void SelectOutputPfos(const pandora::Algorithm *const pAlgorithm, const SliceHypotheses &nuSliceHypotheses,
-        const SliceHypotheses &crSliceHypotheses, pandora::PfoList &selectedPfos);
+    void SelectOutputPfos(const pandora::Algorithm* const pAlgorithm,
+                          const SliceHypotheses& nuSliceHypotheses,
+                          const SliceHypotheses& crSliceHypotheses,
+                          pandora::PfoList& selectedPfos);
 
-private:
+  private:
     pandora::StatusCode ReadSettings(const pandora::TiXmlHandle xmlHandle);
 
-    float m_minWeightFraction; ///< The minimum weight fraction for identifying a slice as a beam particle
-};
+    float
+      m_minWeightFraction; ///< The minimum weight fraction for identifying a slice as a beam particle
+  };
 
 } // namespace lar_content
 

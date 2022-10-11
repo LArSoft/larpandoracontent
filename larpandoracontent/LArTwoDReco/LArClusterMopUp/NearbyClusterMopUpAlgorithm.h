@@ -12,31 +12,33 @@
 
 #include "larpandoracontent/LArTwoDReco/LArClusterMopUp/ClusterMopUpBaseAlgorithm.h"
 
-namespace lar_content
-{
+namespace lar_content {
 
-/**
+  /**
  *  @brief  NearbyClusterMopUpAlgorithm class
  */
 
-class NearbyClusterMopUpAlgorithm : public ClusterMopUpBaseAlgorithm
-{
-public:
+  class NearbyClusterMopUpAlgorithm : public ClusterMopUpBaseAlgorithm {
+  public:
     /**
      *  @brief  Default constructor
      */
     NearbyClusterMopUpAlgorithm();
 
-private:
-    void ClusterMopUp(const pandora::ClusterList &pfoClusters, const pandora::ClusterList &remnantClusters) const;
+  private:
+    void ClusterMopUp(const pandora::ClusterList& pfoClusters,
+                      const pandora::ClusterList& remnantClusters) const;
 
     pandora::StatusCode ReadSettings(const pandora::TiXmlHandle xmlHandle);
 
     unsigned int m_minHitsInCluster; ///< Minimum number of hits in order to consider a cluster
-    float m_vertexProximity;         ///< Distance between cluster inner/outer centroid and vtx to declare cluster vtx associated
-    float m_minClusterSeparation;    ///< Minimum distance between parent and daughter clusters to declare clusters associated
-    float m_touchingDistance;        ///< Threshold (small) distance below which parent and daughter clusters are declated touching
-};
+    float
+      m_vertexProximity; ///< Distance between cluster inner/outer centroid and vtx to declare cluster vtx associated
+    float
+      m_minClusterSeparation; ///< Minimum distance between parent and daughter clusters to declare clusters associated
+    float
+      m_touchingDistance; ///< Threshold (small) distance below which parent and daughter clusters are declated touching
+  };
 
 } // namespace lar_content
 

@@ -10,23 +10,21 @@
 
 #include "larpandoracontent/LArThreeDReco/LArCosmicRay/TwoViewDeltaRayMatchingAlgorithm.h"
 
-namespace lar_content
-{
+namespace lar_content {
 
-/**
+  /**
  *  @brief  TwoViewAmbiguousDeltaRayTool class
  */
-class TwoViewAmbiguousDeltaRayTool : public DeltaRayMatrixTool
-{
-public:
+  class TwoViewAmbiguousDeltaRayTool : public DeltaRayMatrixTool {
+  public:
     typedef std::vector<pandora::HitType> HitTypeVector;
     /**
      *  @brief  Default constructor
      */
     TwoViewAmbiguousDeltaRayTool();
 
-private:
-    bool Run(TwoViewDeltaRayMatchingAlgorithm *const pAlgorithm, MatrixType &overlapMatrix);
+  private:
+    bool Run(TwoViewDeltaRayMatchingAlgorithm* const pAlgorithm, MatrixType& overlapMatrix);
     pandora::StatusCode ReadSettings(const pandora::TiXmlHandle xmlHandle);
 
     /**
@@ -34,7 +32,7 @@ private:
      *
      *  @param  overlapMatrix the overlap matrix
      */
-    void ExamineConnectedElements(MatrixType &overlapMatrix) const;
+    void ExamineConnectedElements(MatrixType& overlapMatrix) const;
 
     /**
      *  @brief  Identify the best 1:1:1 match in a group of connected elements and from it create a pfo
@@ -43,8 +41,8 @@ private:
      *
      *  @return  whether any particles were created
      */
-    bool PickOutGoodMatches(const MatrixType::ElementList &elementList) const;
-};
+    bool PickOutGoodMatches(const MatrixType::ElementList& elementList) const;
+  };
 
 } // namespace lar_content
 

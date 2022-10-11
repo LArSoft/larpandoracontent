@@ -12,23 +12,23 @@
 
 #include "larpandoracontent/LArTwoDReco/LArClusterAssociation/ClusterMergingAlgorithm.h"
 
-namespace lar_content
-{
+namespace lar_content {
 
-/**
+  /**
  *  @brief  SimpleClusterMergingAlgorithm class
  */
-class SimpleClusterMergingAlgorithm : public ClusterMergingAlgorithm
-{
-public:
+  class SimpleClusterMergingAlgorithm : public ClusterMergingAlgorithm {
+  public:
     /**
      *  @brief  Default constructor
      */
     SimpleClusterMergingAlgorithm();
 
-private:
-    void GetListOfCleanClusters(const pandora::ClusterList *const pClusterList, pandora::ClusterVector &clusterVector) const;
-    void PopulateClusterMergeMap(const pandora::ClusterVector &clusterVector, ClusterMergeMap &clusterMergeMap) const;
+  private:
+    void GetListOfCleanClusters(const pandora::ClusterList* const pClusterList,
+                                pandora::ClusterVector& clusterVector) const;
+    void PopulateClusterMergeMap(const pandora::ClusterVector& clusterVector,
+                                 ClusterMergeMap& clusterMergeMap) const;
 
     /**
      *  @brief Decide whether two clusters are associated
@@ -38,13 +38,14 @@ private:
      *
      *  @return boolean
      */
-    bool IsAssociated(const pandora::Cluster *const pClusterI, const pandora::Cluster *const pClusterJ) const;
+    bool IsAssociated(const pandora::Cluster* const pClusterI,
+                      const pandora::Cluster* const pClusterJ) const;
 
     pandora::StatusCode ReadSettings(const pandora::TiXmlHandle xmlHandle);
 
     unsigned int m_minCaloHitsPerCluster; ///< The min number of calo hits per candidate cluster
     float m_maxClusterSeparation;         ///< Maximum distance at which clusters can be joined
-};
+  };
 
 } // namespace lar_content
 

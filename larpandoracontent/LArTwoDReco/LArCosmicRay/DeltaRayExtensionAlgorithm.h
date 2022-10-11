@@ -12,26 +12,28 @@
 
 #include "larpandoracontent/LArTwoDReco/LArClusterAssociation/ClusterExtensionAlgorithm.h"
 
-namespace lar_content
-{
+namespace lar_content {
 
-/**
+  /**
  *  @brief  DeltaRayExtensionAlgorithm class
  */
-class DeltaRayExtensionAlgorithm : public ClusterExtensionAlgorithm
-{
-public:
+  class DeltaRayExtensionAlgorithm : public ClusterExtensionAlgorithm {
+  public:
     /**
      *  @brief  Default constructor
      */
     DeltaRayExtensionAlgorithm();
 
-private:
-    void GetListOfCleanClusters(const pandora::ClusterList *const pClusterList, pandora::ClusterVector &clusterVector) const;
-    void FillClusterAssociationMatrix(const pandora::ClusterVector &clusterVector, ClusterAssociationMatrix &clusterAssociationMatrix) const;
-    void FillClusterMergeMap(const ClusterAssociationMatrix &clusterAssociationMatrix, ClusterMergeMap &clusterMergeMap) const;
+  private:
+    void GetListOfCleanClusters(const pandora::ClusterList* const pClusterList,
+                                pandora::ClusterVector& clusterVector) const;
+    void FillClusterAssociationMatrix(const pandora::ClusterVector& clusterVector,
+                                      ClusterAssociationMatrix& clusterAssociationMatrix) const;
+    void FillClusterMergeMap(const ClusterAssociationMatrix& clusterAssociationMatrix,
+                             ClusterMergeMap& clusterMergeMap) const;
 
-    typedef std::unordered_map<const pandora::Cluster *, pandora::CartesianVector> ClusterToCoordinateMap;
+    typedef std::unordered_map<const pandora::Cluster*, pandora::CartesianVector>
+      ClusterToCoordinateMap;
 
     /**
      *  @brief  Reduce number of extremal coordinates calculations by caching results when they are first obtained
@@ -42,8 +44,11 @@ private:
      *  @param  innerCoordinate to receive the inner coordinate
      *  @param  outerCoordinate to receive the outer coordinate
      */
-    void GetExtremalCoordinatesFromCache(const pandora::Cluster *const pCluster, ClusterToCoordinateMap &innerCoordinateMap,
-        ClusterToCoordinateMap &outerCoordinateMap, pandora::CartesianVector &innerCoordinate, pandora::CartesianVector &outerCoordinate) const;
+    void GetExtremalCoordinatesFromCache(const pandora::Cluster* const pCluster,
+                                         ClusterToCoordinateMap& innerCoordinateMap,
+                                         ClusterToCoordinateMap& outerCoordinateMap,
+                                         pandora::CartesianVector& innerCoordinate,
+                                         pandora::CartesianVector& outerCoordinate) const;
 
     /**
      *  @brief  Form association between two clusters
@@ -54,8 +59,11 @@ private:
      *  @param  outerCoordinateMap the map from cluster to outer extremal coordinate
      *  @param  clusterAssociationMatrix the matrix of cluster associations
      */
-    void FillClusterAssociationMatrix(const pandora::Cluster *const pParentCluster, const pandora::Cluster *const pDaughterCluster,
-        ClusterToCoordinateMap &innerCoordinateMap, ClusterToCoordinateMap &outerCoordinateMap, ClusterAssociationMatrix &clusterAssociationMatrix) const;
+    void FillClusterAssociationMatrix(const pandora::Cluster* const pParentCluster,
+                                      const pandora::Cluster* const pDaughterCluster,
+                                      ClusterToCoordinateMap& innerCoordinateMap,
+                                      ClusterToCoordinateMap& outerCoordinateMap,
+                                      ClusterAssociationMatrix& clusterAssociationMatrix) const;
 
     pandora::StatusCode ReadSettings(const pandora::TiXmlHandle xmlHandle);
 
@@ -64,7 +72,7 @@ private:
 
     float m_maxLongitudinalDisplacement; ///<
     float m_maxTransverseDisplacement;   ///<
-};
+  };
 
 } // namespace lar_content
 

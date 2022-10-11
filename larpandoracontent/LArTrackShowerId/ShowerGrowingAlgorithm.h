@@ -18,21 +18,19 @@
 
 #include <unordered_map>
 
-namespace lar_content
-{
+namespace lar_content {
 
-/**
+  /**
  *  @brief  ShowerGrowingAlgorithm class
  */
-class ShowerGrowingAlgorithm : public BranchGrowingAlgorithm
-{
-public:
+  class ShowerGrowingAlgorithm : public BranchGrowingAlgorithm {
+  public:
     /**
      *  @brief  Default constructor
      */
     ShowerGrowingAlgorithm();
 
-protected:
+  protected:
     /**
      *  @brief  Whether a pointing cluster is assciated with a provided 2D vertex projection
      *
@@ -41,7 +39,8 @@ protected:
      *
      *  @return boolean
      */
-    bool IsVertexAssociated(const LArPointingCluster &pointingCluster, const pandora::CartesianVector &vertexPosition2D) const;
+    bool IsVertexAssociated(const LArPointingCluster& pointingCluster,
+                            const pandora::CartesianVector& vertexPosition2D) const;
 
     /**
      *  @brief  Sorting for clusters to determine order in which seeds are considered
@@ -49,12 +48,14 @@ protected:
      *  @param  pLhs address of first cluster
      *  @param  pRhs address of second cluster
      */
-    static bool SortClusters(const pandora::Cluster *const pLhs, const pandora::Cluster *const pRhs);
+    static bool SortClusters(const pandora::Cluster* const pLhs,
+                             const pandora::Cluster* const pRhs);
 
-    typedef std::unordered_map<const pandora::Cluster *, LArVertexHelper::ClusterDirection> ClusterDirectionMap;
+    typedef std::unordered_map<const pandora::Cluster*, LArVertexHelper::ClusterDirection>
+      ClusterDirectionMap;
     mutable ClusterDirectionMap m_clusterDirectionMap; ///< The cluster direction map
 
-private:
+  private:
     pandora::StatusCode Run();
 
     /**
@@ -63,7 +64,8 @@ private:
      *  @param  pClusterList the list of clusters
      *  @param  clusterListName the cluster list name
      */
-    void SimpleModeShowerGrowing(const pandora::ClusterList *const pClusterList, const std::string &clusterListName) const;
+    void SimpleModeShowerGrowing(const pandora::ClusterList* const pClusterList,
+                                 const std::string& clusterListName) const;
 
     /**
      *  @brief  Get the next seed candidate, using a list of available candidates and a list of those already used
@@ -74,8 +76,9 @@ private:
      *
      *  @return whether a seed candidate has been found
      */
-    bool GetNextSeedCandidate(const pandora::ClusterList *const pClusterList, const pandora::ClusterSet &usedClusters,
-        const pandora::Cluster *&pSeedCluster) const;
+    bool GetNextSeedCandidate(const pandora::ClusterList* const pClusterList,
+                              const pandora::ClusterSet& usedClusters,
+                              const pandora::Cluster*& pSeedCluster) const;
 
     /**
      *  @brief  Get all seed candidates associated with a provided vertex
@@ -84,8 +87,9 @@ private:
      *  @param  pVertex the address of the vertex
      *  @param  seedClusters to receive the list of vertex seed candidates
      */
-    void GetAllVertexSeedCandidates(
-        const pandora::ClusterList *const pClusterList, const pandora::Vertex *const pVertex, pandora::ClusterVector &seedClusters) const;
+    void GetAllVertexSeedCandidates(const pandora::ClusterList* const pClusterList,
+                                    const pandora::Vertex* const pVertex,
+                                    pandora::ClusterVector& seedClusters) const;
 
     /**
      *  @brief  Get the seed association list for a given vector of particle seed candidates
@@ -94,8 +98,9 @@ private:
      *  @param  pClusterList the address of the input cluster list
      *  @param  seedAssociationList to receive the populated seed association list
      */
-    void GetSeedAssociationList(const pandora::ClusterVector &particleSeedVector, const pandora::ClusterList *const pClusterList,
-        SeedAssociationList &seedAssociationList) const;
+    void GetSeedAssociationList(const pandora::ClusterVector& particleSeedVector,
+                                const pandora::ClusterList* const pClusterList,
+                                SeedAssociationList& seedAssociationList) const;
 
     /**
      *  @brief  Process the details stored in a specified seed association list
@@ -105,8 +110,9 @@ private:
      *  @param  pfoList the pfo list
      *  @param  usedClusters the list of candidates already considered
      */
-    void ProcessSeedAssociationDetails(
-        const SeedAssociationList &seedAssociationList, const std::string &clusterListName, pandora::ClusterSet &usedClusters) const;
+    void ProcessSeedAssociationDetails(const SeedAssociationList& seedAssociationList,
+                                       const std::string& clusterListName,
+                                       pandora::ClusterSet& usedClusters) const;
 
     /**
      *  @brief  Process the list of branch clusters, merging with specified parent cluster, dealing with any existing pfos as required
@@ -116,10 +122,12 @@ private:
      *  @param  listName the cluster list name
      *  @param  pfoList the input pfo list
      */
-    void ProcessBranchClusters(
-        const pandora::Cluster *const pParentCluster, const pandora::ClusterVector &branchClusters, const std::string &listName) const;
+    void ProcessBranchClusters(const pandora::Cluster* const pParentCluster,
+                               const pandora::ClusterVector& branchClusters,
+                               const std::string& listName) const;
 
-    AssociationType AreClustersAssociated(const pandora::Cluster *const pClusterSeed, const pandora::Cluster *const pCluster) const;
+    AssociationType AreClustersAssociated(const pandora::Cluster* const pClusterSeed,
+                                          const pandora::Cluster* const pCluster) const;
 
     /**
      *  @brief  Get a figure of merit representing the consistency of the provided seed associated list
@@ -128,7 +136,7 @@ private:
      *
      *  @return the figure of merit
      */
-    float GetFigureOfMerit(const SeedAssociationList &seedAssociationList) const;
+    float GetFigureOfMerit(const SeedAssociationList& seedAssociationList) const;
 
     /**
      *  @brief  Get the number of clusters associated with the vertex
@@ -138,24 +146,33 @@ private:
      *
      *  @return the number of clusters associated with the vertex
      */
-    unsigned int GetNVertexConnections(const pandora::CartesianVector &vertexPosition2D, const LArPointingClusterList &pointingClusterList) const;
+    unsigned int GetNVertexConnections(const pandora::CartesianVector& vertexPosition2D,
+                                       const LArPointingClusterList& pointingClusterList) const;
 
     pandora::StatusCode ReadSettings(const pandora::TiXmlHandle xmlHandle);
 
     pandora::StringVector m_inputClusterListNames; ///< The names of the input cluster lists
 
-    unsigned int m_minCaloHitsPerCluster; ///< The minimum number of calo hits per (seed or branch) cluster
-    float m_nearbyClusterDistance;        ///< The nearby cluster distance, used for determining cluster associations
-    float m_remoteClusterDistance;        ///< The remote cluster distance, used for determining cluster associations
+    unsigned int
+      m_minCaloHitsPerCluster; ///< The minimum number of calo hits per (seed or branch) cluster
+    float
+      m_nearbyClusterDistance; ///< The nearby cluster distance, used for determining cluster associations
+    float
+      m_remoteClusterDistance; ///< The remote cluster distance, used for determining cluster associations
 
-    float m_directionTanAngle;  ///< Direction determination, look for vertex inside triangle with apex shifted along the cluster length
-    float m_directionApexShift; ///< Direction determination, look for vertex inside triangle with apex shifted along the cluster length
+    float
+      m_directionTanAngle; ///< Direction determination, look for vertex inside triangle with apex shifted along the cluster length
+    float
+      m_directionApexShift; ///< Direction determination, look for vertex inside triangle with apex shifted along the cluster length
 
-    float m_minVertexLongitudinalDistance; ///< Vertex association check: min longitudinal distance cut
-    float m_maxVertexLongitudinalDistance; ///< Vertex association check: max longitudinal distance cut
-    float m_maxVertexTransverseDistance;   ///< Vertex association check: max transverse distance cut
-    float m_vertexAngularAllowance;        ///< Vertex association check: pointing angular allowance in degrees
-};
+    float
+      m_minVertexLongitudinalDistance; ///< Vertex association check: min longitudinal distance cut
+    float
+      m_maxVertexLongitudinalDistance; ///< Vertex association check: max longitudinal distance cut
+    float m_maxVertexTransverseDistance; ///< Vertex association check: max transverse distance cut
+    float
+      m_vertexAngularAllowance; ///< Vertex association check: pointing angular allowance in degrees
+  };
 
 } // namespace lar_content
 

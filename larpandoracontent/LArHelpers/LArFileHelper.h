@@ -10,15 +10,13 @@
 
 #include <string>
 
-namespace lar_content
-{
+namespace lar_content {
 
-/**
+  /**
  *  @brief  LArFileHelper class
  */
-class LArFileHelper
-{
-public:
+  class LArFileHelper {
+  public:
     /**
      *  @brief  Find the fully-qualified file name by searching through a list of delimiter-separated paths in a named environment
      *          variable. The fully-qualified file name will be provided for the first instance of the file name encountered.
@@ -29,8 +27,10 @@ public:
      *
      *  @return the fully-qualified name if found, else a StatusCode exception will be raised
      */
-    static std::string FindFileInPath(const std::string &unqualifiedFileName, const std::string &environmentVariable, const std::string &delimiter = ":");
-};
+    static std::string FindFileInPath(const std::string& unqualifiedFileName,
+                                      const std::string& environmentVariable,
+                                      const std::string& delimiter = ":");
+  };
 
 } // namespace lar_content
 

@@ -16,32 +16,34 @@
 #include "larpandoracontent/LArThreeDReco/LArThreeDBase/NViewTrackMatchingAlgorithm.h"
 #include "larpandoracontent/LArThreeDReco/LArThreeDBase/ThreeViewMatchingControl.h"
 
-namespace lar_content
-{
+namespace lar_content {
 
-class TransverseTensorTool;
+  class TransverseTensorTool;
 
-//------------------------------------------------------------------------------------------------------------------------------------------
+  //------------------------------------------------------------------------------------------------------------------------------------------
 
-/**
+  /**
  *  @brief  ThreeViewTransverseTracksAlgorithm class
  */
-class ThreeViewTransverseTracksAlgorithm : public NViewTrackMatchingAlgorithm<ThreeViewMatchingControl<TransverseOverlapResult>>
-{
-public:
-    typedef NViewTrackMatchingAlgorithm<ThreeViewMatchingControl<TransverseOverlapResult>> BaseAlgorithm;
+  class ThreeViewTransverseTracksAlgorithm
+    : public NViewTrackMatchingAlgorithm<ThreeViewMatchingControl<TransverseOverlapResult>> {
+  public:
+    typedef NViewTrackMatchingAlgorithm<ThreeViewMatchingControl<TransverseOverlapResult>>
+      BaseAlgorithm;
 
     /**
      *  @brief  Default constructor
      */
     ThreeViewTransverseTracksAlgorithm();
 
-private:
+  private:
     typedef std::map<unsigned int, TransverseOverlapResult> FitSegmentToOverlapResultMap;
     typedef std::map<unsigned int, FitSegmentToOverlapResultMap> FitSegmentMatrix;
     typedef std::map<unsigned int, FitSegmentMatrix> FitSegmentTensor;
 
-    void CalculateOverlapResult(const pandora::Cluster *const pClusterU, const pandora::Cluster *const pClusterV, const pandora::Cluster *const pClusterW);
+    void CalculateOverlapResult(const pandora::Cluster* const pClusterU,
+                                const pandora::Cluster* const pClusterV,
+                                const pandora::Cluster* const pClusterW);
 
     /**
      *  @brief  Calculate the overlap result for given group of clusters
@@ -53,8 +55,10 @@ private:
      *
      *  @return statusCode, faster than throwing in regular use-cases
      */
-    pandora::StatusCode CalculateOverlapResult(const pandora::Cluster *const pClusterU, const pandora::Cluster *const pClusterV,
-        const pandora::Cluster *const pClusterW, TransverseOverlapResult &overlapResult);
+    pandora::StatusCode CalculateOverlapResult(const pandora::Cluster* const pClusterU,
+                                               const pandora::Cluster* const pClusterV,
+                                               const pandora::Cluster* const pClusterW,
+                                               TransverseOverlapResult& overlapResult);
 
     /**
      *  @brief  Get the number of matched points for three fit segments and accompanying sliding fit results
@@ -64,8 +68,10 @@ private:
      *  @param  slidingFitResultW sliding fit result for w cluster
      *  @param  fitSegmentTensor the fit segment tensor
      */
-    void GetFitSegmentTensor(const TwoDSlidingFitResult &slidingFitResultU, const TwoDSlidingFitResult &slidingFitResultV,
-        const TwoDSlidingFitResult &slidingFitResultW, FitSegmentTensor &fitSegmentTensor) const;
+    void GetFitSegmentTensor(const TwoDSlidingFitResult& slidingFitResultU,
+                             const TwoDSlidingFitResult& slidingFitResultV,
+                             const TwoDSlidingFitResult& slidingFitResultW,
+                             FitSegmentTensor& fitSegmentTensor) const;
 
     /**
      *  @brief  Get the overlap result for three fit segments and the accompanying sliding fit results
@@ -80,9 +86,13 @@ private:
      *
      *  @return statusCode, faster than throwing in regular use-cases
      */
-    pandora::StatusCode GetSegmentOverlap(const FitSegment &fitSegmentU, const FitSegment &fitSegmentV, const FitSegment &fitSegmentW,
-        const TwoDSlidingFitResult &slidingFitResultU, const TwoDSlidingFitResult &slidingFitResultV,
-        const TwoDSlidingFitResult &slidingFitResultW, TransverseOverlapResult &transverseOverlapResult) const;
+    pandora::StatusCode GetSegmentOverlap(const FitSegment& fitSegmentU,
+                                          const FitSegment& fitSegmentV,
+                                          const FitSegment& fitSegmentW,
+                                          const TwoDSlidingFitResult& slidingFitResultU,
+                                          const TwoDSlidingFitResult& slidingFitResultV,
+                                          const TwoDSlidingFitResult& slidingFitResultW,
+                                          TransverseOverlapResult& transverseOverlapResult) const;
 
     /**
      *  @brief  Get the best overlap result, by examining the fit segment tensor
@@ -90,7 +100,8 @@ private:
      *  @param  fitSegmentTensor the fit segment tensor
      *  @param  bestTransverseOverlapResult to receive the best transverse overlap result
      */
-    void GetBestOverlapResult(const FitSegmentTensor &fitSegmentTensor, TransverseOverlapResult &bestTransverseOverlapResult) const;
+    void GetBestOverlapResult(const FitSegmentTensor& fitSegmentTensor,
+                              TransverseOverlapResult& bestTransverseOverlapResult) const;
 
     /**
      *  @brief  Get track overlap results for possible connected segments
@@ -100,33 +111,42 @@ private:
      *  @param  indexW the index w
      *  @param  transverseOverlapResultVector the transverse overlap result vector
      */
-    void GetPreviousOverlapResults(const unsigned int indexU, const unsigned int indexV, const unsigned int indexW,
-        FitSegmentTensor &fitSegmentSumTensor, TransverseOverlapResultVector &transverseOverlapResultVector) const;
+    void GetPreviousOverlapResults(
+      const unsigned int indexU,
+      const unsigned int indexV,
+      const unsigned int indexW,
+      FitSegmentTensor& fitSegmentSumTensor,
+      TransverseOverlapResultVector& transverseOverlapResultVector) const;
 
     void ExamineOverlapContainer();
     pandora::StatusCode ReadSettings(const pandora::TiXmlHandle xmlHandle);
 
-    typedef std::vector<TransverseTensorTool *> TensorToolVector;
+    typedef std::vector<TransverseTensorTool*> TensorToolVector;
     TensorToolVector m_algorithmToolVector; ///< The algorithm tool vector
 
-    unsigned int m_nMaxTensorToolRepeats;   ///< The maximum number of repeat loops over tensor tools
-    unsigned int m_maxFitSegmentIndex;      ///< The maximum number of fit segments used when identifying best overlap result
-    float m_pseudoChi2Cut;                  ///< The pseudo chi2 cut to identify matched sampling points
-    float m_minSegmentMatchedFraction;      ///< The minimum segment matched sampling fraction to allow segment grouping
-    unsigned int m_minSegmentMatchedPoints; ///< The minimum number of matched segment sampling points to allow segment grouping
-    float m_minOverallMatchedFraction;      ///< The minimum matched sampling fraction to allow particle creation
-    unsigned int m_minOverallMatchedPoints; ///< The minimum number of matched segment sampling points to allow particle creation
-    float m_minSamplingPointsPerLayer;      ///< The minimum number of sampling points per layer to allow particle creation
-};
+    unsigned int m_nMaxTensorToolRepeats; ///< The maximum number of repeat loops over tensor tools
+    unsigned int
+      m_maxFitSegmentIndex; ///< The maximum number of fit segments used when identifying best overlap result
+    float m_pseudoChi2Cut; ///< The pseudo chi2 cut to identify matched sampling points
+    float
+      m_minSegmentMatchedFraction; ///< The minimum segment matched sampling fraction to allow segment grouping
+    unsigned int
+      m_minSegmentMatchedPoints; ///< The minimum number of matched segment sampling points to allow segment grouping
+    float
+      m_minOverallMatchedFraction; ///< The minimum matched sampling fraction to allow particle creation
+    unsigned int
+      m_minOverallMatchedPoints; ///< The minimum number of matched segment sampling points to allow particle creation
+    float
+      m_minSamplingPointsPerLayer; ///< The minimum number of sampling points per layer to allow particle creation
+  };
 
-//------------------------------------------------------------------------------------------------------------------------------------------
+  //------------------------------------------------------------------------------------------------------------------------------------------
 
-/**
+  /**
  *  @brief  TransverseTensorTool class
  */
-class TransverseTensorTool : public pandora::AlgorithmTool
-{
-public:
+  class TransverseTensorTool : public pandora::AlgorithmTool {
+  public:
     typedef ThreeViewTransverseTracksAlgorithm::MatchingType::TensorType TensorType;
     typedef std::vector<TensorType::ElementList::const_iterator> IteratorList;
 
@@ -138,8 +158,9 @@ public:
      *
      *  @return whether changes have been made by the tool
      */
-    virtual bool Run(ThreeViewTransverseTracksAlgorithm *const pAlgorithm, TensorType &overlapTensor) = 0;
-};
+    virtual bool Run(ThreeViewTransverseTracksAlgorithm* const pAlgorithm,
+                     TensorType& overlapTensor) = 0;
+  };
 
 } // namespace lar_content
 

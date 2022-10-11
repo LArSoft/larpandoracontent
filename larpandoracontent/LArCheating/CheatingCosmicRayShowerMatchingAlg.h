@@ -10,15 +10,13 @@
 
 #include "Pandora/Algorithm.h"
 
-namespace lar_content
-{
+namespace lar_content {
 
-/**
+  /**
  *  @brief  CheatingCosmicRayShowerMatchingAlg class
  */
-class CheatingCosmicRayShowerMatchingAlg : public pandora::Algorithm
-{
-private:
+  class CheatingCosmicRayShowerMatchingAlg : public pandora::Algorithm {
+  private:
     pandora::StatusCode Run();
 
     /**
@@ -26,7 +24,7 @@ private:
      *
      *  @param  candidateClusterList to receive the list of candidate clusters
      */
-    void GetCandidateClusters(pandora::ClusterList &candidateClusterList) const;
+    void GetCandidateClusters(pandora::ClusterList& candidateClusterList) const;
 
     /**
      *  @brief  Perform cosmic ray shower matching for a specific cluster in a pfo
@@ -35,14 +33,15 @@ private:
      *  @param  pPfoCluster the pfo cluster of interest
      *  @param  candidateClusterList the list of candidate clusters
      */
-    void CosmicRayShowerMatching(const pandora::ParticleFlowObject *const pPfo, const pandora::Cluster *const pPfoCluster,
-        const pandora::ClusterList &candidateClusterList) const;
+    void CosmicRayShowerMatching(const pandora::ParticleFlowObject* const pPfo,
+                                 const pandora::Cluster* const pPfoCluster,
+                                 const pandora::ClusterList& candidateClusterList) const;
 
     pandora::StatusCode ReadSettings(const pandora::TiXmlHandle xmlHandle);
 
     std::string m_inputPfoListName;                ///< The input pfo list name
     pandora::StringVector m_inputClusterListNames; ///< The input cluster list names
-};
+  };
 
 } // namespace lar_content
 

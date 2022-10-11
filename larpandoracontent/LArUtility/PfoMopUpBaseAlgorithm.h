@@ -10,22 +10,21 @@
 
 #include "larpandoracontent/LArUtility/MopUpBaseAlgorithm.h"
 
-namespace lar_content
-{
+namespace lar_content {
 
-/**
+  /**
  *  @brief  PfoMopUpBaseAlgorithm class
  */
-class PfoMopUpBaseAlgorithm : public MopUpBaseAlgorithm
-{
-public:
+  class PfoMopUpBaseAlgorithm : public MopUpBaseAlgorithm {
+  public:
     /**
      *  @brief  Merge and delete a pair of pfos, with a specific set of conventions for cluster merging, vertex use, etc.
      *
      *  @param  pPfoToEnlarge the address of the pfo to enlarge
      *  @param  pPfoToDelete the address of the pfo to delete (will become a dangling pointer)
      */
-    virtual void MergeAndDeletePfos(const pandora::ParticleFlowObject *const pPfoToEnlarge, const pandora::ParticleFlowObject *const pPfoToDelete) const;
+    virtual void MergeAndDeletePfos(const pandora::ParticleFlowObject* const pPfoToEnlarge,
+                                    const pandora::ParticleFlowObject* const pPfoToDelete) const;
 
     /**
      *  @brief  Select the parent cluster (same hit type and most hits) using a provided cluster list and hit type
@@ -35,11 +34,12 @@ public:
      *
      *  @return the address of the parent cluster
      */
-    static const pandora::Cluster *GetParentCluster(const pandora::ClusterList &clusterList, const pandora::HitType hitType);
+    static const pandora::Cluster* GetParentCluster(const pandora::ClusterList& clusterList,
+                                                    const pandora::HitType hitType);
 
-protected:
+  protected:
     virtual pandora::StatusCode ReadSettings(const pandora::TiXmlHandle xmlHandle);
-};
+  };
 
 } // namespace lar_content
 

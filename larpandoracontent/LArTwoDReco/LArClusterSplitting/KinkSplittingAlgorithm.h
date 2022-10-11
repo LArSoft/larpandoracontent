@@ -10,21 +10,19 @@
 
 #include "larpandoracontent/LArTwoDReco/LArClusterSplitting/TwoDSlidingFitSplittingAlgorithm.h"
 
-namespace lar_content
-{
+namespace lar_content {
 
-/**
+  /**
  *  @brief  KinkSplittingAlgorithm class
  */
-class KinkSplittingAlgorithm : public TwoDSlidingFitSplittingAlgorithm
-{
-public:
+  class KinkSplittingAlgorithm : public TwoDSlidingFitSplittingAlgorithm {
+  public:
     /**
      *  @brief  Default constructor
      */
     KinkSplittingAlgorithm();
 
-private:
+  private:
     pandora::StatusCode ReadSettings(const pandora::TiXmlHandle xmlHandle);
 
     /**
@@ -35,12 +33,13 @@ private:
      *
      *  @return pandora::StatusCode
      */
-    pandora::StatusCode FindBestSplitPosition(const TwoDSlidingFitResult &slidingFitResult, pandora::CartesianVector &splitPosition) const;
+    pandora::StatusCode FindBestSplitPosition(const TwoDSlidingFitResult& slidingFitResult,
+                                              pandora::CartesianVector& splitPosition) const;
 
     float m_maxScatterRms;      ///<
     float m_maxScatterCosTheta; ///<
     float m_maxSlidingCosTheta; ///<
-};
+  };
 
 } // namespace lar_content
 

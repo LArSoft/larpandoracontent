@@ -14,24 +14,26 @@
 
 #include "larpandoracontent/LArHelpers/LArHitWidthHelper.h"
 
-namespace lar_content
-{
+namespace lar_content {
 
-/**
+  /**
  *  @brief HitWidthClusterMergingAlgorithm class
  */
-class HitWidthClusterMergingAlgorithm : public ClusterAssociationAlgorithm
-{
-public:
+  class HitWidthClusterMergingAlgorithm : public ClusterAssociationAlgorithm {
+  public:
     /**
      *  @brief  Default constructor
      */
     HitWidthClusterMergingAlgorithm();
 
-private:
-    void GetListOfCleanClusters(const pandora::ClusterList *const pClusterList, pandora::ClusterVector &clusterVector) const;
-    void PopulateClusterAssociationMap(const pandora::ClusterVector &clusterVector, ClusterAssociationMap &clusterAssociationMap) const;
-    bool IsExtremalCluster(const bool isForward, const pandora::Cluster *const pCurrentCluster, const pandora::Cluster *const pTestCluster) const;
+  private:
+    void GetListOfCleanClusters(const pandora::ClusterList* const pClusterList,
+                                pandora::ClusterVector& clusterVector) const;
+    void PopulateClusterAssociationMap(const pandora::ClusterVector& clusterVector,
+                                       ClusterAssociationMap& clusterAssociationMap) const;
+    bool IsExtremalCluster(const bool isForward,
+                           const pandora::Cluster* const pCurrentCluster,
+                           const pandora::Cluster* const pTestCluster) const;
 
     /**
      *  @brief  Determine whether two clusters are associated
@@ -41,8 +43,9 @@ private:
      *
      *  @return boolean whether the clusters are associated
      */
-    bool AreClustersAssociated(const LArHitWidthHelper::ClusterParameters &currentClusterParameters,
-        const LArHitWidthHelper::ClusterParameters &testClusterParameters) const;
+    bool AreClustersAssociated(
+      const LArHitWidthHelper::ClusterParameters& currentClusterParameters,
+      const LArHitWidthHelper::ClusterParameters& testClusterParameters) const;
 
     /**
      *  @brief  Determine the position of the constituent hit that lies closest to a specified position
@@ -52,8 +55,10 @@ private:
      *  @param  closestPoint the position of the closest constituent hit
      *
      */
-    void FindClosestPointToPosition(const pandora::CartesianVector &position,
-        const LArHitWidthHelper::ConstituentHitVector &constituentHitVector, pandora::CartesianVector &closestPoint) const;
+    void FindClosestPointToPosition(
+      const pandora::CartesianVector& position,
+      const LArHitWidthHelper::ConstituentHitVector& constituentHitVector,
+      pandora::CartesianVector& closestPoint) const;
 
     /**
      *  @brief  Determine the cluster direction at a reference point by performing a weighted least squared fit to the input consitutent hit positions
@@ -69,8 +74,10 @@ private:
      *  @param  fittingWeight the weight that is considered in the fit
      *
      */
-    void GetClusterDirection(const LArHitWidthHelper::ConstituentHitVector &constituentHitVector, pandora::CartesianVector &direction,
-        const pandora::CartesianVector &fitReferencePoint, const float fittingWeight) const;
+    void GetClusterDirection(const LArHitWidthHelper::ConstituentHitVector& constituentHitVector,
+                             pandora::CartesianVector& direction,
+                             const pandora::CartesianVector& fitReferencePoint,
+                             const float fittingWeight) const;
 
     /**
      *  @brief  Obtain a vector of the minimum number of hits closest to a reference point that exceed a given weight
@@ -81,8 +88,11 @@ private:
      *  @param  constituentHitSubsetVector the subset of constituent hits
      *
      */
-    void GetConstituentHitSubsetVector(const LArHitWidthHelper::ConstituentHitVector &constituentHitVector, const pandora::CartesianVector &fitReferencePoint,
-        const float fittingWeight, LArHitWidthHelper::ConstituentHitVector &constituentHitSubsetVector) const;
+    void GetConstituentHitSubsetVector(
+      const LArHitWidthHelper::ConstituentHitVector& constituentHitVector,
+      const pandora::CartesianVector& fitReferencePoint,
+      const float fittingWeight,
+      LArHitWidthHelper::ConstituentHitVector& constituentHitSubsetVector) const;
 
     /**
      *  @brief  Obtain the axes of the fitting frame
@@ -92,8 +102,9 @@ private:
      *  @param  orthoDirection the fitting 'z-axis'
      *
      */
-    void GetFittingAxes(const LArHitWidthHelper::ConstituentHitVector &constituentHitSubsetVector, pandora::CartesianVector &axisDirection,
-        pandora::CartesianVector &orthoDirection) const;
+    void GetFittingAxes(const LArHitWidthHelper::ConstituentHitVector& constituentHitSubsetVector,
+                        pandora::CartesianVector& axisDirection,
+                        pandora::CartesianVector& orthoDirection) const;
 
     /**
      *  @brief  Translate from (x, y, z) coordinates to (rL, rT) coordinates
@@ -104,8 +115,10 @@ private:
      *  @param  rT the fitting 'z' coordinate
      *
      */
-    void GetFittingCoordinates(
-        const pandora::CartesianVector &axisDirection, const pandora::CartesianVector &constituentHitPosition, float &rL, float &rT) const;
+    void GetFittingCoordinates(const pandora::CartesianVector& axisDirection,
+                               const pandora::CartesianVector& constituentHitPosition,
+                               float& rL,
+                               float& rT) const;
 
     /**
      *  @brief  Translate a gradient in the fitting coordinate frame to a direction vector in the detector frame
@@ -115,7 +128,9 @@ private:
      *  @param  globalDirection the direction vector in the detector frame
      *
      */
-    void GetGlobalDirection(const pandora::CartesianVector &axisDirection, const float gradient, pandora::CartesianVector &globalDirection) const;
+    void GetGlobalDirection(const pandora::CartesianVector& axisDirection,
+                            const float gradient,
+                            pandora::CartesianVector& globalDirection) const;
 
     /**
      *  @brief  Remove 'shortcut' associations from the cluster association map
@@ -124,23 +139,32 @@ private:
      *  @param  clusterAssociationMap the mapping of clusters to forward/backward associations
      *
      */
-    void RemoveShortcutAssociations(const pandora::ClusterVector &clusterVector, ClusterAssociationMap &clusterAssociationMap) const;
+    void RemoveShortcutAssociations(const pandora::ClusterVector& clusterVector,
+                                    ClusterAssociationMap& clusterAssociationMap) const;
 
     pandora::StatusCode ReadSettings(const pandora::TiXmlHandle xmlHandle);
 
-    float m_maxConstituentHitWidth;  ///< The maximum hit width of a constituent hit of broken up hit, units cm
-    float m_hitWidthScalingFactor;   ///< The scaling factor of the hit widths
-    float m_fittingWeight;           ///< The maximum hit weight considered in the least squared fit
-    float m_minClusterWeight;        ///< The threshold hit weight of the original, unscaled cluster to be considered in the merging process
-    float m_maxXMergeDistance;       ///< The maximum x distance between merging points of associated clusters, units cm
-    float m_maxZMergeDistance;       ///< The maximum z distance between merging points of associated clusters, units cm
-    float m_minMergeCosOpeningAngle; ///< The minimum cosine opening angle of the directions of associated clusters
-    float m_minDirectionDeviationCosAngle; ///< The minimum cosine opening angle of the direction of and associated cluster before and after merge
-    float m_minClusterSparseness;          ///< The threshold sparseness of a cluster to be considered in the merging process
+    float
+      m_maxConstituentHitWidth; ///< The maximum hit width of a constituent hit of broken up hit, units cm
+    float m_hitWidthScalingFactor; ///< The scaling factor of the hit widths
+    float m_fittingWeight;         ///< The maximum hit weight considered in the least squared fit
+    float
+      m_minClusterWeight; ///< The threshold hit weight of the original, unscaled cluster to be considered in the merging process
+    float
+      m_maxXMergeDistance; ///< The maximum x distance between merging points of associated clusters, units cm
+    float
+      m_maxZMergeDistance; ///< The maximum z distance between merging points of associated clusters, units cm
+    float
+      m_minMergeCosOpeningAngle; ///< The minimum cosine opening angle of the directions of associated clusters
+    float
+      m_minDirectionDeviationCosAngle; ///< The minimum cosine opening angle of the direction of and associated cluster before and after merge
+    float
+      m_minClusterSparseness; ///< The threshold sparseness of a cluster to be considered in the merging process
 
     // ATTN Dangling pointers emerge during cluster merging, here explicitly not dereferenced
-    mutable LArHitWidthHelper::ClusterToParametersMap m_clusterToParametersMap; ///< The map [cluster -> cluster parameters]
-};
+    mutable LArHitWidthHelper::ClusterToParametersMap
+      m_clusterToParametersMap; ///< The map [cluster -> cluster parameters]
+  };
 
 } //namespace lar_content
 

@@ -12,19 +12,18 @@
 
 using namespace pandora;
 
-namespace lar_content
-{
+namespace lar_content {
 
-ClearLongitudinalTracksTool::ClearLongitudinalTracksTool() : m_minMatchedFraction(0.8f)
-{
-}
+  ClearLongitudinalTracksTool::ClearLongitudinalTracksTool() : m_minMatchedFraction(0.8f) {}
 
-//------------------------------------------------------------------------------------------------------------------------------------------
+  //------------------------------------------------------------------------------------------------------------------------------------------
 
-bool ClearLongitudinalTracksTool::Run(ThreeViewLongitudinalTracksAlgorithm *const pAlgorithm, TensorType &overlapTensor)
-{
+  bool ClearLongitudinalTracksTool::Run(ThreeViewLongitudinalTracksAlgorithm* const pAlgorithm,
+                                        TensorType& overlapTensor)
+  {
     if (PandoraContentApi::GetSettings(*pAlgorithm)->ShouldDisplayAlgorithmInfo())
-        std::cout << "----> Running Algorithm Tool: " << this->GetInstanceName() << ", " << this->GetType() << std::endl;
+      std::cout << "----> Running Algorithm Tool: " << this->GetInstanceName() << ", "
+                << this->GetType() << std::endl;
 
     bool particlesMade(false);
 
@@ -33,38 +32,44 @@ bool ClearLongitudinalTracksTool::Run(ThreeViewLongitudinalTracksAlgorithm *cons
     this->CreateThreeDParticles(pAlgorithm, elementList, particlesMade);
 
     return particlesMade;
-}
+  }
 
-//------------------------------------------------------------------------------------------------------------------------------------------
+  //------------------------------------------------------------------------------------------------------------------------------------------
 
-void ClearLongitudinalTracksTool::CreateThreeDParticles(
-    ThreeViewLongitudinalTracksAlgorithm *const pAlgorithm, const TensorType::ElementList &elementList, bool &particlesMade) const
-{
+  void ClearLongitudinalTracksTool::CreateThreeDParticles(
+    ThreeViewLongitudinalTracksAlgorithm* const pAlgorithm,
+    const TensorType::ElementList& elementList,
+    bool& particlesMade) const
+  {
     ProtoParticleVector protoParticleVector;
 
-    for (TensorType::ElementList::const_iterator iter = elementList.begin(), iterEnd = elementList.end(); iter != iterEnd; ++iter)
-    {
-        if (iter->GetOverlapResult().GetMatchedFraction() < m_minMatchedFraction)
-            continue;
+    for (TensorType::ElementList::const_iterator iter = elementList.begin(),
+                                                 iterEnd = elementList.end();
+         iter != iterEnd;
+         ++iter) {
+      if (iter->GetOverlapResult().GetMatchedFraction() < m_minMatchedFraction) continue;
 
-        ProtoParticle protoParticle;
-        protoParticle.m_clusterList.push_back(iter->GetClusterU());
-        protoParticle.m_clusterList.push_back(iter->GetClusterV());
-        protoParticle.m_clusterList.push_back(iter->GetClusterW());
-        protoParticleVector.push_back(protoParticle);
+      ProtoParticle protoParticle;
+      protoParticle.m_clusterList.push_back(iter->GetClusterU());
+      protoParticle.m_clusterList.push_back(iter->GetClusterV());
+      protoParticle.m_clusterList.push_back(iter->GetClusterW());
+      protoParticleVector.push_back(protoParticle);
     }
 
     particlesMade |= pAlgorithm->CreateThreeDParticles(protoParticleVector);
-}
+  }
 
-//------------------------------------------------------------------------------------------------------------------------------------------
+  //------------------------------------------------------------------------------------------------------------------------------------------
 
-StatusCode ClearLongitudinalTracksTool::ReadSettings(const TiXmlHandle xmlHandle)
-{
+  StatusCode ClearLongitudinalTracksTool::ReadSettings(const TiXmlHandle xmlHandle)
+  {
     PANDORA_RETURN_RESULT_IF_AND_IF(
-        STATUS_CODE_SUCCESS, STATUS_CODE_NOT_FOUND, !=, XmlHelper::ReadValue(xmlHandle, "MinMatchedFraction", m_minMatchedFraction));
+      STATUS_CODE_SUCCESS,
+      STATUS_CODE_NOT_FOUND,
+      !=,
+      XmlHelper::ReadValue(xmlHandle, "MinMatchedFraction", m_minMatchedFraction));
 
     return STATUS_CODE_SUCCESS;
-}
+  }
 
 } // namespace lar_content

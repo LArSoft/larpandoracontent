@@ -10,23 +10,21 @@
 
 #include "larpandoracontent/LArThreeDReco/LArShowerFragments/ThreeViewRemnantsAlgorithm.h"
 
-namespace lar_content
-{
+namespace lar_content {
 
-/**
+  /**
  *  @brief  MopUpRemnantsTool class
  */
-class MopUpRemnantsTool : public RemnantTensorTool
-{
-public:
+  class MopUpRemnantsTool : public RemnantTensorTool {
+  public:
     /**
      *  @brief  Default constructor
      */
     MopUpRemnantsTool();
 
-    bool Run(ThreeViewRemnantsAlgorithm *const pAlgorithm, TensorType &overlapTensor);
+    bool Run(ThreeViewRemnantsAlgorithm* const pAlgorithm, TensorType& overlapTensor);
 
-private:
+  private:
     pandora::StatusCode ReadSettings(const pandora::TiXmlHandle xmlHandle);
 
     /**
@@ -36,7 +34,8 @@ private:
      *  @param  protoParticleVector the output vector of candidate particles
      *  @param  clusterMergeMap the output map of clusters to be merged
      */
-    void FindBestShowers(const TensorType &overlapTensor, ProtoParticleVector &protoParticleVector) const;
+    void FindBestShowers(const TensorType& overlapTensor,
+                         ProtoParticleVector& protoParticleVector) const;
 
     /**
      *  @brief  Copy used clusters into cluster list
@@ -44,7 +43,8 @@ private:
      *  @param  elementList the input list of elements
      *  @param  usedClusters to receive the list of used clusters
      */
-    void GetUsedClusters(const TensorType::ElementList &elementList, pandora::ClusterSet &usedClusters) const;
+    void GetUsedClusters(const TensorType::ElementList& elementList,
+                         pandora::ClusterSet& usedClusters) const;
 
     /**
      *  @brief  Select the best triplet of clusters
@@ -53,9 +53,10 @@ private:
      *  @param  usedClusters the list of cluster analysed so far
      *  @param  bestIter iterator to the best element in the list
      */
-    void SelectBestElement(const TensorType::ElementList &elementList, const pandora::ClusterSet &usedClusters,
-        TensorType::ElementList::const_iterator &bestIter) const;
-};
+    void SelectBestElement(const TensorType::ElementList& elementList,
+                           const pandora::ClusterSet& usedClusters,
+                           TensorType::ElementList::const_iterator& bestIter) const;
+  };
 
 } // namespace lar_content
 
