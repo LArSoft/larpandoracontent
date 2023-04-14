@@ -10,6 +10,7 @@
 
 #include "larpandoracontent/LArControlFlow/MasterAlgorithm.h"
 
+#include "larpandoracontent/LArObjects/LArAdaBoostDecisionTree.h"
 #include "larpandoracontent/LArObjects/LArSupportVectorMachine.h"
 
 #include <functional>
@@ -20,11 +21,11 @@ namespace lar_content
 /**
  *  @brief  NeutrinoIdTool class
  *
- *          Compares the neutrino and cosmic hypotheses of all of the slices in the event. Uses an SVM to calculate the probability of each slice
+ *          Compares the neutrino and cosmic hypotheses of all of the slices in the event. Uses an MVA to calculate the probability of each slice
  *          containing a neutrino interaction. The N slices with the highest probabilities are identified as a neutrino (if sufficiently probable)
  *          all other slices are deemed cosmogenic.
  *
- *          If training mode is switched on, then the tool will write SVM training exmples to the specified output file. The events selected for
+ *          If training mode is switched on, then the tool will write MVA training exmples to the specified output file. The events selected for
  *          training must pass (user configurable) slicing quality cuts. Users may also select events based on their interaction type (nuance code).
  */
 class NeutrinoIdTool : public SliceIdBaseTool
@@ -35,7 +36,10 @@ public:
      */
     NeutrinoIdTool();
 
-    void SelectOutputPfos(const pandora::Algorithm *const pAlgorithm, const SliceHypotheses &nuSliceHypotheses, const SliceHypotheses &crSliceHypotheses, pandora::PfoList &selectedPfos);
+    ~NeutrinoIdTool();
+
+    void SelectOutputPfos(const pandora::Algorithm *const pAlgorithm, const SliceHypotheses &nuSliceHypotheses,
+        const SliceHypotheses &crSliceHypotheses, pandora::PfoList &selectedPfos);
 
 private:
     /**
@@ -66,6 +70,13 @@ private:
          *  @param  featuresVector empty feature vector to populate
          */
         void GetFeatureVector(LArMvaHelper::MvaFeatureVector &featureVector) const;
+
+        /**
+         *  @brief  Get the feature map for the MVA
+         *
+         *  @param  featuresMap empty feature map to populate
+         */
+        void GetFeatureMap(LArMvaHelper::DoubleMap &featureMap) const;
 
         /**
          *  @brief  Get the probability that this slice contains a neutrino interaction
@@ -100,7 +111,8 @@ private:
          *
          *  @return the direction of the input spacepoints
          */
-        pandora::CartesianVector GetDirection(const pandora::CartesianPointVector &spacePoints, std::function<bool(const pandora::CartesianVector &pointA, const pandora::CartesianVector &pointB)> fShouldChooseA) const;
+        pandora::CartesianVector GetDirection(const pandora::CartesianPointVector &spacePoints,
+            std::function<bool(const pandora::CartesianVector &pointA, const pandora::CartesianVector &pointB)> fShouldChooseA) const;
 
         /**
          *  @brief  Use a sliding fit to get the direction of a collection of spacepoint near a vertex position
@@ -138,11 +150,13 @@ private:
          *  @param  radius the radius of the sphere
          *  @param  spacePointsInSphere the vector to hold the spacepoint in the sphere
          */
-        void GetPointsInSphere(const pandora::CartesianPointVector &spacePoints, const pandora::CartesianVector &vertex, const float radius, pandora::CartesianPointVector &spacePointsInSphere) const;
+        void GetPointsInSphere(const pandora::CartesianPointVector &spacePoints, const pandora::CartesianVector &vertex, const float radius,
+            pandora::CartesianPointVector &spacePointsInSphere) const;
 
-        bool                               m_isAvailable;    ///< Is the feature vector available
-        LArMvaHelper::MvaFeatureVector     m_featureVector;  ///< The SVM feature vector
-        const NeutrinoIdTool *const        m_pTool;          ///< The tool that owns this
+        bool m_isAvailable;                             ///< Is the feature vector available
+        LArMvaHelper::MvaFeatureVector m_featureVector; ///< The MVA feature vector
+        LArMvaHelper::DoubleMap m_featureMap;           ///< A map between MVA features and their names
+        const NeutrinoIdTool *const m_pTool;            ///< The tool that owns this
     };
 
     typedef std::pair<unsigned int, float> UintFloatPair;
@@ -156,7 +170,8 @@ private:
      *  @param  crSliceHypotheses the input cosmic slice hypotheses
      *  @param  sliceFeaturesVector vector to hold the slice features
      */
-    void GetSliceFeatures(const NeutrinoIdTool *const pTool, const SliceHypotheses &nuSliceHypotheses, const SliceHypotheses &crSliceHypotheses, SliceFeaturesVector &sliceFeaturesVector) const;
+    void GetSliceFeatures(const NeutrinoIdTool *const pTool, const SliceHypotheses &nuSliceHypotheses,
+        const SliceHypotheses &crSliceHypotheses, SliceFeaturesVector &sliceFeaturesVector) const;
 
     /**
      *  @brief  Get the slice with the most neutrino induced hits using Monte-Carlo information
@@ -168,7 +183,8 @@ private:
      *
      *  @return does the best slice pass the quality cuts for training?
      */
-    bool GetBestMCSliceIndex(const pandora::Algorithm *const pAlgorithm, const SliceHypotheses &nuSliceHypotheses, const SliceHypotheses &crSliceHypotheses, unsigned int &bestSliceIndex) const;
+    bool GetBestMCSliceIndex(const pandora::Algorithm *const pAlgorithm, const SliceHypotheses &nuSliceHypotheses,
+        const SliceHypotheses &crSliceHypotheses, unsigned int &bestSliceIndex) const;
 
     /**
      *  @brief  Determine if the event passes the selection cuts for training and has the required NUANCE code
@@ -188,7 +204,8 @@ private:
      *  @param  reconstructedCaloHitList output list of all 2d hits in the input pfos
      *  @param  reconstructableCaloHitSet set of reconstructable calo hits
      */
-    void Collect2DHits(const pandora::PfoList &pfos, pandora::CaloHitList &reconstructedCaloHitList, const pandora::CaloHitSet &reconstructableCaloHitSet) const;
+    void Collect2DHits(const pandora::PfoList &pfos, pandora::CaloHitList &reconstructedCaloHitList,
+        const pandora::CaloHitSet &reconstructableCaloHitSet) const;
 
     /**
      *  @brief  Count the number of neutrino induced hits in a given list using MC information
@@ -226,7 +243,8 @@ private:
      *  @param  sliceFeaturesVector vector holding the slice features
      *  @param  selectedPfos the list of pfos to populate
      */
-    void SelectPfosByProbability(const pandora::Algorithm *const pAlgorithm, const SliceHypotheses &nuSliceHypotheses, const SliceHypotheses &crSliceHypotheses, const SliceFeaturesVector &sliceFeaturesVector, pandora::PfoList &selectedPfos) const;
+    void SelectPfosByProbability(const pandora::Algorithm *const pAlgorithm, const SliceHypotheses &nuSliceHypotheses,
+        const SliceHypotheses &crSliceHypotheses, const SliceFeaturesVector &sliceFeaturesVector, pandora::PfoList &selectedPfos) const;
 
     /**
      *  @brief  Add the given pfos to the selected Pfo list
@@ -239,16 +257,18 @@ private:
     pandora::StatusCode ReadSettings(const pandora::TiXmlHandle xmlHandle);
 
     // Training
-    bool                  m_useTrainingMode;              ///< Should use training mode. If true, training examples will be written to the output file
-    std::string           m_trainingOutputFile;           ///< Output file name for training examples
-    bool                  m_selectNuanceCode;             ///< Should select training events by nuance code
-    int                   m_nuance;                       ///< Nuance code to select for training
-    float                 m_minPurity;                    ///< Minimum purity of the best slice to use event for training
-    float                 m_minCompleteness;              ///< Minimum completeness of the best slice to use event for training
+    bool m_useTrainingMode;           ///< Should use training mode. If true, training examples will be written to the output file
+    std::string m_trainingOutputFile; ///< Output file name for training examples
+    bool m_selectNuanceCode;          ///< Should select training events by nuance code
+    int m_nuance;                     ///< Nuance code to select for training
+    float m_minPurity;                ///< Minimum purity of the best slice to use event for training
+    float m_minCompleteness;          ///< Minimum completeness of the best slice to use event for training
 
     // Classification
-    float                 m_minProbability;               ///< Minimum probability required to classify a slice as the neutrino
-    unsigned int          m_maxNeutrinos;                 ///< The maximum number of neutrinos to select in any one event
+    float m_minProbability;      ///< Minimum probability required to classify a slice as the neutrino
+    unsigned int m_maxNeutrinos; ///< The maximum number of neutrinos to select in any one event
+
+    bool m_persistFeatures; ///< If true, the mva features will be persisted in the metadata
 
     SupportVectorMachine  m_supportVectorMachine;         ///< The support vector machine
     std::string           m_filePathEnvironmentVariable;  ///< The environment variable providing a list of paths to svm files
