@@ -15,15 +15,16 @@ product	  	    version
 eigen			v3_3_4a
 pandora				v03_11_01
 cetbuildtools			v7_04_00	-	only_for_build
+libtorch	v1_0_1_nonuma		-	optional
 end_product_list
 
 # We now define allowed qualifiers and the corresponding qualifiers for the depdencies.
 # Make a table by adding columns before "notes". 
-qualifier      pandora 	 eigen notes
-e17:debug      e17:debug -nq-
-e17:prof       e17:prof	 -nq-
-c2:debug       c2:debug	 -nq-
-c2:prof	       		 c2:prof		-nq-
+qualifier	pandora		eigen	libtorch	notes
+e17:debug      e17:debug -nq-	e17:prof
+e17:prof       e17:prof	 -nq-	e17:prof
+c2:debug       c2:debug	 -nq-	-nq-
+c2:prof	       		 c2:prof		-nq-	-nq-
 end_qualifier_list
 
 # Preserve tabs and formatting in emacs and vi / vim:
