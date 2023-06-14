@@ -14,13 +14,15 @@
 
 #include "larpandoradlcontent/LArControlFlow/DLMasterAlgorithm.h"
 #include "larpandoradlcontent/LArVertex/DlVertexingAlgorithm.h"
+#include "larpandoradlcontent/LArVertex/DlCheatedVertexingAlgorithm.h"
 
 #include "larpandoradlcontent/LArDLContent.h"
 
 // clang-format off
 #define LAR_DL_ALGORITHM_LIST(d)                                                                                                           \
     d("LArDLMaster", DLMasterAlgorithm)                                                                                                    \
-    d("LArDLVertexing",                         DlVertexingAlgorithm)
+    d("LArDLVertexing",                         DlVertexingAlgorithm)                                                                      \
+    d("LArCheatedDLVertexing",                  DlCheatedVertexingAlgorithm)
 
 #define LAR_DL_ALGORITHM_TOOL_LIST(d)
 
