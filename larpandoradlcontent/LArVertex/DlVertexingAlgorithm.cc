@@ -13,6 +13,8 @@
 #include <torch/torch.h>
 #include <ATen/ATen.h>
 
+#include "larpandoracontent/LArObjects/LArCaloHit.h"
+
 #include "larpandoracontent/LArHelpers/LArFileHelper.h"
 #include "larpandoracontent/LArHelpers/LArGeometryHelper.h"
 #include "larpandoracontent/LArHelpers/LArMvaHelper.h"
@@ -67,6 +69,20 @@ StatusCode DlVertexingAlgorithm::Run()
         return this->Infer();
 
     return STATUS_CODE_SUCCESS;
+}
+
+// TODO: This needs to be more elegant, but also depends on how/where the metadata is stored.
+bool ShouldUtiliseCaloHit(const CaloHit *pCaloHit)
+{
+    try
+    {
+        LArCaloHit *pLArCaloHit{const_cast<LArCaloHit *>(dynamic_cast<const LArCaloHit *>(pCaloHit))};
+        return pLArCaloHit->GetShowerProbability() > pLArCaloHit->GetTrackProbability();
+    }
+    catch (StatusCodeException &e)
+    {
+        return true;
+    }
 }
 
 StatusCode DlVertexingAlgorithm::PrepareTrainingSample()
@@ -158,8 +174,10 @@ StatusCode DlVertexingAlgorithm::PrepareTrainingSample()
 
         for (const CaloHit *pCaloHit : *pCaloHitList)
         {
+            LArCaloHit *pLArCaloHit{const_cast<LArCaloHit *>(dynamic_cast<const LArCaloHit *>(pCaloHit))};
             const float x{pCaloHit->GetPositionVector().GetX()}, z{pCaloHit->GetPositionVector().GetZ()}, adc{pCaloHit->GetMipEquivalentEnergy()};
             const float particlePdg(hitPdgCode.count(pCaloHit) != 0 ? hitPdgCode[pCaloHit] : 0);
+            const float nuProb{pLArCaloHit->GetShowerProbability()}, crProb{pLArCaloHit->GetTrackProbability()};
             // If on a refinement pass, drop hits outside the region of interest
             if (m_pass > 1 && (x < xMin || x > xMax || z < zMin || z > zMax))
                 continue;
@@ -167,6 +185,8 @@ StatusCode DlVertexingAlgorithm::PrepareTrainingSample()
             featureVector.emplace_back(static_cast<double>(z));
             featureVector.emplace_back(static_cast<double>(adc));
             featureVector.emplace_back(static_cast<double>(particlePdg));
+            featureVector.emplace_back(static_cast<double>(nuProb));
+            featureVector.emplace_back(static_cast<double>(crProb));
             ++nHits;
         }
         featureVector.insert(featureVector.begin() + 8, static_cast<double>(nHits));
@@ -369,7 +389,8 @@ StatusCode DlVertexingAlgorithm::Infer()
 //-----------------------------------------------------------------------------------------------------------------------------------------
 
 StatusCode DlVertexingAlgorithm::MakeNetworkInputFromHits(const CaloHitList &caloHits, const HitType view, const float xMin,
-    const float xMax, const float zMin, const float zMax, LArDLHelper::TorchInput &networkInput, PixelVector &pixelVector) const
+    const float xMax, const float zMin, const float zMax, LArDLHelper::TorchInput &networkInput, PixelVector &pixelVector,
+    CaloHitToPixelMap *caloHitToPixelMap) const
 {
     // ATTN If wire w pitches vary between TPCs, exception will be raised in initialisation of lar pseudolayer plugin
     const LArTPC *const pTPC(this->GetPandora().GetGeometry()->GetLArTPCMap().begin()->second);
@@ -393,6 +414,9 @@ StatusCode DlVertexingAlgorithm::MakeNetworkInputFromHits(const CaloHitList &cal
 
     for (const CaloHit *pCaloHit : caloHits)
     {
+        if (! ShouldUtiliseCaloHit(pCaloHit))
+            continue;
+
         const float x{pCaloHit->GetPositionVector().GetX()};
         const float z{pCaloHit->GetPositionVector().GetZ()};
         if (m_pass > 1)
@@ -404,6 +428,9 @@ StatusCode DlVertexingAlgorithm::MakeNetworkInputFromHits(const CaloHitList &cal
         const int pixelX{static_cast<int>(std::floor((x - xBinEdges[0]) / dx))};
         const int pixelZ{static_cast<int>(std::floor((z - zBinEdges[0]) / dz))};
         accessor[0][0][pixelZ][pixelX] += adc;
+
+        if (caloHitToPixelMap != nullptr)
+            caloHitToPixelMap->insert({pCaloHit, {pixelZ, pixelX}});
     }
     for (int row = 0; row < m_height; ++row)
     {
@@ -656,6 +683,9 @@ void DlVertexingAlgorithm::GetHitRegion(const CaloHitList &caloHitList, float &x
                 continue;
             for (const CaloHit *const pCaloHit : *pCaloHitList)
             {
+                if (! ShouldUtiliseCaloHit(pCaloHit))
+                    continue;
+
                 const CartesianVector &pos{pCaloHit->GetPositionVector()};
                 if (pos.GetX() <= xVtx)
                     ++nHitsLeft;
@@ -682,6 +712,9 @@ void DlVertexingAlgorithm::GetHitRegion(const CaloHitList &caloHitList, float &x
         int nHitsUpstream{0}, nHitsDownstream{0};
         for (const CaloHit *const pCaloHit : caloHitList)
         {
+            if (! ShouldUtiliseCaloHit(pCaloHit))
+                continue;
+
             const CartesianVector &pos{pCaloHit->GetPositionVector()};
             if (pos.GetZ() <= zVtx)
                 ++nHitsUpstream;
