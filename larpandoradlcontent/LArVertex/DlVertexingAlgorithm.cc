@@ -232,9 +232,16 @@ StatusCode DlVertexingAlgorithm::Infer()
         if (!isU && !isV && !isW)
             return STATUS_CODE_NOT_ALLOWED;
 
+        // INFO: If this view only has CR hits, skip it. We can tell that by the hit region not being set.
+        if (wireMin[view] == std::numeric_limits<float>::max() || wireMax[view] == -std::numeric_limits<float>::max()) {
+            continue;
+        }
+
         LArDLHelper::TorchInput input;
         PixelVector pixelVector;
         this->MakeNetworkInputFromHits(*pCaloHitList, view, driftMin, driftMax, wireMin[view], wireMax[view], input, pixelVector);
+        if (pixelVector.size() < 5)
+            continue;
 
         // Run the input through the trained model
         LArDLHelper::TorchInputVector inputs;
@@ -657,6 +664,13 @@ void DlVertexingAlgorithm::GetHitRegion(const CaloHitList &caloHitList, float &x
 
     if (caloHitList.empty())
         throw StatusCodeException(STATUS_CODE_NOT_FOUND);
+
+    // INFO: If we didn't set one or all of the boundaies, 
+    //       there are hits, but they were all CR hits
+    //       Don't throw, as the other views could be okay.
+    if (xMin == std::numeric_limits<float>::max() || xMax == -std::numeric_limits<float>::max() ||
+        zMin == std::numeric_limits<float>::max() || zMax == -std::numeric_limits<float>::max())
+        return;
 
     const HitType view{caloHitList.front()->GetHitType()};
     const bool isU{view == TPC_VIEW_U}, isV{view == TPC_VIEW_V}, isW{view == TPC_VIEW_W};
