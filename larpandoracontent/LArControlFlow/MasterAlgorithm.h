@@ -106,6 +106,11 @@ protected:
     pandora::StatusCode CopyMCParticles() const;
 
     /**
+     *  @brief  Copy all calo hits in the named input list to all pandora worker instances
+     */
+    pandora::StatusCode CopyAllCaloHits() const;
+
+    /**
      *  @brief  Get the mapping from lar tpc volume id to lists of all hits, and truncated hits
      *
      *  @param  volumeIdToHitListMap to receive the populated volume id to hit list map
@@ -187,7 +192,7 @@ protected:
      *  @param  pPandora the address of the target pandora instance
      *  @param  pCaloHit the address of the calo hit
      */
-    pandora::StatusCode Copy(const pandora::Pandora *const pPandora, const pandora::CaloHit *const pCaloHit) const;
+    pandora::StatusCode Copy(const pandora::Pandora *const pPandora, const pandora::CaloHit *const pCaloHit, const bool ignoredHit = false) const;
 
     /**
      *  @brief  Copy a specified mc particle to the provided pandora instance
@@ -329,6 +334,7 @@ protected:
 
     bool m_fullWidthCRWorkerWireGaps;        ///< Whether wire-type line gaps in cosmic-ray worker instances should cover all drift time
     bool m_passMCParticlesToWorkerInstances; ///< Whether to pass mc particle details (and links to calo hits) to worker instances
+    bool m_passAllCaloHitsToWorkerInstances; ///< Whether to pass mc particle details (and links to calo hits) to worker instances
 
     typedef std::vector<StitchingBaseTool *> StitchingToolVector;
     typedef std::vector<CosmicRayTaggingBaseTool *> CosmicRayTaggingToolVector;

@@ -52,6 +52,9 @@ StatusCode SliceMonitoringAlgorithm::AssessSlice() const
     const CaloHitList *pCaloHitList{nullptr};
     PANDORA_RETURN_RESULT_IF(STATUS_CODE_SUCCESS, !=, PandoraContentApi::GetCurrentList(*this, pCaloHitList));
 
+    const CaloHitList *pCaloFullHitList{nullptr};
+    PANDORA_RETURN_RESULT_IF(STATUS_CODE_SUCCESS, !=, PandoraContentApi::GetList(*this, "FullHitList", pCaloFullHitList));
+
     MCParticleVector primaries;
     LArMCParticleHelper::GetPrimaryMCParticleList(pMCParticleList, primaries);
 
@@ -78,7 +81,7 @@ StatusCode SliceMonitoringAlgorithm::AssessSlice() const
 
     LArMCParticleHelper::CaloHitToMCMap caloHitToPrimaryMCMap;
     LArMCParticleHelper::MCContributionMap mcToTrueHitListMap;
-    LArMCParticleHelper::GetMCParticleToCaloHitMatches(pCaloHitList, mcToPrimaryMCMap, caloHitToPrimaryMCMap, mcToTrueHitListMap);
+    LArMCParticleHelper::GetMCParticleToCaloHitMatches(pCaloFullHitList, mcToPrimaryMCMap, caloHitToPrimaryMCMap, mcToTrueHitListMap);
 
     if (pTrueNeutrino)
     {
