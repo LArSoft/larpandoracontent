@@ -202,8 +202,20 @@ StatusCode DlVertexingAlgorithm::PrepareTrainingSample()
 
 StatusCode DlVertexingAlgorithm::Infer()
 {
-    if (m_pass == 1)
+    if (m_pass == 1) {
         ++m_event;
+    } else {
+        const VertexList *pVertexList(nullptr);
+        PandoraContentApi::GetList(*this, m_inputVertexListName, pVertexList);
+        if (pVertexList == nullptr || pVertexList->empty()) {
+            std::cout << "DLVertexing: Input vertex list is empty! Can't perform pass " << m_pass << std::endl;
+            return STATUS_CODE_SUCCESS;
+        }
+    }
+
+    HepEVD::resetServer();
+    HepEVD::setHepEVDGeometry(this->GetPandora().GetGeometry());
+    HepEVD::HepHitMap* caloHitToEvdHit = HepEVD::getHitMap();
 
     std::map<HitType, float> wireMin, wireMax;
     float driftMin{std::numeric_limits<float>::max()}, driftMax{-std::numeric_limits<float>::max()};
@@ -221,6 +233,7 @@ StatusCode DlVertexingAlgorithm::Infer()
         driftMax = std::max(viewDriftMax, driftMax);
     }
 
+    int skippedProcessing = 0;
     CartesianPointVector vertexCandidatesU, vertexCandidatesV, vertexCandidatesW;
     for (const std::string &listName : m_caloHitListNames)
     {
@@ -233,7 +246,9 @@ StatusCode DlVertexingAlgorithm::Infer()
             return STATUS_CODE_NOT_ALLOWED;
 
         // INFO: If this view only has CR hits, skip it. We can tell that by the hit region not being set.
-        if (wireMin[view] == std::numeric_limits<float>::max() || wireMax[view] == -std::numeric_limits<float>::max()) {
+        if (wireMin[view] == std::numeric_limits<float>::max() || wireMax[view] == -std::numeric_limits<float>::max())
+        {
+            skippedProcessing += 1;
             continue;
         }
 
@@ -241,7 +256,10 @@ StatusCode DlVertexingAlgorithm::Infer()
         PixelVector pixelVector;
         this->MakeNetworkInputFromHits(*pCaloHitList, view, driftMin, driftMax, wireMin[view], wireMax[view], input, pixelVector);
         if (pixelVector.size() < 5)
+        {
+            skippedProcessing += 1;
             continue;
+        }
 
         // Run the input through the trained model
         LArDLHelper::TorchInputVector inputs;
@@ -361,6 +379,11 @@ StatusCode DlVertexingAlgorithm::Infer()
             vertexTuples.emplace_back(VertexTuple(this->GetPandora(), vertexCandidatesU.front(), vertexCandidatesV.front(), TPC_VIEW_U, TPC_VIEW_V));
         }
     }
+    else if (skippedProcessing > 0)
+    {
+        std::cout << "Insufficient 2D vertices to reconstruct a 3D vertex" << std::endl;
+        std::cout << "Possibly running on CR slice..." << std::endl;
+    }
     else
     { // Not enough views to reconstruct a 3D vertex
         std::cout << "Insufficient 2D vertices to reconstruct a 3D vertex" << std::endl;
@@ -379,9 +402,14 @@ StatusCode DlVertexingAlgorithm::Infer()
         vertexCandidates.emplace_back(vertex);
         PANDORA_RETURN_RESULT_IF(STATUS_CODE_SUCCESS, !=, this->MakeCandidateVertexList(vertexCandidates));
     }
+    else if (skippedProcessing > 0)
+    {
+        std::cout << "Missing vertex tuple to reconstruct a 3D vertex" << std::endl;
+        std::cout << "Possibly running on CR slice..." << std::endl;
+    }
     else
     {
-        std::cout << "Insufficient 2D vertices to reconstruct a 3D vertex" << std::endl;
+        std::cout << "Missing vertex tuple to reconstruct a 3D vertex" << std::endl;
         return STATUS_CODE_NOT_FOUND;
     }
 
