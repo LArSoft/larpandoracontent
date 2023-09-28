@@ -201,6 +201,7 @@ StatusCode VertexMonitoringAlgorithm::AssessVertices() const
             const int recoNuHitsU = caloHits.size();
             const float nuCompU = LArMCParticleHelper::GetSharedHits(uTrueHits, caloHits).size() / (float) uTrueHits.size();
             const float nuPurityU = LArMCParticleHelper::GetSharedHits(uTrueHits, caloHits).size() / (float) uSliceHits.size();
+            const int isInSliceU = CheckIfSliceContainsVertex(uSliceHits, trueVertex, TPC_VIEW_U);
 
             caloHits.clear();
             LArPfoHelper::GetCaloHits(pRecoNeutrino, TPC_VIEW_V, caloHits);
@@ -208,6 +209,7 @@ StatusCode VertexMonitoringAlgorithm::AssessVertices() const
             const int recoNuHitsV = caloHits.size();
             const float nuCompV = LArMCParticleHelper::GetSharedHits(vTrueHits, caloHits).size() / (float) vTrueHits.size();
             const float nuPurityV = LArMCParticleHelper::GetSharedHits(vTrueHits, caloHits).size() / (float) vSliceHits.size();
+            const int isInSliceV = CheckIfSliceContainsVertex(vSliceHits, trueVertex, TPC_VIEW_V);
 
             caloHits.clear();
             LArPfoHelper::GetCaloHits(pRecoNeutrino, TPC_VIEW_W, caloHits);
@@ -215,6 +217,7 @@ StatusCode VertexMonitoringAlgorithm::AssessVertices() const
             const int recoNuHitsW = caloHits.size();
             const float nuCompW = LArMCParticleHelper::GetSharedHits(wTrueHits, caloHits).size() / (float) wTrueHits.size();
             const float nuPurityW = LArMCParticleHelper::GetSharedHits(wTrueHits, caloHits).size() / (float) wSliceHits.size();
+            const int isInSliceW = CheckIfSliceContainsVertex(wSliceHits, trueVertex, TPC_VIEW_W);
 
             // Top level Neutrino information
             PANDORA_MONITORING_API(SetTreeVariable(this->GetPandora(), m_treename.c_str(), "success", success));
@@ -235,6 +238,9 @@ StatusCode VertexMonitoringAlgorithm::AssessVertices() const
             PANDORA_MONITORING_API(SetTreeVariable(this->GetPandora(), m_treename.c_str(), "isInGapUReco", isInGapUReco));
             PANDORA_MONITORING_API(SetTreeVariable(this->GetPandora(), m_treename.c_str(), "isInGapVReco", isInGapVReco));
             PANDORA_MONITORING_API(SetTreeVariable(this->GetPandora(), m_treename.c_str(), "isInGapWReco", isInGapWReco));
+            PANDORA_MONITORING_API(SetTreeVariable(this->GetPandora(), m_treename.c_str(), "isInSliceU", isInSliceU));
+            PANDORA_MONITORING_API(SetTreeVariable(this->GetPandora(), m_treename.c_str(), "isInSliceV", isInSliceV));
+            PANDORA_MONITORING_API(SetTreeVariable(this->GetPandora(), m_treename.c_str(), "isInSliceW", isInSliceW));
 
             // Finally, hit-level information. If the neutrino is badly reconstructed / missing, a worse vertex makes sense.
             PANDORA_MONITORING_API(SetTreeVariable(this->GetPandora(), m_treename.c_str(), "recoSliceHitsU", (int) uSliceHits.size()));
@@ -285,6 +291,44 @@ StatusCode VertexMonitoringAlgorithm::AssessVertices() const
     }
 
     return STATUS_CODE_SUCCESS;
+}
+
+//------------------------------------------------------------------------------------------------------------------------------------------
+
+bool CheckIfSliceContainsVertex(const pandora::CaloHitList caloHits, const pandora::CartesianVector trueVertex, const HitType view) const
+{
+    const auto projectedVertex = LArGeometryHelper::ProjectPositionOntoView(trueVertex, view);
+
+    float minX{std::numeric_limits<float>::max()};
+    float maxX{std::numeric_limits<float>::min()};
+    float minY{std::numeric_limits<float>::max()};
+    float maxY{std::numeric_limits<float>::min()};
+    float minZ{std::numeric_limits<float>::max()};
+    float maxZ{std::numeric_limits<float>::min()};
+
+    for (const auto &caloHit : caloHitList)
+    {
+        const auto pos = caloHit->GetPositionVector();
+        minX = std::min(minX, pos.GetX());
+        maxX = std::max(maxX, pos.GetX());
+        minY = std::min(minY, pos.GetY());
+        maxY = std::max(maxY, pos.GetY());
+        minZ = std::min(minZ, pos.GetZ());
+        maxZ = std::max(maxZ, pos.GetZ());
+    }
+
+    // TODO: Is just checking the x coordinate enough?
+    if (minX == std::numeric_limits<float>::max() || maxX == std::numeric_limits<float>::min())
+        return false;
+
+    if (projectedVertex.GetX() < minX || projectedVertex.GetX() > maxX)
+        return false;
+    if (projectedVertex.GetY() < minY || projectedVertex.GetY() > maxY)
+        return false;
+    if (projectedVertex.GetZ() < minZ || projectedVertex.GetZ() > maxZ)
+        return false;
+
+    return true;
 }
 
 //------------------------------------------------------------------------------------------------------------------------------------------
