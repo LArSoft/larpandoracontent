@@ -301,8 +301,6 @@ bool VertexMonitoringAlgorithm::CheckIfSliceContainsVertex(const pandora::CaloHi
 
     float minX{std::numeric_limits<float>::max()};
     float maxX{std::numeric_limits<float>::min()};
-    float minY{std::numeric_limits<float>::max()};
-    float maxY{std::numeric_limits<float>::min()};
     float minZ{std::numeric_limits<float>::max()};
     float maxZ{std::numeric_limits<float>::min()};
 
@@ -311,8 +309,6 @@ bool VertexMonitoringAlgorithm::CheckIfSliceContainsVertex(const pandora::CaloHi
         const auto pos = caloHit->GetPositionVector();
         minX = std::min(minX, pos.GetX());
         maxX = std::max(maxX, pos.GetX());
-        minY = std::min(minY, pos.GetY());
-        maxY = std::max(maxY, pos.GetY());
         minZ = std::min(minZ, pos.GetZ());
         maxZ = std::max(maxZ, pos.GetZ());
     }
@@ -322,8 +318,6 @@ bool VertexMonitoringAlgorithm::CheckIfSliceContainsVertex(const pandora::CaloHi
         return false;
 
     if (projectedVertex.GetX() < minX || projectedVertex.GetX() > maxX)
-        return false;
-    if (projectedVertex.GetY() < minY || projectedVertex.GetY() > maxY)
         return false;
     if (projectedVertex.GetZ() < minZ || projectedVertex.GetZ() > maxZ)
         return false;
