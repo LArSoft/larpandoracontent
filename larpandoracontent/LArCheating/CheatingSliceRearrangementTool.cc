@@ -12,9 +12,6 @@
 
 #include "larpandoracontent/LArHelpers/LArMCParticleHelper.h"
 
-#define HEP_EVD_PANDORA_HELPERS 1
-#include "hep_evd.h"
-
 using namespace pandora;
 
 namespace lar_content
@@ -32,9 +29,6 @@ void CheatingSliceRearrangementTool::SelectSlices(const pandora::Algorithm *cons
     int bestSlice(-1);
     std::map<int, std::pair<CaloHitList, float>> sliceMetrics;
 
-    HepEVD::setHepEVDGeometry(this->GetPandora().GetGeometry());
-    HepEVD::HepHitMap* caloHitToEvdHit = HepEVD::getHitMap();
-
     // Get all the hits in each slice, and then find out if they are neutrino or cosmic-ray induced.
     // We can then calculate the number of neutrino hits and the percentage of nu hits out of all the hits in the slice.
     //
@@ -50,15 +44,9 @@ void CheatingSliceRearrangementTool::SelectSlices(const pandora::Algorithm *cons
         for (const CaloHit *const pSliceCaloHit : sliceHits)
             localHitList.push_back(static_cast<const CaloHit *>(pSliceCaloHit->GetParentAddress()));
 
-        HepEVD::add2DHits(&localHitList);
-
         for (const CaloHit *const pCaloHit : localHitList)
         {
             const MCParticleWeightMap &hitMCParticleWeightMap(pCaloHit->GetMCParticleWeightMap());
-
-            caloHitToEvdHit->at(pCaloHit)->addProperties({
-                {"SliceNumber", sliceNumber}
-            });
 
             // INFO: At MicroBooNE, if there is any MC at all...its a nu-hit.
             if (hitMCParticleWeightMap.empty())
@@ -116,16 +104,8 @@ void CheatingSliceRearrangementTool::SelectSlices(const pandora::Algorithm *cons
             CaloHitList filteredHits{};
             for (auto pCaloHit : sliceHits) {
                 if (std::find(caloHitsToMove.begin(), caloHitsToMove.end(), pCaloHit) != caloHitsToMove.end())
-                {
-                    caloHitToEvdHit->at(pCaloHit)->addProperties({
-                        {"SwappedHit", sliceNumber}
-                    });
                     continue;
-                }
 
-                caloHitToEvdHit->at(pCaloHit)->addProperties({
-                    {"LeftHit", sliceNumber}
-                });
                 filteredHits.push_back(pCaloHit);
             }
 
@@ -134,9 +114,6 @@ void CheatingSliceRearrangementTool::SelectSlices(const pandora::Algorithm *cons
 
         outputSliceVector.push_back(sliceHits);
     }
-
-    HepEVD::saveState("SliceRearrangeCheat");
-    HepEVD::startServer();
 }
 
 //------------------------------------------------------------------------------------------------------------------------------------------
