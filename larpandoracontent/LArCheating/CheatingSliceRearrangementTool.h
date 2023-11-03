@@ -5,8 +5,8 @@
  *
  *  $Log: $
  */
-#ifndef LAR_CHEATING_SLICE_SELECTION_TOOL_H
-#define LAR_CHEATING_SLICE_SELECTION_TOOL_H 1
+#ifndef LAR_CHEATING_SLICE_REARRANGEMENT_TOOL_H
+#define LAR_CHEATING_SLICE_REARRANGEMENT_TOOL_H 1
 
 #include "larpandoracontent/LArControlFlow/MasterAlgorithm.h"
 
@@ -33,16 +33,7 @@ public:
      */
     void SelectSlices(const pandora::Algorithm *const pAlgorithm, const SliceVector &inputSliceVector, SliceVector &outputSliceVector);
 
-    typedef std::map<float, int, std::greater<float>> MetricSliceIndexMap;
-
 protected:
-    /**
-     *  @brief  Template method to determine if an MC particle matches the target criteria for slice selection. Return true if match.
-     *
-     *  @param  mcParticle the MC particle to check
-     */
-    virtual bool IsTarget(const pandora::MCParticle *const mcParticle) const = 0;
-
     pandora::StatusCode ReadSettings(const pandora::TiXmlHandle xmlHandle);
 
 protected:
@@ -54,4 +45,4 @@ protected:
 
 } // namespace lar_content
 
-#endif // #ifndef LAR_CHEATING_SLICE_SELECTION_TOOL_H
+#endif // #ifndef LAR_CHEATING_SLICE_REARRANGEMENT_TOOL_H
