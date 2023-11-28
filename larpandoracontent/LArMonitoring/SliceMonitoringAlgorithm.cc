@@ -44,20 +44,37 @@ void SliceMonitoringAlgorithm::RearrangeHits(const pandora::Algorithm *const pAl
         STATUS_CODE_SUCCESS, !=,
         PandoraContentApi::GetCurrentList(*pAlgorithm, pMCParticleList));
 
-    CaloHitList fullCaloHitList{};
+    const CaloHitList *pCompleteCaloHitList{nullptr};
+    PANDORA_THROW_RESULT_IF(
+        STATUS_CODE_SUCCESS, !=,
+        PandoraContentApi::GetList(*pAlgorithm, "FullHitList", pCompleteCaloHitList));
+
+    // Populate the complete calo hit list, based on every hit in every slice.
+    CaloHitList fullSliceCaloHitList{};
     for (const auto &slice : inputSliceList)
     {
         for (const CaloHit *const pSliceCaloHit : slice.m_caloHitListU)
-            fullCaloHitList.push_back(pSliceCaloHit);
+            fullSliceCaloHitList.push_back(pSliceCaloHit);
         for (const CaloHit *const pSliceCaloHit : slice.m_caloHitListV)
-            fullCaloHitList.push_back(pSliceCaloHit);
+            fullSliceCaloHitList.push_back(pSliceCaloHit);
         for (const CaloHit *const pSliceCaloHit : slice.m_caloHitListW)
-            fullCaloHitList.push_back(pSliceCaloHit);
+            fullSliceCaloHitList.push_back(pSliceCaloHit);
     }
 
     const MCParticle *pTrueNeutrino{nullptr};
-    LArMCParticleHelper::CaloHitToMCMap caloHitToPrimaryMCMap;
     LArMCParticleHelper::MCContributionMap mcToTrueHitListMap;
+
+    // Since the slice hits, and the full, unfiltered hits may not match up, first
+    // perform a quick match between these two sets of hits.
+    std::map<const std::tuple<float, float, float>, const CaloHit*> caloHitListMatchMap;
+    auto getHitKey = [](const CaloHit* pCaloHit) -> std::tuple<float, float, float> {
+        const auto pos = pCaloHit->GetPositionVector();
+        return {pos.GetX(), pos.GetZ(), pCaloHit->GetHadronicEnergy()};
+    };
+    CaloHitList matchedCaloHitList;
+
+    for (const CaloHit* pCaloHit : fullSliceCaloHitList)
+        caloHitListMatchMap[getHitKey(pCaloHit)] = pCaloHit;
 
     // Refactor: For slices find largest nu slice.
     //           For slices, populate the below variables.
@@ -71,7 +88,13 @@ void SliceMonitoringAlgorithm::RearrangeHits(const pandora::Algorithm *const pAl
     //              Double check the variables work for both "slice level" and "nu
     //              level"
 
-    for (const CaloHit *pCaloHit : fullCaloHitList) {
+    for (const CaloHit *pCaloHit : *pCompleteCaloHitList) {
+
+        // If there is a match for this hit...we want to point the slice-based hit,
+        // to the complete calo hit list hit instead.
+        // Otherwise, we can't really make connections between the two.
+        if (caloHitListMatchMap.count(getHitKey(pCaloHit)) > 0)
+            caloHitListMatchMap[getHitKey(pCaloHit)] = pCaloHit;
 
         // Populate MC info.
         LArCaloHit *pLArCaloHit{
@@ -100,24 +123,26 @@ void SliceMonitoringAlgorithm::RearrangeHits(const pandora::Algorithm *const pAl
         if (largestContributor == nullptr)
             continue;
 
-        caloHitToPrimaryMCMap[pCaloHit] = largestContributor;
         mcToTrueHitListMap[largestContributor].push_back(pCaloHit);
     }
+
+    std::cout << "We found " << mcToTrueHitListMap.size() << " MCs..." << std::endl;
 
     if (pTrueNeutrino) {
         const float trueNuEnergy{pTrueNeutrino->GetEnergy()};
         const int success{1};
 
         // Lets calculate some slice properties.
+        // Perform this for every given input slice.
         for (const auto &slice : inputSliceList)
         {
             CaloHitList sliceCaloHits;
             for (const CaloHit *const pSliceCaloHit : slice.m_caloHitListU)
-                sliceCaloHits.push_back(pSliceCaloHit);
+                sliceCaloHits.push_back(caloHitListMatchMap[getHitKey(pSliceCaloHit)]);
             for (const CaloHit *const pSliceCaloHit : slice.m_caloHitListV)
-                sliceCaloHits.push_back(pSliceCaloHit);
+                sliceCaloHits.push_back(caloHitListMatchMap[getHitKey(pSliceCaloHit)]);
             for (const CaloHit *const pSliceCaloHit : slice.m_caloHitListW)
-                sliceCaloHits.push_back(pSliceCaloHit);
+                sliceCaloHits.push_back(caloHitListMatchMap[getHitKey(pSliceCaloHit)]);
 
             CaloHitList mcHits;
             if (mcToTrueHitListMap.count(pTrueNeutrino) > 0)
@@ -133,19 +158,18 @@ void SliceMonitoringAlgorithm::RearrangeHits(const pandora::Algorithm *const pAl
 
             const std::map<HitType, std::string> allViews(
                 {{TPC_VIEW_U, "_U"}, {TPC_VIEW_V, "_V"}, {TPC_VIEW_W, "_W"}});
-            // std::map<std::string, std::vector<float>> scoreDistributions;
 
             for (const auto &viewNamePair : allViews) {
                 HitType view(viewNamePair.first);
                 auto viewName(viewNamePair.second);
 
-                CaloHitList trueNuHitsForView;
+                CaloHitList totalNuHitsInView;
                 std::copy_if(mcHits.begin(), mcHits.end(),
-                             std::back_inserter(trueNuHitsForView),
+                             std::back_inserter(totalNuHitsInView),
                              [&](const pandora::CaloHit *hit) {
                              return hit->GetHitType() == view;
                              });
-                trueNuHitsForView.sort();
+                totalNuHitsInView.sort();
 
                 CaloHitList allCaloHitsInView;
                 std::copy_if(sliceCaloHits.begin(), sliceCaloHits.end(),
@@ -158,14 +182,14 @@ void SliceMonitoringAlgorithm::RearrangeHits(const pandora::Algorithm *const pAl
                 // Now we have all the hits + all the MC-based (i.e. neutrino hits), get
                 // the overlap / missing / extra. First, the hits that match in the slice.
                 CaloHitList sliceNuHits;
-                std::set_intersection(trueNuHitsForView.begin(), trueNuHitsForView.end(),
+                std::set_intersection(totalNuHitsInView.begin(), totalNuHitsInView.end(),
                                       allCaloHitsInView.begin(), allCaloHitsInView.end(),
                                       std::inserter(sliceNuHits, sliceNuHits.end()));
 
                 // Now, the MC hits that are missing (i.e. the neutrino hits that are
                 // missing).
                 CaloHitList missingNuHits;
-                std::set_difference(trueNuHitsForView.begin(), trueNuHitsForView.end(),
+                std::set_difference(totalNuHitsInView.begin(), totalNuHitsInView.end(),
                                     allCaloHitsInView.begin(), allCaloHitsInView.end(),
                                     std::inserter(missingNuHits, missingNuHits.end()));
 
@@ -173,7 +197,7 @@ void SliceMonitoringAlgorithm::RearrangeHits(const pandora::Algorithm *const pAl
                 // associated with the neutrino (cosmic contamination).
                 CaloHitList sliceCRHits;
                 std::set_difference(allCaloHitsInView.begin(), allCaloHitsInView.end(),
-                                    trueNuHitsForView.begin(), trueNuHitsForView.end(),
+                                    totalNuHitsInView.begin(), totalNuHitsInView.end(),
                                     std::inserter(sliceCRHits, sliceCRHits.end()));
 
                 // Calculate slice completeness (how much of the neutrino is here), and
@@ -183,13 +207,13 @@ void SliceMonitoringAlgorithm::RearrangeHits(const pandora::Algorithm *const pAl
                 float nuPurity(1.f);
 
                 if (containsNeutrinoHits) {
-                    nuComp = sliceNuHits.size() / (float)trueNuHitsForView.size();
+                    nuComp = sliceNuHits.size() / (float)totalNuHitsInView.size();
                     nuPurity = sliceNuHits.size() / (float)allCaloHitsInView.size();
                 }
 
                 PANDORA_MONITORING_API(SetTreeVariable(
                     this->GetPandora(), m_treename.c_str(),
-                    "trueNuHitsInSlice" + viewName, (float)trueNuHitsForView.size()));
+                    "totalNuHitsInView" + viewName, (float)totalNuHitsInView.size()));
                 PANDORA_MONITORING_API(SetTreeVariable(
                     this->GetPandora(), m_treename.c_str(), "sliceHits" + viewName,
                     (float)allCaloHitsInView.size()));
