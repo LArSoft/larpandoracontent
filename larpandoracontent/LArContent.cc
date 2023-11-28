@@ -186,7 +186,6 @@
     d("LArMCParticleMonitoring",                MCParticleMonitoringAlgorithm)                                                  \
     d("LArVisualMonitoring",                    VisualMonitoringAlgorithm)                                                      \
     d("LArVertexMonitoring",                    VertexMonitoringAlgorithm)                                                      \
-    d("LArSliceMonitoring",                     SliceMonitoringAlgorithm)                                                       \
     d("LArEventReading",                        EventReadingAlgorithm)                                                          \
     d("LArEventWriting",                        EventWritingAlgorithm)                                                          \
     d("LArCheatingClusterCharacterisation",     CheatingClusterCharacterisationAlgorithm)                                       \
@@ -287,6 +286,7 @@
     d("LArCheatingNeutrinoId",                  CheatingNeutrinoIdTool)                                                         \
     d("LArCheatingNeutrinoSliceSelection",      CheatingNeutrinoSliceSelectionTool)                                             \
     d("LArCheatingSliceRearrangement",          CheatingSliceRearrangementTool)                                                 \
+    d("LArSliceMonitoring",                     SliceMonitoringAlgorithm)                                                       \
     d("LArBranchAssociatedPfos",                BranchAssociatedPfosTool)                                                       \
     d("LArEndAssociatedPfos",                   EndAssociatedPfosTool)                                                          \
     d("LArEventSlicing",                        EventSlicingTool)                                                               \
