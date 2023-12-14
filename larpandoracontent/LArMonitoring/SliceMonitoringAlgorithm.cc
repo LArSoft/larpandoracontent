@@ -14,6 +14,7 @@
 
 #include "larpandoracontent/LArHelpers/LArGeometryHelper.h"
 #include "larpandoracontent/LArHelpers/LArMCParticleHelper.h"
+#include "larpandoracontent/LArHelpers/LArMvaHelper.h"
 #include "larpandoracontent/LArHelpers/LArPfoHelper.h"
 
 #include <algorithm>
@@ -37,7 +38,8 @@ SliceMonitoringAlgorithm::~SliceMonitoringAlgorithm()
 
 void SliceMonitoringAlgorithm::RearrangeHits(const pandora::Algorithm *const pAlgorithm, SlicingAlgorithm::SliceList &inputSliceList,
     SlicingAlgorithm::SliceList &outputSliceList
-){
+)
+{
 
     const MCParticleList *pMCParticleList{nullptr};
     PANDORA_THROW_RESULT_IF(
@@ -114,6 +116,9 @@ void SliceMonitoringAlgorithm::RearrangeHits(const pandora::Algorithm *const pAl
         mcToTrueHitListMap[largestContributor].push_back(pCaloHit);
     }
 
+    if (m_trainingMode)
+        WriteOutHits(inputSliceList, mcToTrueHitListMap);
+
     if (pTrueNeutrino) {
         const float trueNuEnergy{pTrueNeutrino->GetEnergy()};
         const int success{1};
@@ -136,7 +141,6 @@ void SliceMonitoringAlgorithm::RearrangeHits(const pandora::Algorithm *const pAl
                 sliceCaloHits.push_back(caloHitListMatchMap[getHitKey(pSliceCaloHit)]);
             for (const CaloHit *const pSliceCaloHit : slice.m_caloHitListW)
                 sliceCaloHits.push_back(caloHitListMatchMap[getHitKey(pSliceCaloHit)]);
-
 
             CaloHitList sliceNuHits;
             std::set_intersection(sliceCaloHits.begin(), sliceCaloHits.end(),
@@ -283,10 +287,77 @@ void SliceMonitoringAlgorithm::RearrangeHits(const pandora::Algorithm *const pAl
 
 //------------------------------------------------------------------------------------------------------------------------------------------
 
+void SliceMonitoringAlgorithm::WriteOutHits(SlicingAlgorithm::SliceList &inputSliceList, const LArMCParticleHelper::MCContributionMap &mcToTrueHitListMap)
+{
+
+    // Build up a full list of all the slicing input hits, whilst retaining the
+    // slice that Pandora currently chose.
+    std::map<HitType, CaloHitList> perViewSliceHits({});
+    std::map<const CaloHit*, int> hitToSliceNumber;
+
+    for (unsigned int sliceNumber = 0; sliceNumber < inputSliceList.size(); ++sliceNumber)
+    {
+        const auto slice(inputSliceList[sliceNumber]);
+
+        for (const CaloHit *const pSliceCaloHit : slice.m_caloHitListU) {
+            perViewSliceHits[TPC_VIEW_U].push_back(pSliceCaloHit);
+            hitToSliceNumber.insert({pSliceCaloHit, sliceNumber});
+        }
+        for (const CaloHit *const pSliceCaloHit : slice.m_caloHitListV) {
+            perViewSliceHits[TPC_VIEW_V].push_back(pSliceCaloHit);
+            hitToSliceNumber.insert({pSliceCaloHit, sliceNumber});
+        }
+        for (const CaloHit *const pSliceCaloHit : slice.m_caloHitListW) {
+            perViewSliceHits[TPC_VIEW_W].push_back(pSliceCaloHit);
+            hitToSliceNumber.insert({pSliceCaloHit, sliceNumber});
+        }
+    }
+
+    std::map<const CaloHit*, int> hitToPdgCode;
+    for (const auto &mcHitListPair : mcToTrueHitListMap)
+        for (const auto &hit : mcHitListPair.second)
+            hitToPdgCode.insert({hit, mcHitListPair.first->GetParticleId()});
+
+    const std::map<HitType, std::string> allViews({{TPC_VIEW_U, "_U_View"}, {TPC_VIEW_V, "_V_View"}, {TPC_VIEW_W, "_W_View"}});
+
+
+    for (const auto &viewNamePair : allViews)
+    {
+        HitType view(viewNamePair.first);
+        auto viewName(viewNamePair.second);
+        const auto sliceCaloHits(perViewSliceHits[view]);
+
+        LArMvaHelper::MvaFeatureVector featureVector;
+        featureVector.emplace_back(static_cast<double>(inputSliceList.size()));
+        featureVector.emplace_back(static_cast<double>(sliceCaloHits.size()));
+
+        for (const CaloHit *pCaloHit : sliceCaloHits)
+        {
+            const float x{pCaloHit->GetPositionVector().GetX()}, z{pCaloHit->GetPositionVector().GetZ()}, adc{pCaloHit->GetMipEquivalentEnergy()};
+            const float particlePdg(hitToPdgCode.count(pCaloHit) != 0 ? hitToPdgCode[pCaloHit] : 0);
+
+            featureVector.emplace_back(static_cast<double>(x));
+            featureVector.emplace_back(static_cast<double>(z));
+            featureVector.emplace_back(static_cast<double>(adc));
+            featureVector.emplace_back(static_cast<double>(particlePdg));
+            featureVector.emplace_back(static_cast<double>(hitToSliceNumber[pCaloHit]));
+        }
+
+        const std::string trainingFileName{m_trainingOutputFile + viewName + ".csv"};
+        LArMvaHelper::ProduceTrainingExample(trainingFileName, true, featureVector);
+    }
+}
+
+//------------------------------------------------------------------------------------------------------------------------------------------
+
 StatusCode SliceMonitoringAlgorithm::ReadSettings(const TiXmlHandle xmlHandle)
 {
+    PANDORA_RETURN_RESULT_IF_AND_IF(STATUS_CODE_SUCCESS, STATUS_CODE_NOT_FOUND, !=, XmlHelper::ReadValue(xmlHandle, "TrainingMode", m_trainingMode));
     PANDORA_RETURN_RESULT_IF(STATUS_CODE_SUCCESS, !=, XmlHelper::ReadValue(xmlHandle, "Filename", m_filename));
     PANDORA_RETURN_RESULT_IF(STATUS_CODE_SUCCESS, !=, XmlHelper::ReadValue(xmlHandle, "Treename", m_treename));
+
+    if (m_trainingMode)
+        PANDORA_RETURN_RESULT_IF(STATUS_CODE_SUCCESS, !=, XmlHelper::ReadValue(xmlHandle, "TrainingOutputFileName", m_trainingOutputFile));
 
     return STATUS_CODE_SUCCESS;
 }
