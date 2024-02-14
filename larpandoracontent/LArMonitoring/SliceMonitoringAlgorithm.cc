@@ -157,9 +157,8 @@ void SliceMonitoringAlgorithm::RearrangeHits(const pandora::Algorithm *const pAl
         // WARN: This is valid at MicroBooNE, due to overlay information,
         //       but won't be valid if the cosmic rays have MC.
         CaloHitList mcHits;
-        if (mcToTrueHitListMap.count(pTrueNeutrino) > 0)
-            for (const auto &mcHitPair : mcToTrueHitListMap)
-                mcHits.insert(mcHits.end(), mcHitPair.second.begin(), mcHitPair.second.end());
+        for (const auto &mcHitPair : mcToTrueHitListMap)
+            mcHits.insert(mcHits.end(), mcHitPair.second.begin(), mcHitPair.second.end());
         // ATTN: Sort the list of MC hits, as the later std::set_XXX functions
         //       are undefined if run on unsorted sets.
         mcHits.sort();
