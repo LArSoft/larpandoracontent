@@ -31,7 +31,17 @@ typedef SlicingAlgorithm::HitTypeToNameMap HitTypeToNameMap;
 typedef SlicingAlgorithm::SliceList SliceList;
 typedef SlicingAlgorithm::Slice Slice;
 
-DlEventSlicingTool::DlEventSlicingTool(): m_nClasses(3) {}
+DlEventSlicingTool::DlEventSlicingTool():
+    m_event{-1},
+    m_nClasses{3},
+    m_height{256},
+    m_width{256},
+    m_driftStep{0.5f},
+    m_visualise{false},
+    m_writeTree{false},
+    m_rng(static_cast<std::mt19937::result_type>(std::chrono::high_resolution_clock::now().time_since_epoch().count()))
+{
+}
 
 DlEventSlicingTool::~DlEventSlicingTool()
 {
@@ -172,6 +182,8 @@ void DlEventSlicingTool::RunSlicing(const Algorithm *const pAlgorithm, const Hit
         PANDORA_MONITORING_API(ViewEvent(this->GetPandora()));
     }
 
+    sliceList.push_back(neutrinoSlice);
+
     return;
 }
 
@@ -281,7 +293,7 @@ void DlEventSlicingTool::GetHitRegion(const CaloHitList &caloHitList, float &xMi
 
 StatusCode DlEventSlicingTool::ReadSettings(const TiXmlHandle xmlHandle)
 {
-    PANDORA_RETURN_RESULT_IF_AND_IF(STATUS_CODE_SUCCESS, STATUS_CODE_NOT_FOUND, !=, XmlHelper::ReadValue(xmlHandle, "Visualise", m_visualise));
+    PANDORA_RETURN_RESULT_IF_AND_IF(STATUS_CODE_SUCCESS, STATUS_CODE_NOT_FOUND, !=, XmlHelper::ReadValue(xmlHandle, "Visualize", m_visualise));
     PANDORA_RETURN_RESULT_IF_AND_IF(STATUS_CODE_SUCCESS, STATUS_CODE_NOT_FOUND, !=, XmlHelper::ReadValue(xmlHandle, "ImageHeight", m_height));
     PANDORA_RETURN_RESULT_IF_AND_IF(STATUS_CODE_SUCCESS, STATUS_CODE_NOT_FOUND, !=, XmlHelper::ReadValue(xmlHandle, "ImageWidth", m_width));
 
