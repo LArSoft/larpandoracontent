@@ -61,6 +61,17 @@ void SliceMonitoringAlgorithm::RearrangeHits(const pandora::Algorithm *const pAl
         STATUS_CODE_SUCCESS, STATUS_CODE_NOT_FOUND, !=,
         PandoraContentApi::GetList(*pAlgorithm, m_showerPfoListName, pShowerPfos));
 
+    ClusterList *pClusterList(new ClusterList());
+    for (const auto &clusterListName : m_inputClusterListNames)
+    {
+        const ClusterList *pClusterListTemp(nullptr);
+        PANDORA_THROW_RESULT_IF_AND_IF(
+            STATUS_CODE_SUCCESS, STATUS_CODE_NOT_FOUND, !=,
+            PandoraContentApi::GetList(*pAlgorithm, clusterListName, pClusterListTemp));
+        pClusterList->insert(pClusterList->end(), pClusterListTemp->begin(), pClusterListTemp->end());
+    }
+    std::cout << "Cluster list has " << pClusterList->size() << " clusters." << std::endl;
+
     // Populate the complete calo hit list, based on every hit in every slice.
     CaloHitList fullSliceCaloHitList{};
     for (const auto &slice : inputSliceList)
@@ -192,7 +203,7 @@ void SliceMonitoringAlgorithm::RearrangeHits(const pandora::Algorithm *const pAl
 
         // INFO: Only want to write out training hits if we have a neutrino.
         if (m_trainingMode)
-            WriteOutHits(matchedSliceHits, threeDHits, mcToTrueHitListMap);
+            WriteOutHits(matchedSliceHits, threeDHits, pClusterList, mcToTrueHitListMap);
 
         // Lets calculate some slice properties.
         // Perform this for every given input slice.
@@ -329,6 +340,7 @@ void SliceMonitoringAlgorithm::RearrangeHits(const pandora::Algorithm *const pAl
 
 void SliceMonitoringAlgorithm::WriteOutHits(const std::map<unsigned int, CaloHitList> &inputSliceHits,
                                             const CaloHitList &threeDHits,
+                                            const ClusterList *clusterList,
                                             const LArMCParticleHelper::MCContributionMap &mcToTrueHitListMap)
 {
 
@@ -353,22 +365,25 @@ void SliceMonitoringAlgorithm::WriteOutHits(const std::map<unsigned int, CaloHit
         for (const auto &hit : mcHitListPair.second)
             hitToPdgCode.insert({hit, mcHitListPair.first->GetParticleId()});
 
-    int twoDHitMCCount(0);
-    int threeDHitsCount(0);
-    for (const auto &hitMCPair : hitToPdgCode) {
-        if (hitMCPair.first->GetHitType() != TPC_3D)
-            ++twoDHitMCCount;
-        else
-            ++threeDHitsCount;
+    std::map<const std::tuple<float, float, float>, unsigned int> hitToClusterId;
+    auto getHitKey = [](const CaloHit* pCaloHit) -> std::tuple<float, float, float> {
+        const auto pos = pCaloHit->GetPositionVector();
+        return {pos.GetX(), pos.GetZ(), pCaloHit->GetHadronicEnergy()};
+    };
+    unsigned int clusterId(1);
+    for (auto it = clusterList->begin(); it != clusterList->end(); ++it, ++clusterId)
+    {
+        CaloHitList clusterHits;
+        (*it)->GetOrderedCaloHitList().FillCaloHitList(clusterHits);
+
+        for (const auto &hit : clusterHits)
+            hitToClusterId.insert({getHitKey(hit), clusterId});
     }
 
     const std::map<HitType, std::string> allViews({
         {TPC_VIEW_U, "_U_View"}, {TPC_VIEW_V, "_V_View"},
         {TPC_VIEW_W, "_W_View"}, {TPC_3D, "_3D_Hits"}
     });
-
-    int twoDMCWrittenCount(0);
-    int threeDMCWrittenCount(0);
 
     for (const auto &viewNamePair : allViews)
     {
@@ -382,17 +397,14 @@ void SliceMonitoringAlgorithm::WriteOutHits(const std::map<unsigned int, CaloHit
 
         for (const CaloHit *pCaloHit : sliceCaloHits)
         {
+            const auto hitKey = getHitKey(pCaloHit);
             const float x{pCaloHit->GetPositionVector().GetX()};
             const float y{pCaloHit->GetPositionVector().GetY()};
             const float z{pCaloHit->GetPositionVector().GetZ()};
             const float adc{pCaloHit->GetMipEquivalentEnergy()};
             const float particlePdg(hitToPdgCode.count(pCaloHit) != 0 ? hitToPdgCode[pCaloHit] : 0);
             const float sliceNumber(hitToSliceNumber.count(pCaloHit) != 0 ? hitToSliceNumber[pCaloHit] : 0);
-
-            if (pCaloHit->GetHitType() == TPC_3D && particlePdg != 0)
-                ++threeDMCWrittenCount;
-            else if (pCaloHit->GetHitType() != TPC_3D && particlePdg != 0)
-                ++twoDMCWrittenCount;
+            const float clusterNum(hitToClusterId.count(hitKey) != 0 ? hitToClusterId[hitKey] : 0);
 
             featureVector.emplace_back(static_cast<double>(x));
             featureVector.emplace_back(static_cast<double>(y));
@@ -400,6 +412,7 @@ void SliceMonitoringAlgorithm::WriteOutHits(const std::map<unsigned int, CaloHit
             featureVector.emplace_back(static_cast<double>(adc));
             featureVector.emplace_back(static_cast<double>(particlePdg));
             featureVector.emplace_back(static_cast<double>(sliceNumber));
+            featureVector.emplace_back(static_cast<double>(clusterNum));
         }
 
         const std::string trainingFileName{m_trainingOutputFile + viewName + ".csv"};
@@ -412,8 +425,11 @@ void SliceMonitoringAlgorithm::WriteOutHits(const std::map<unsigned int, CaloHit
 StatusCode SliceMonitoringAlgorithm::ReadSettings(const TiXmlHandle xmlHandle)
 {
     PANDORA_RETURN_RESULT_IF_AND_IF(STATUS_CODE_SUCCESS, STATUS_CODE_NOT_FOUND, !=, XmlHelper::ReadValue(xmlHandle, "TrainingMode", m_trainingMode));
+
     PANDORA_RETURN_RESULT_IF_AND_IF(STATUS_CODE_SUCCESS, STATUS_CODE_NOT_FOUND, !=, XmlHelper::ReadValue(xmlHandle, "TrackPfoListName", m_trackPfoListName));
     PANDORA_RETURN_RESULT_IF_AND_IF(STATUS_CODE_SUCCESS, STATUS_CODE_NOT_FOUND, !=, XmlHelper::ReadValue(xmlHandle, "ShowerPfoListName", m_showerPfoListName));
+    PANDORA_RETURN_RESULT_IF_AND_IF(STATUS_CODE_SUCCESS, STATUS_CODE_NOT_FOUND, !=, XmlHelper::ReadVectorOfValues(xmlHandle,
+        "InputClusterListNames", m_inputClusterListNames));
 
     if (m_trainingMode && ((m_trackPfoListName == "") || m_showerPfoListName == ""))
     {
