@@ -65,13 +65,12 @@ void DlEventSlicingTool::RunSlicing(const Algorithm *const pAlgorithm, const Hit
     SliceList &sliceList)
 {
     Slice neutrinoSlice;
-    this->TagHits(pAlgorithm, caloHitListNames, clusterListNames, neutrinoSlice);
+    this->TagHits(pAlgorithm, caloHitListNames, neutrinoSlice);
     EventSlicingTool::RunSlicing(pAlgorithm, caloHitListNames, clusterListNames, sliceList);
 
     // We now need to merge the neutrino slice with the other slices
     // This is done by removing any hits in the other slices that are also in the neutrino slice
     // We should be careful to respect the previous clustering of the hits though.
-
     std::map<const CaloHit*, bool> nuLikeHits;
     for (const CaloHit *pCaloHit : neutrinoSlice.m_caloHitListU)
         nuLikeHits.insert({pCaloHit, true});
@@ -89,11 +88,21 @@ void DlEventSlicingTool::RunSlicing(const Algorithm *const pAlgorithm, const Hit
             slice.m_caloHitListW.push_back(hit);
     };
 
-    const ClusterList *pClusterList = NULL;
-    PANDORA_THROW_RESULT_IF(STATUS_CODE_SUCCESS, !=, PandoraContentApi::GetCurrentList(*pAlgorithm, pClusterList));
+    ClusterList clusterList;
+    for (const auto &clusterListNamePair : clusterListNames)
+    {
+        const std::string &clusterListName = clusterListNamePair.second;
+        std::cout << "DlEventSlicingTool: Adding cluster list " << clusterListName << " to the list of clusters" << std::endl;
+        const ClusterList *pCurrentClusterList(nullptr);
+        PANDORA_THROW_RESULT_IF(STATUS_CODE_SUCCESS, !=, PandoraContentApi::GetList(*pAlgorithm, clusterListName, pCurrentClusterList));
+
+        clusterList.insert(clusterList.end(), pCurrentClusterList->begin(), pCurrentClusterList->end());
+    }
+
     std::map<const CaloHit*, const Cluster*> hitToClusterMap;
     std::map<const Cluster*, float> clusterToNuLikePercentage;
-    for (const Cluster *pCluster : *pClusterList)
+    int clusterNum(0);
+    for (const Cluster *pCluster : clusterList)
     {
         int numHits = 0;
         int numNuLikeHits = 0;
@@ -113,7 +122,7 @@ void DlEventSlicingTool::RunSlicing(const Algorithm *const pAlgorithm, const Hit
 
         // Also need to correct the other way around: cluster is X% tagged as neutrino-like,
         // so we should tag all hits in the cluster as neutrino-like.
-        if (nuLikePercentage > 0.75 && nuLikePercentage != 1.f)
+        if (nuLikePercentage > 0.51 && nuLikePercentage != 1.f && numHits > 25)
         {
             for (const auto &orderedList : pCluster->GetOrderedCaloHitList())
                 for (const CaloHit *pCaloHit : *(orderedList.second))
@@ -124,9 +133,13 @@ void DlEventSlicingTool::RunSlicing(const Algorithm *const pAlgorithm, const Hit
         }
 
         clusterToNuLikePercentage.insert({pCluster, nuLikePercentage});
+
+        if (numNuLikeHits != numHits && numNuLikeHits > 0)
+            std::cout << "DlEventSlicingTool: Cluster " << clusterNum << " has " << numNuLikeHits << " / " << numHits << " hits tagged as neutrino-like (" << nuLikePercentage << ")" << std::endl;
+        ++clusterNum;
     }
 
-    const auto shouldRemove = [&](const CaloHit *hit) {
+    const auto isHitClusterIsNuLike = [&](const CaloHit *hit) {
         auto found = hitToClusterMap.find(hit);
 
         if (found == hitToClusterMap.end())
@@ -140,23 +153,28 @@ void DlEventSlicingTool::RunSlicing(const Algorithm *const pAlgorithm, const Hit
         return false;
     };
 
-    // Store a map of hits to remove from the neutrinoSlice
+    // Finally, we need to make all the slices consistent, by ensuring the hits
+    // in the neutrino slice are not in the other slices. However, we should
+    // make this decision alongside the clustering of the hits.
+    // So, there is a few cases to consider:
+    //  - Nu-like hit, in a non-nu-like cluster: keep it in the existing slice.
+    //  - Nu-like hit, in a nu-like cluster: Delete it from the existing slice and add it to the neutrino slice.
     std::map<HitType, std::vector<const CaloHit*>> hitsToRemove;
 
     for (Slice &slice : sliceList)
     {
         for (const CaloHit *pCaloHit : neutrinoSlice.m_caloHitListU)
-            if (shouldRemove(pCaloHit))
+            if (isHitClusterIsNuLike(pCaloHit))
                 slice.m_caloHitListU.remove(pCaloHit);
             else
                 hitsToRemove[TPC_VIEW_U].push_back(pCaloHit);
         for (const CaloHit *pCaloHit : neutrinoSlice.m_caloHitListV)
-            if (shouldRemove(pCaloHit))
+            if (isHitClusterIsNuLike(pCaloHit))
                 slice.m_caloHitListV.remove(pCaloHit);
             else
                 hitsToRemove[TPC_VIEW_V].push_back(pCaloHit);
         for (const CaloHit *pCaloHit : neutrinoSlice.m_caloHitListW)
-            if (shouldRemove(pCaloHit))
+            if (isHitClusterIsNuLike(pCaloHit))
                 slice.m_caloHitListW.remove(pCaloHit);
             else
                 hitsToRemove[TPC_VIEW_W].push_back(pCaloHit);
@@ -189,8 +207,7 @@ void DlEventSlicingTool::RunSlicing(const Algorithm *const pAlgorithm, const Hit
 
 //-----------------------------------------------------------------------------------------------------------------------------------------
 
-void DlEventSlicingTool::TagHits(const Algorithm *const pAlgorithm, const HitTypeToNameMap &caloHitListNames, const HitTypeToNameMap &clusterListNames,
-    Slice &neutrinoSlice)
+void DlEventSlicingTool::TagHits(const Algorithm *const pAlgorithm, const HitTypeToNameMap &caloHitListNames, Slice &neutrinoSlice)
 {
 
     std::map<HitType, float> wireMin, wireMax;
