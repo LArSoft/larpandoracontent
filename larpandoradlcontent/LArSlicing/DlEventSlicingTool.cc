@@ -112,6 +112,7 @@ void DlEventSlicingTool::RunSlicing(const Algorithm *const pAlgorithm, const Hit
             for (const CaloHit *pCaloHit : *(orderedList.second))
             {
                 numHits++;
+                hitToClusterMap.insert({pCaloHit, pCluster});
 
                 if (nuLikeHits.find(pCaloHit) != nuLikeHits.end())
                     numNuLikeHits++;
@@ -122,7 +123,7 @@ void DlEventSlicingTool::RunSlicing(const Algorithm *const pAlgorithm, const Hit
 
         // Also need to correct the other way around: cluster is X% tagged as neutrino-like,
         // so we should tag all hits in the cluster as neutrino-like.
-        if (nuLikePercentage > 0.51 && nuLikePercentage != 1.f && numHits > 25)
+        if (nuLikePercentage > 0.75 && nuLikePercentage != 1.f && numHits > 25)
         {
             for (const auto &orderedList : pCluster->GetOrderedCaloHitList())
                 for (const CaloHit *pCaloHit : *(orderedList.second))
@@ -282,19 +283,18 @@ void DlEventSlicingTool::TagHits(const Algorithm *const pAlgorithm, const HitTyp
             const int pixelX(std::get<1>(pixelMap));
 
             // Apply softmax to loss to get actual probability
-            float probNull = classesAccessor[0][0][pixelZ][pixelX];
             float probNeutrino = classesAccessor[0][1][pixelZ][pixelX];
             float probOther = classesAccessor[0][2][pixelZ][pixelX];
 
-            if (probNeutrino > probOther && probNeutrino > probNull)
-                neutrinoSliceHits.push_back(pCaloHit);
-            else if (probOther > probNeutrino && probOther > probNull)
-                otherHits.push_back(pCaloHit);
-
-            float recipSum = 1.f / (probNeutrino + probOther);
             // Adjust probabilities to ignore null hits and update LArCaloHit
+            float recipSum = 1.f / (probNeutrino + probOther);
             probNeutrino *= recipSum;
             probOther *= recipSum;
+
+            if (probNeutrino > probOther && probNeutrino >= 0.6)
+                neutrinoSliceHits.push_back(pCaloHit);
+            else
+                otherHits.push_back(pCaloHit);
 
             LArCaloHit *pLArCaloHit{const_cast<LArCaloHit *>(dynamic_cast<const LArCaloHit *>(pCaloHit))};
             pLArCaloHit->SetShowerProbability(probNeutrino);
