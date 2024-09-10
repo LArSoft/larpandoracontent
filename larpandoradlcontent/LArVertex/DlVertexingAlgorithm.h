@@ -28,7 +28,6 @@ class DlVertexingAlgorithm : public pandora::Algorithm
 {
 public:
     typedef std::map<std::pair<int, int>, std::vector<const pandora::CaloHit *>> PixelToCaloHitsMap;
-    typedef std::map<const pandora::CaloHit *, std::tuple<int, int>> CaloHitToPixelMap;
 
     /**
      *  @brief Default constructor
@@ -37,7 +36,7 @@ public:
 
     virtual ~DlVertexingAlgorithm();
 
-protected:
+private:
     class VertexTuple
     {
     public:
@@ -79,8 +78,7 @@ protected:
      *  @return The StatusCode resulting from the function
      **/
     pandora::StatusCode MakeNetworkInputFromHits(const pandora::CaloHitList &caloHits, const pandora::HitType view, const float xMin,
-        const float xMax, const float zMin, const float zMax, LArDLHelper::TorchInput &networkInput, PixelVector &pixelVector,
-        CaloHitToPixelMap *caloHitToPixelMap = nullptr) const;
+        const float xMax, const float zMin, const float zMax, LArDLHelper::TorchInput &networkInput, PixelVector &pixelVector) const;
 
     /*
      *  @brief  Create a list of wire plane-space coordinates from a canvas

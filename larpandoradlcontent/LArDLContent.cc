@@ -13,7 +13,6 @@
 #include "Pandora/Pandora.h"
 
 #include "larpandoradlcontent/LArControlFlow/DLMasterAlgorithm.h"
-#include "larpandoradlcontent/LArSliceTagging/DlSliceHitTagAlgorithm.h"
 #include "larpandoradlcontent/LArVertex/DlVertexingAlgorithm.h"
 #include "larpandoradlcontent/LArVertex/DlCheatedVertexingAlgorithm.h"
 
@@ -22,7 +21,6 @@
 // clang-format off
 #define LAR_DL_ALGORITHM_LIST(d)                                                                                                           \
     d("LArDLMaster", DLMasterAlgorithm)                                                                                                    \
-    d("LArDLSliceHitTagging",                   DlSliceHitTagAlgorithm)                                                                    \
     d("LArDLVertexing",                         DlVertexingAlgorithm)                                                                      \
     d("LArCheatedDLVertexing",                  DlCheatedVertexingAlgorithm)
 
