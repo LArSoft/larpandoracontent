@@ -26,7 +26,7 @@ using namespace pandora;
 namespace lar_content
 {
 
-SliceMonitoringAlgorithm::SliceMonitoringAlgorithm() : m_trainingMode(false), m_trackPfoListName(""), m_showerPfoListName("") {}
+SliceMonitoringAlgorithm::SliceMonitoringAlgorithm() : m_trackPfoListName(""), m_showerPfoListName("") {}
 
 //------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -65,9 +65,9 @@ void SliceMonitoringAlgorithm::RearrangeHits(const pandora::Algorithm *const pAl
     for (const auto &clusterListName : m_inputClusterListNames)
     {
         const ClusterList *pClusterListTemp(nullptr);
-        PandoraContentApi::GetList(*pAlgorithm, clusterListName, pClusterListTemp);
-        if (pClusterListTemp == nullptr)
-            continue;
+        PANDORA_THROW_RESULT_IF_AND_IF(
+            STATUS_CODE_SUCCESS, STATUS_CODE_NOT_FOUND, !=,
+            PandoraContentApi::GetList(*pAlgorithm, clusterListName, pClusterListTemp));
         pClusterList->insert(pClusterList->end(), pClusterListTemp->begin(), pClusterListTemp->end());
     }
     std::cout << "Cluster list has " << pClusterList->size() << " clusters." << std::endl;
@@ -426,17 +426,17 @@ StatusCode SliceMonitoringAlgorithm::ReadSettings(const TiXmlHandle xmlHandle)
 {
     PANDORA_RETURN_RESULT_IF_AND_IF(STATUS_CODE_SUCCESS, STATUS_CODE_NOT_FOUND, !=, XmlHelper::ReadValue(xmlHandle, "TrainingMode", m_trainingMode));
 
+    PANDORA_RETURN_RESULT_IF_AND_IF(STATUS_CODE_SUCCESS, STATUS_CODE_NOT_FOUND, !=, XmlHelper::ReadValue(xmlHandle, "TrackPfoListName", m_trackPfoListName));
+    PANDORA_RETURN_RESULT_IF_AND_IF(STATUS_CODE_SUCCESS, STATUS_CODE_NOT_FOUND, !=, XmlHelper::ReadValue(xmlHandle, "ShowerPfoListName", m_showerPfoListName));
     PANDORA_RETURN_RESULT_IF_AND_IF(STATUS_CODE_SUCCESS, STATUS_CODE_NOT_FOUND, !=, XmlHelper::ReadVectorOfValues(xmlHandle,
         "InputClusterListNames", m_inputClusterListNames));
 
-    if (m_trainingMode && (m_inputClusterListNames.empty()))
+    if (m_trainingMode && ((m_trackPfoListName == "") || m_showerPfoListName == ""))
     {
-        std::cout << "SliceMonitoring: Must provide cluster list names when producing training samples!" << std::endl;
+        std::cout << "SliceMonitoring: Must provide both track and shower PFO list names when producing training samples!" << std::endl;
         return STATUS_CODE_INVALID_PARAMETER;
     }
 
-    PANDORA_RETURN_RESULT_IF(STATUS_CODE_SUCCESS, !=, XmlHelper::ReadValue(xmlHandle, "TrackPfoListName", m_trackPfoListName));
-    PANDORA_RETURN_RESULT_IF(STATUS_CODE_SUCCESS, !=, XmlHelper::ReadValue(xmlHandle, "ShowerPfoListName", m_showerPfoListName));
     PANDORA_RETURN_RESULT_IF(STATUS_CODE_SUCCESS, !=, XmlHelper::ReadValue(xmlHandle, "Filename", m_filename));
     PANDORA_RETURN_RESULT_IF(STATUS_CODE_SUCCESS, !=, XmlHelper::ReadValue(xmlHandle, "Treename", m_treename));
 
