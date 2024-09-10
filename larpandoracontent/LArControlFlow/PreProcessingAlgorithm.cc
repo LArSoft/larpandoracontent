@@ -28,8 +28,7 @@ PreProcessingAlgorithm::PreProcessingAlgorithm() :
     m_maxCellLengthScale(3.f),
     m_searchRegion1D(0.1f),
     m_onlyAvailableCaloHits(true),
-    m_inputCaloHitListName("Input"),
-    m_dropNonMCHits(false)
+    m_inputCaloHitListName("Input")
 {
 }
 
@@ -92,9 +91,6 @@ void PreProcessingAlgorithm::ProcessCaloHits()
             fullHitList.push_back(pCaloHit);
             continue;
         }
-
-        if (pLArCaloHit->GetMCParticleWeightMap().empty())
-            continue;
 
         if (m_processedHits.count(pCaloHit))
             continue;
@@ -257,9 +253,6 @@ StatusCode PreProcessingAlgorithm::ReadSettings(const TiXmlHandle xmlHandle)
 
     PANDORA_RETURN_RESULT_IF(STATUS_CODE_SUCCESS, !=, XmlHelper::ReadValue(xmlHandle,
         "CurrentCaloHitListReplacement", m_currentCaloHitListReplacement));
-
-    PANDORA_RETURN_RESULT_IF_AND_IF(STATUS_CODE_SUCCESS, STATUS_CODE_NOT_FOUND, !=, XmlHelper::ReadValue(xmlHandle,
-        "DropNonMCHits", m_dropNonMCHits));
 
     return STATUS_CODE_SUCCESS;
 }
