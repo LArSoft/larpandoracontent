@@ -10,12 +10,9 @@
 
 #include "larpandoracontent/LArMonitoring/SliceMonitoringAlgorithm.h"
 
-#include "larpandoracontent/LArObjects/LArCaloHit.h"
-
 #include "larpandoracontent/LArHelpers/LArGeometryHelper.h"
 #include "larpandoracontent/LArHelpers/LArMCParticleHelper.h"
 #include "larpandoracontent/LArHelpers/LArPfoHelper.h"
-
 #include <algorithm>
 #include <iterator>
 
@@ -46,15 +43,24 @@ StatusCode SliceMonitoringAlgorithm::Run()
 
 StatusCode SliceMonitoringAlgorithm::AssessSlice() const
 {
+    std::cout << "Assessing slice!" << std::endl;
+
+    std::cout << "Getting MC..." << std::endl;
     const MCParticleList *pMCParticleList{nullptr};
     PANDORA_RETURN_RESULT_IF(STATUS_CODE_SUCCESS, !=, PandoraContentApi::GetCurrentList(*this, pMCParticleList));
+    std::cout << "There is " << pMCParticleList->size() << " MC!" << std::endl;
 
+    std::cout << "Getting hits..." << std::endl;
     const CaloHitList *pCaloHitList{nullptr};
     PANDORA_RETURN_RESULT_IF(STATUS_CODE_SUCCESS, !=, PandoraContentApi::GetCurrentList(*this, pCaloHitList));
+    std::cout << "There is " << pCaloHitList->size() << " hits!" << std::endl;
 
+    std::cout << "Populating maps..." << std::endl;
     MCParticleVector primaries;
     LArMCParticleHelper::GetPrimaryMCParticleList(pMCParticleList, primaries);
+    std::cout << "Found " << primaries.size() << " primaries!" << std::endl;
 
+    std::cout << "Finding neutrino..." << std::endl;
     const MCParticle *pTrueNeutrino{nullptr};
 
     if (!primaries.empty())
@@ -79,35 +85,44 @@ StatusCode SliceMonitoringAlgorithm::AssessSlice() const
     LArMCParticleHelper::CaloHitToMCMap caloHitToPrimaryMCMap;
     LArMCParticleHelper::MCContributionMap mcToTrueHitListMap;
     LArMCParticleHelper::GetMCParticleToCaloHitMatches(pCaloHitList, mcToPrimaryMCMap, caloHitToPrimaryMCMap, mcToTrueHitListMap);
+    std::cout << "There is " << mcToTrueHitListMap.size() << " MC entries..." << std::endl;
+    std::cout << "There is " << caloHitToPrimaryMCMap.size() << " hit entries..." << std::endl;
 
+    std::cout << "Writing stats out..." << std::endl;
     if (pTrueNeutrino)
     {
         const float trueNuEnergy{pTrueNeutrino->GetEnergy()};
         const int success{1};
 
         // Lets calculate some slice properties.
-        CaloHitList mcHits;
-        if (mcToTrueHitListMap.count(pTrueNeutrino) > 0)
-            mcHits = mcToTrueHitListMap.at(pTrueNeutrino);
+        std::cout << "Getting the MC hits for the Nu..." << std::endl;
+        const auto mcHits = mcToTrueHitListMap.at(pTrueNeutrino);
 
+        std::cout << "Setting the basic properties..." << std::endl;
         PANDORA_MONITORING_API(SetTreeVariable(this->GetPandora(), m_treename.c_str(), "success", success));
         PANDORA_MONITORING_API(SetTreeVariable(this->GetPandora(), m_treename.c_str(), "trueNuEnergy", trueNuEnergy));
         PANDORA_MONITORING_API(SetTreeVariable(this->GetPandora(), m_treename.c_str(), "trueNuHits", (float) mcHits.size()));
 
         const std::map<HitType, std::string> allViews({{TPC_VIEW_U, "_U"}, {TPC_VIEW_V, "_V"}, {TPC_VIEW_W, "_W"}});
-        std::map<std::string, std::vector<float>> scoreDistributions;
 
+        std::cout << "Starting loop..." << std::endl;
         for (const auto &viewNamePair : allViews)
         {
             HitType view(viewNamePair.first);
             auto viewName(viewNamePair.second);
 
+            std::cout << viewName << std::endl;
+
+            std::cout << "Getting MC Hits for view..." << std::endl;
             CaloHitList trueNuHitsForView;
             std::copy_if(mcHits.begin(), mcHits.end(), std::back_inserter(trueNuHitsForView), [&](const pandora::CaloHit* hit) { return hit->GetHitType() == view; });
+            std::cout << "Got mc, there is " << trueNuHitsForView.size() << " MC hits..." << std::endl;
             trueNuHitsForView.sort();
 
+            std::cout << "Getting Reco Hits for view..." << std::endl;
             CaloHitList allCaloHitsInView;
             std::copy_if(pCaloHitList->begin(), pCaloHitList->end(), std::back_inserter(allCaloHitsInView), [&](const pandora::CaloHit* hit) { return hit->GetHitType() == view; });
+            std::cout << "Got hits, there is " << allCaloHitsInView.size() << " hits..." << std::endl;
             allCaloHitsInView.sort();
 
             // Now we have all the hits + all the MC-based (i.e. neutrino hits), get the overlap / missing / extra.
@@ -142,22 +157,7 @@ StatusCode SliceMonitoringAlgorithm::AssessSlice() const
                 nuPurity = sliceNuHits.size() / (float) allCaloHitsInView.size();
             }
 
-            std::vector<float> nuHitTagScores({});
-            std::vector<float> crHitTagScores({});
-            int tagCorrect(0);
-
-            for (const CaloHit *pCaloHit : allCaloHitsInView) {
-
-                LArCaloHit *pLArCaloHit{const_cast<LArCaloHit *>(dynamic_cast<const LArCaloHit *>(pCaloHit))};
-
-                if (caloHitToPrimaryMCMap.count(pCaloHit) == 0) {
-                    crHitTagScores.push_back(pLArCaloHit->GetTrackProbability());
-                    tagCorrect += pLArCaloHit->GetTrackProbability() > 0.5;
-                } else {
-                    nuHitTagScores.push_back(pLArCaloHit->GetShowerProbability());
-                    tagCorrect += pLArCaloHit->GetShowerProbability() > 0.5;
-                }
-            }
+            std::cout << "View" << viewName << ": " << nuComp << ", " << nuPurity << ", " << containsNeutrinoHits << std::endl;
 
             PANDORA_MONITORING_API(SetTreeVariable(this->GetPandora(), m_treename.c_str(), "trueNuHitsInSlice" + viewName, (float) trueNuHitsForView.size()));
             PANDORA_MONITORING_API(SetTreeVariable(this->GetPandora(), m_treename.c_str(), "sliceHits" + viewName, (float) allCaloHitsInView.size()));
@@ -168,15 +168,7 @@ StatusCode SliceMonitoringAlgorithm::AssessSlice() const
             PANDORA_MONITORING_API(SetTreeVariable(this->GetPandora(), m_treename.c_str(), "nuSliceComp" + viewName, nuComp));
             PANDORA_MONITORING_API(SetTreeVariable(this->GetPandora(), m_treename.c_str(), "nuSlicePur" + viewName, nuPurity));
 
-            // Slice hit tagging efficiencies
-            PANDORA_MONITORING_API(SetTreeVariable(this->GetPandora(), m_treename.c_str(), "hitTagCorrectPct" + viewName, (float) tagCorrect / allCaloHitsInView.size()));
-
-            scoreDistributions["trueNuHitScores" + viewName] = nuHitTagScores;
-            scoreDistributions["trueCRHitScores" + viewName] = crHitTagScores;
-        }
-
-        for (auto &labelScorePair : scoreDistributions) {
-            PANDORA_MONITORING_API(SetTreeVariable(this->GetPandora(), m_treename.c_str(), labelScorePair.first, &labelScorePair.second));
+            // TODO: Hit tagging efficiencies
         }
 
         PANDORA_MONITORING_API(FillTree(this->GetPandora(), m_treename.c_str()));
