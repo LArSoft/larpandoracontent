@@ -213,6 +213,10 @@ StatusCode DlVertexingAlgorithm::Infer()
         }
     }
 
+    HepEVD::resetServer();
+    HepEVD::setHepEVDGeometry(this->GetPandora().GetGeometry());
+    HepEVD::HepHitMap* caloHitToEvdHit = HepEVD::getHitMap();
+
     std::map<HitType, float> wireMin, wireMax;
     float driftMin{std::numeric_limits<float>::max()}, driftMax{-std::numeric_limits<float>::max()};
     for (const std::string &listname : m_caloHitListNames)
@@ -251,7 +255,6 @@ StatusCode DlVertexingAlgorithm::Infer()
         LArDLHelper::TorchInput input;
         PixelVector pixelVector;
         this->MakeNetworkInputFromHits(*pCaloHitList, view, driftMin, driftMax, wireMin[view], wireMax[view], input, pixelVector);
-
         if (pixelVector.size() < 5)
         {
             skippedProcessing += 1;

@@ -65,33 +65,14 @@ StatusCode VertexMonitoringAlgorithm::Run()
 
 StatusCode VertexMonitoringAlgorithm::AssessVertices() const
 {
-    std::cout << "Starting to assess vertices..." << std::endl;
-
     const MCParticleList *pMCParticleList{nullptr};
     PANDORA_RETURN_RESULT_IF(STATUS_CODE_SUCCESS, !=, PandoraContentApi::GetCurrentList(*this, pMCParticleList));
     const PfoList *pPfoList{nullptr};
     PANDORA_RETURN_RESULT_IF(STATUS_CODE_SUCCESS, !=, PandoraContentApi::GetCurrentList(*this, pPfoList));
 
-    const CaloHitList *pCaloHitList2D(nullptr);
-    PANDORA_RETURN_RESULT_IF(STATUS_CODE_SUCCESS, !=, PandoraContentApi::GetList(*this, "CaloHitList2D", pCaloHitList2D));
-
-    // Get a mapping from each MC to its Calo hits...
-    LArMCParticleHelper::CaloHitToMCMap caloHitToPrimaryMCMap;
     LArMCParticleHelper::MCContributionMap mcToHitsMap;
-    LArMCParticleHelper::MCRelationMap mcToPrimaryMCMap;
-    LArMCParticleHelper::GetMCPrimaryMap(pMCParticleList, mcToPrimaryMCMap);
-    LArMCParticleHelper::GetMCParticleToCaloHitMatches(pCaloHitList2D, mcToPrimaryMCMap, caloHitToPrimaryMCMap, mcToHitsMap);
-
-    CaloHitList mcHits;
-    for (const auto &mcHitsPair : mcToHitsMap) {
-        const auto hits = mcHitsPair.second;
-        mcHits.insert(mcHits.end(), hits.begin(), hits.end());
-    }
-
-    // Then, find the primary MC particles.
     MCParticleVector primaries;
     LArMCParticleHelper::GetPrimaryMCParticleList(pMCParticleList, primaries);
-
     const MCParticle *pTrueNeutrino{nullptr};
     const ParticleFlowObject *pRecoNeutrino{nullptr};
     if (!primaries.empty())
@@ -122,17 +103,18 @@ StatusCode VertexMonitoringAlgorithm::AssessVertices() const
             for (const auto &view : {TPC_VIEW_U, TPC_VIEW_V, TPC_VIEW_W}) {
                 CaloHitList caloHits;
                 LArPfoHelper::GetCaloHits(pPfo, view, caloHits);
-                LArPfoHelper::GetCaloHits(pPfo->GetDaughterPfoList(), view, caloHits);
                 sliceIdToTotalHits[iter->second][view].insert(
                     sliceIdToTotalHits[iter->second][view].end(),
                     caloHits.begin(), caloHits.end()
                 );
             }
-        }
+        } else
+            pfoToSliceIdMap.insert({pPfo, -1});
 
-        if (LArPfoHelper::IsNeutrino(pPfo) && pRecoNeutrino == nullptr)
+        if (LArPfoHelper::IsNeutrino(pPfo))
         {
             pRecoNeutrino = pPfo;
+            break;
         }
     }
 
@@ -186,45 +168,40 @@ StatusCode VertexMonitoringAlgorithm::AssessVertices() const
 
             // Lets calculate some slice properties.
             const float sliceIndex(pfoToSliceIdMap.at(pRecoNeutrino));
+            const auto mcHits = mcToHitsMap.at(pTrueNeutrino);
             CaloHitList uTrueHits, vTrueHits, wTrueHits;
             std::copy_if(mcHits.begin(), mcHits.end(), std::back_inserter(uTrueHits), [](const pandora::CaloHit* hit) { return hit->GetHitType() == TPC_VIEW_U; });
             std::copy_if(mcHits.begin(), mcHits.end(), std::back_inserter(vTrueHits), [](const pandora::CaloHit* hit) { return hit->GetHitType() == TPC_VIEW_V; });
             std::copy_if(mcHits.begin(), mcHits.end(), std::back_inserter(wTrueHits), [](const pandora::CaloHit* hit) { return hit->GetHitType() == TPC_VIEW_W; });
 
-            const auto uSliceHits = sliceIdToTotalHits.at(sliceIndex).at(TPC_VIEW_U);
-            const auto vSliceHits = sliceIdToTotalHits.at(sliceIndex).at(TPC_VIEW_V);
-            const auto wSliceHits = sliceIdToTotalHits.at(sliceIndex).at(TPC_VIEW_W);
+            const auto uRecoHits = sliceIdToTotalHits.at(sliceIndex).at(TPC_VIEW_U);
+            const auto vRecoHits = sliceIdToTotalHits.at(sliceIndex).at(TPC_VIEW_V);
+            const auto wRecoHits = sliceIdToTotalHits.at(sliceIndex).at(TPC_VIEW_W);
 
             CaloHitList caloHits;
             LArPfoHelper::GetCaloHits(pRecoNeutrino, TPC_VIEW_U, caloHits);
             LArPfoHelper::GetCaloHits(pRecoNeutrino->GetDaughterPfoList(), TPC_VIEW_U, caloHits);
-            const int recoNuHitsU = caloHits.size();
             const float nuCompU = LArMCParticleHelper::GetSharedHits(uTrueHits, caloHits).size() / (float) uTrueHits.size();
-            const float nuPurityU = LArMCParticleHelper::GetSharedHits(uTrueHits, caloHits).size() / (float) uSliceHits.size();
+            const float nuPurityU = LArMCParticleHelper::GetSharedHits(uTrueHits, caloHits).size() / (float) uRecoHits.size();
 
             caloHits.clear();
             LArPfoHelper::GetCaloHits(pRecoNeutrino, TPC_VIEW_V, caloHits);
             LArPfoHelper::GetCaloHits(pRecoNeutrino->GetDaughterPfoList(), TPC_VIEW_V, caloHits);
-            const int recoNuHitsV = caloHits.size();
             const float nuCompV = LArMCParticleHelper::GetSharedHits(vTrueHits, caloHits).size() / (float) vTrueHits.size();
-            const float nuPurityV = LArMCParticleHelper::GetSharedHits(vTrueHits, caloHits).size() / (float) vSliceHits.size();
+            const float nuPurityV = LArMCParticleHelper::GetSharedHits(vTrueHits, caloHits).size() / (float) vRecoHits.size();
 
             caloHits.clear();
             LArPfoHelper::GetCaloHits(pRecoNeutrino, TPC_VIEW_W, caloHits);
             LArPfoHelper::GetCaloHits(pRecoNeutrino->GetDaughterPfoList(), TPC_VIEW_W, caloHits);
-            const int recoNuHitsW = caloHits.size();
             const float nuCompW = LArMCParticleHelper::GetSharedHits(wTrueHits, caloHits).size() / (float) wTrueHits.size();
-            const float nuPurityW = LArMCParticleHelper::GetSharedHits(wTrueHits, caloHits).size() / (float) wSliceHits.size();
+            const float nuPurityW = LArMCParticleHelper::GetSharedHits(wTrueHits, caloHits).size() / (float) wRecoHits.size();
 
-            // Top level Neutrino information
             PANDORA_MONITORING_API(SetTreeVariable(this->GetPandora(), m_treename.c_str(), "success", success));
             PANDORA_MONITORING_API(SetTreeVariable(this->GetPandora(), m_treename.c_str(), "trueNuEnergy", trueNuEnergy));
-            PANDORA_MONITORING_API(SetTreeVariable(this->GetPandora(), m_treename.c_str(), "trueNuHits", (int) mcHits.size()));
-            PANDORA_MONITORING_API(SetTreeVariable(this->GetPandora(), m_treename.c_str(), "trueNuHitsU", (int) uTrueHits.size()));
-            PANDORA_MONITORING_API(SetTreeVariable(this->GetPandora(), m_treename.c_str(), "trueNuHitsV", (int) vTrueHits.size()));
-            PANDORA_MONITORING_API(SetTreeVariable(this->GetPandora(), m_treename.c_str(), "trueNuHitsW", (int) wTrueHits.size()));
-
-            // Then, vertex information.
+            PANDORA_MONITORING_API(SetTreeVariable(this->GetPandora(), m_treename.c_str(), "trueNuHits", (double) mcHits.size()));
+            PANDORA_MONITORING_API(SetTreeVariable(this->GetPandora(), m_treename.c_str(), "recoNuHitsU", (double) uRecoHits.size()));
+            PANDORA_MONITORING_API(SetTreeVariable(this->GetPandora(), m_treename.c_str(), "recoNuHitsV", (double) vRecoHits.size()));
+            PANDORA_MONITORING_API(SetTreeVariable(this->GetPandora(), m_treename.c_str(), "recoNuHitsW", (double) wRecoHits.size()));
             PANDORA_MONITORING_API(SetTreeVariable(this->GetPandora(), m_treename.c_str(), "dx", dx));
             PANDORA_MONITORING_API(SetTreeVariable(this->GetPandora(), m_treename.c_str(), "dy", dy));
             PANDORA_MONITORING_API(SetTreeVariable(this->GetPandora(), m_treename.c_str(), "dz", dz));
@@ -235,14 +212,6 @@ StatusCode VertexMonitoringAlgorithm::AssessVertices() const
             PANDORA_MONITORING_API(SetTreeVariable(this->GetPandora(), m_treename.c_str(), "isInGapUReco", isInGapUReco));
             PANDORA_MONITORING_API(SetTreeVariable(this->GetPandora(), m_treename.c_str(), "isInGapVReco", isInGapVReco));
             PANDORA_MONITORING_API(SetTreeVariable(this->GetPandora(), m_treename.c_str(), "isInGapWReco", isInGapWReco));
-
-            // Finally, hit-level information. If the neutrino is badly reconstructed / missing, a worse vertex makes sense.
-            PANDORA_MONITORING_API(SetTreeVariable(this->GetPandora(), m_treename.c_str(), "recoSliceHitsU", (int) uSliceHits.size()));
-            PANDORA_MONITORING_API(SetTreeVariable(this->GetPandora(), m_treename.c_str(), "recoSliceHitsV", (int) vSliceHits.size()));
-            PANDORA_MONITORING_API(SetTreeVariable(this->GetPandora(), m_treename.c_str(), "recoSliceHitsW", (int) wSliceHits.size()));
-            PANDORA_MONITORING_API(SetTreeVariable(this->GetPandora(), m_treename.c_str(), "recoNuHitsU", recoNuHitsU));
-            PANDORA_MONITORING_API(SetTreeVariable(this->GetPandora(), m_treename.c_str(), "recoNuHitsV", recoNuHitsV));
-            PANDORA_MONITORING_API(SetTreeVariable(this->GetPandora(), m_treename.c_str(), "recoNuHitsW", recoNuHitsW));
 
             PANDORA_MONITORING_API(SetTreeVariable(this->GetPandora(), m_treename.c_str(), "nuSliceCompU", nuCompU));
             PANDORA_MONITORING_API(SetTreeVariable(this->GetPandora(), m_treename.c_str(), "nuSlicePurU", nuPurityU));
@@ -260,31 +229,12 @@ StatusCode VertexMonitoringAlgorithm::AssessVertices() const
             const int success{0};
             const float dx{-999.f}, dy{-999.f}, dz{-999.f}, dr{-999.f};
             const float trueNuEnergy{pTrueNeutrino->GetEnergy()};
-
-            // Was the true 3D vertex in any gap?
-            const int isInGapUTrue(LArGeometryHelper::IsInGap3D(this->GetPandora(), trueVertex, TPC_VIEW_U));
-            const int isInGapVTrue(LArGeometryHelper::IsInGap3D(this->GetPandora(), trueVertex, TPC_VIEW_V));
-            const int isInGapWTrue(LArGeometryHelper::IsInGap3D(this->GetPandora(), trueVertex, TPC_VIEW_W));
-
-            CaloHitList uTrueHits, vTrueHits, wTrueHits;
-            std::copy_if(mcHits.begin(), mcHits.end(), std::back_inserter(uTrueHits), [](const pandora::CaloHit* hit) { return hit->GetHitType() == TPC_VIEW_U; });
-            std::copy_if(mcHits.begin(), mcHits.end(), std::back_inserter(vTrueHits), [](const pandora::CaloHit* hit) { return hit->GetHitType() == TPC_VIEW_V; });
-            std::copy_if(mcHits.begin(), mcHits.end(), std::back_inserter(wTrueHits), [](const pandora::CaloHit* hit) { return hit->GetHitType() == TPC_VIEW_W; });
-
             PANDORA_MONITORING_API(SetTreeVariable(this->GetPandora(), m_treename.c_str(), "success", success));
             PANDORA_MONITORING_API(SetTreeVariable(this->GetPandora(), m_treename.c_str(), "trueNuEnergy", trueNuEnergy));
-            PANDORA_MONITORING_API(SetTreeVariable(this->GetPandora(), m_treename.c_str(), "trueNuHits", (int) mcHits.size()));
-            PANDORA_MONITORING_API(SetTreeVariable(this->GetPandora(), m_treename.c_str(), "trueNuHitsU", (int) uTrueHits.size()));
-            PANDORA_MONITORING_API(SetTreeVariable(this->GetPandora(), m_treename.c_str(), "trueNuHitsV", (int) vTrueHits.size()));
-            PANDORA_MONITORING_API(SetTreeVariable(this->GetPandora(), m_treename.c_str(), "trueNuHitsW", (int) wTrueHits.size()));
-
             PANDORA_MONITORING_API(SetTreeVariable(this->GetPandora(), m_treename.c_str(), "dx", dx));
             PANDORA_MONITORING_API(SetTreeVariable(this->GetPandora(), m_treename.c_str(), "dy", dy));
             PANDORA_MONITORING_API(SetTreeVariable(this->GetPandora(), m_treename.c_str(), "dz", dz));
             PANDORA_MONITORING_API(SetTreeVariable(this->GetPandora(), m_treename.c_str(), "dr", dr));
-            PANDORA_MONITORING_API(SetTreeVariable(this->GetPandora(), m_treename.c_str(), "isInGapUTrue", isInGapUTrue));
-            PANDORA_MONITORING_API(SetTreeVariable(this->GetPandora(), m_treename.c_str(), "isInGapVTrue", isInGapVTrue));
-            PANDORA_MONITORING_API(SetTreeVariable(this->GetPandora(), m_treename.c_str(), "isInGapWTrue", isInGapWTrue));
             PANDORA_MONITORING_API(FillTree(this->GetPandora(), m_treename.c_str()));
         }
     }
