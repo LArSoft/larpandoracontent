@@ -56,7 +56,6 @@ class LArMvaHelper
 public:
     typedef MvaTypes::MvaFeature MvaFeature;
     typedef MvaTypes::MvaFeatureVector MvaFeatureVector;
-    typedef std::map<std::string, double> DoubleMap;
 
     /**
      *  @brief  Produce a training example with the given features and result

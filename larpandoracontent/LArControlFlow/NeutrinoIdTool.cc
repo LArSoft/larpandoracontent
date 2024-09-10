@@ -12,11 +12,11 @@
 
 #include "Helpers/MCParticleHelper.h"
 
-#include "larpandoracontent/LArHelpers/LArFileHelper.h"
 #include "larpandoracontent/LArHelpers/LArMCParticleHelper.h"
+#include "larpandoracontent/LArHelpers/LArPfoHelper.h"
 #include "larpandoracontent/LArHelpers/LArMvaHelper.h"
 #include "larpandoracontent/LArHelpers/LArPcaHelper.h"
-#include "larpandoracontent/LArHelpers/LArPfoHelper.h"
+#include "larpandoracontent/LArHelpers/LArFileHelper.h"
 
 #include "larpandoracontent/LArObjects/LArThreeDSlidingFitResult.h"
 
@@ -33,30 +33,19 @@ NeutrinoIdTool::NeutrinoIdTool() :
     m_minCompleteness(0.9f),
     m_minProbability(0.0f),
     m_maxNeutrinos(1),
-    m_persistFeatures(false),
     m_filePathEnvironmentVariable("FW_SEARCH_PATH")
 {
 }
 
-NeutrinoIdTool::~NeutrinoIdTool()
-{
-    if (m_persistFeatures)
-    {
-        PANDORA_MONITORING_API(SaveTree(this->GetPandora(), "sliceid", "sliceid.root", "UPDATE"));
-    }
-}
-
 //------------------------------------------------------------------------------------------------------------------------------------------
 
-void NeutrinoIdTool::SelectOutputPfos(const Algorithm *const pAlgorithm, const SliceHypotheses &nuSliceHypotheses,
-    const SliceHypotheses &crSliceHypotheses, PfoList &selectedPfos)
+void NeutrinoIdTool::SelectOutputPfos(const Algorithm *const pAlgorithm, const SliceHypotheses &nuSliceHypotheses, const SliceHypotheses &crSliceHypotheses, PfoList &selectedPfos)
 {
     if (nuSliceHypotheses.size() != crSliceHypotheses.size())
         throw StatusCodeException(STATUS_CODE_INVALID_PARAMETER);
 
     const unsigned int nSlices(nuSliceHypotheses.size());
-    if (nSlices == 0)
-        return;
+    if (nSlices == 0) return;
 
     SliceFeaturesVector sliceFeaturesVector;
     this->GetSliceFeatures(this, nuSliceHypotheses, crSliceHypotheses, sliceFeaturesVector);
@@ -67,14 +56,12 @@ void NeutrinoIdTool::SelectOutputPfos(const Algorithm *const pAlgorithm, const S
         this->SelectAllPfos(pAlgorithm, crSliceHypotheses, selectedPfos);
 
         unsigned int bestSliceIndex(std::numeric_limits<unsigned int>::max());
-        if (!this->GetBestMCSliceIndex(pAlgorithm, nuSliceHypotheses, crSliceHypotheses, bestSliceIndex))
-            return;
+        if (!this->GetBestMCSliceIndex(pAlgorithm, nuSliceHypotheses, crSliceHypotheses, bestSliceIndex)) return;
 
         for (unsigned int sliceIndex = 0; sliceIndex < nSlices; ++sliceIndex)
         {
             const SliceFeatures &features(sliceFeaturesVector.at(sliceIndex));
-            if (!features.IsFeatureVectorAvailable())
-                continue;
+            if (!features.IsFeatureVectorAvailable()) continue;
 
             LArMvaHelper::MvaFeatureVector featureVector;
             features.GetFeatureVector(featureVector);
@@ -89,8 +76,7 @@ void NeutrinoIdTool::SelectOutputPfos(const Algorithm *const pAlgorithm, const S
 
 //------------------------------------------------------------------------------------------------------------------------------------------
 
-void NeutrinoIdTool::GetSliceFeatures(const NeutrinoIdTool *const pTool, const SliceHypotheses &nuSliceHypotheses,
-    const SliceHypotheses &crSliceHypotheses, SliceFeaturesVector &sliceFeaturesVector) const
+void NeutrinoIdTool::GetSliceFeatures(const NeutrinoIdTool *const pTool, const SliceHypotheses &nuSliceHypotheses, const SliceHypotheses &crSliceHypotheses, SliceFeaturesVector &sliceFeaturesVector) const
 {
     for (unsigned int sliceIndex = 0, nSlices = nuSliceHypotheses.size(); sliceIndex < nSlices; ++sliceIndex)
         sliceFeaturesVector.push_back(SliceFeatures(nuSliceHypotheses.at(sliceIndex), crSliceHypotheses.at(sliceIndex), pTool));
@@ -98,8 +84,7 @@ void NeutrinoIdTool::GetSliceFeatures(const NeutrinoIdTool *const pTool, const S
 
 //------------------------------------------------------------------------------------------------------------------------------------------
 
-bool NeutrinoIdTool::GetBestMCSliceIndex(const Algorithm *const pAlgorithm, const SliceHypotheses &nuSliceHypotheses,
-    const SliceHypotheses &crSliceHypotheses, unsigned int &bestSliceIndex) const
+bool NeutrinoIdTool::GetBestMCSliceIndex(const Algorithm *const pAlgorithm, const SliceHypotheses &nuSliceHypotheses, const SliceHypotheses &crSliceHypotheses, unsigned int &bestSliceIndex) const
 {
     unsigned int nHitsInBestSlice(0), nNuHitsInBestSlice(0);
 
@@ -117,8 +102,7 @@ bool NeutrinoIdTool::GetBestMCSliceIndex(const Algorithm *const pAlgorithm, cons
     // Remove non-reconstructable hits, e.g. those downstream of a neutron
     CaloHitList reconstructableCaloHitList;
     LArMCParticleHelper::PrimaryParameters parameters;
-    LArMCParticleHelper::SelectCaloHits(pAllReconstructedCaloHitList, mcToPrimaryMCMap, reconstructableCaloHitList,
-        parameters.m_selectInputHits, parameters.m_maxPhotonPropagation);
+    LArMCParticleHelper::SelectCaloHits(pAllReconstructedCaloHitList, mcToPrimaryMCMap, reconstructableCaloHitList, parameters.m_selectInputHits, parameters.m_maxPhotonPropagation);
 
     const int nuNHitsTotal(this->CountNeutrinoInducedHits(reconstructableCaloHitList));
     const CaloHitSet reconstructableCaloHitSet(reconstructableCaloHitList.begin(), reconstructableCaloHitList.end());
@@ -147,6 +131,7 @@ bool NeutrinoIdTool::GetBestMCSliceIndex(const Algorithm *const pAlgorithm, cons
     // ATTN for events with no neutrino induced hits, default neutrino purity and completeness to zero
     const float purity(nHitsInBestSlice > 0 ? static_cast<float>(nNuHitsInBestSlice) / static_cast<float>(nHitsInBestSlice) : 0.f);
     const float completeness(nuNHitsTotal > 0 ? static_cast<float>(nNuHitsInBestSlice) / static_cast<float>(nuNHitsTotal) : 0.f);
+
     return this->PassesQualityCuts(pAlgorithm, purity, completeness);
 }
 
@@ -154,10 +139,8 @@ bool NeutrinoIdTool::GetBestMCSliceIndex(const Algorithm *const pAlgorithm, cons
 
 bool NeutrinoIdTool::PassesQualityCuts(const Algorithm *const pAlgorithm, const float purity, const float completeness) const
 {
-    if (purity < m_minPurity || completeness < m_minCompleteness)
-        return false;
-    if (m_selectNuanceCode && (this->GetNuanceCode(pAlgorithm) != m_nuance))
-        return false;
+    if (purity < m_minPurity || completeness < m_minCompleteness) return false;
+    if (m_selectNuanceCode && (this->GetNuanceCode(pAlgorithm) != m_nuance)) return false;
 
     return true;
 }
@@ -173,13 +156,12 @@ void NeutrinoIdTool::Collect2DHits(const PfoList &pfos, CaloHitList &reconstruct
 
     for (const CaloHit *const pCaloHit : collectedHits)
     {
-        const CaloHit *const pParentHit = static_cast<const CaloHit *>(pCaloHit->GetParentAddress());
-        if (!reconstructableCaloHitSet.count(pParentHit))
+        if (!reconstructableCaloHitSet.count(pCaloHit))
             continue;
 
         // Ensure no hits have been double counted
-        if (std::find(reconstructedCaloHitList.begin(), reconstructedCaloHitList.end(), pParentHit) == reconstructedCaloHitList.end())
-            reconstructedCaloHitList.push_back(pParentHit);
+        if (std::find(reconstructedCaloHitList.begin(), reconstructedCaloHitList.end(), pCaloHit) == reconstructedCaloHitList.end())
+            reconstructedCaloHitList.push_back(pCaloHit);
     }
 }
 
@@ -241,8 +223,7 @@ void NeutrinoIdTool::SelectAllPfos(const pandora::Algorithm *const pAlgorithm, c
 
 //------------------------------------------------------------------------------------------------------------------------------------------
 
-void NeutrinoIdTool::SelectPfosByProbability(const pandora::Algorithm *const pAlgorithm, const SliceHypotheses &nuSliceHypotheses,
-    const SliceHypotheses &crSliceHypotheses, const SliceFeaturesVector &sliceFeaturesVector, PfoList &selectedPfos) const
+void NeutrinoIdTool::SelectPfosByProbability(const pandora::Algorithm *const pAlgorithm, const SliceHypotheses &nuSliceHypotheses, const SliceHypotheses &crSliceHypotheses, const SliceFeaturesVector &sliceFeaturesVector, PfoList &selectedPfos) const
 {
     // Calculate the probability of each slice that passes the minimum probability cut
     std::vector<UintFloatPair> sliceIndexProbabilityPairs;
@@ -254,23 +235,6 @@ void NeutrinoIdTool::SelectPfosByProbability(const pandora::Algorithm *const pAl
         {
             object_creation::ParticleFlowObject::Metadata metadata;
             metadata.m_propertiesToAdd["NuScore"] = nuProbability;
-
-            if (m_persistFeatures && sliceFeaturesVector.at(sliceIndex).IsFeatureVectorAvailable())
-            {
-                LArMvaHelper::DoubleMap featureMap;
-                sliceFeaturesVector.at(sliceIndex).GetFeatureMap(featureMap);
-
-                for (auto const &[name, value] : featureMap)
-                {
-                    metadata.m_propertiesToAdd[name] = value;
-                    PANDORA_MONITORING_API(SetTreeVariable(this->GetPandora(), "sliceid", name, value));
-                    PANDORA_MONITORING_API(SetTreeVariable(this->GetPandora(), "sliceid", "slice", 0));
-                }
-                PANDORA_MONITORING_API(SetTreeVariable(this->GetPandora(), "sliceid", "nu_score", nuProbability));
-                PANDORA_MONITORING_API(FillTree(this->GetPandora(), "sliceid"));
-
-            }
-
             PANDORA_THROW_RESULT_IF(STATUS_CODE_SUCCESS, !=, PandoraContentApi::ParticleFlowObject::AlterMetadata(*pAlgorithm, pPfo, metadata));
         }
 
@@ -278,22 +242,6 @@ void NeutrinoIdTool::SelectPfosByProbability(const pandora::Algorithm *const pAl
         {
             object_creation::ParticleFlowObject::Metadata metadata;
             metadata.m_propertiesToAdd["NuScore"] = nuProbability;
-
-            if (m_persistFeatures && sliceFeaturesVector.at(sliceIndex).IsFeatureVectorAvailable())
-            {
-                LArMvaHelper::DoubleMap featureMap;
-                sliceFeaturesVector.at(sliceIndex).GetFeatureMap(featureMap);
-
-                for (auto const &[name, value] : featureMap)
-                {
-                    metadata.m_propertiesToAdd[name] = value;
-                    PANDORA_MONITORING_API(SetTreeVariable(this->GetPandora(), "sliceid", name, value));
-                    PANDORA_MONITORING_API(SetTreeVariable(this->GetPandora(), "sliceid", "slice", 1));
-                }
-                PANDORA_MONITORING_API(SetTreeVariable(this->GetPandora(), "sliceid", "nu_score", nuProbability));
-                PANDORA_MONITORING_API(FillTree(this->GetPandora(), "sliceid"));
-            }
-
             PANDORA_THROW_RESULT_IF(STATUS_CODE_SUCCESS, !=, PandoraContentApi::ParticleFlowObject::AlterMetadata(*pAlgorithm, pPfo, metadata));
         }
 
@@ -307,8 +255,10 @@ void NeutrinoIdTool::SelectPfosByProbability(const pandora::Algorithm *const pAl
     }
 
     // Sort the slices by probability
-    std::sort(sliceIndexProbabilityPairs.begin(), sliceIndexProbabilityPairs.end(),
-        [](const UintFloatPair &a, const UintFloatPair &b) { return (a.second > b.second); });
+    std::sort(sliceIndexProbabilityPairs.begin(), sliceIndexProbabilityPairs.end(), [] (const UintFloatPair &a, const UintFloatPair &b)
+    {
+        return (a.second > b.second);
+    });
 
     // Select the first m_maxNeutrinos as neutrinos, and the rest as cosmic
     unsigned int nNuSlices(0);
@@ -359,16 +309,14 @@ NeutrinoIdTool::SliceFeatures::SliceFeatures(const PfoList &nuPfos, const PfoLis
             nuAllSpacePoints.insert(nuAllSpacePoints.end(), spacePoints.begin(), spacePoints.end());
             nuNHitsTotal += spacePoints.size();
 
-            if (spacePoints.size() < 5)
-                continue;
+            if (spacePoints.size() < 5) continue;
 
             const CartesianVector dir(this->GetDirectionFromVertex(spacePoints, nuVertex));
             nuWeightedDirTotal += dir * static_cast<float>(spacePoints.size());
             nuNHitsUsedTotal += spacePoints.size();
         }
 
-        if (nuNHitsUsedTotal == 0)
-            return;
+        if (nuNHitsUsedTotal == 0) return;
         const CartesianVector nuWeightedDir(nuWeightedDirTotal * (1.f / static_cast<float>(nuNHitsUsedTotal)));
 
         CartesianPointVector pointsInSphere;
@@ -379,13 +327,13 @@ NeutrinoIdTool::SliceFeatures::SliceFeatures(const PfoList &nuPfos, const PfoLis
         LArPcaHelper::EigenVectors eigenVectors;
         LArPcaHelper::RunPca(pointsInSphere, centroid, eigenValues, eigenVectors);
 
+
         const float nuNFinalStatePfos(static_cast<float>(nuFinalStates.size()));
         const float nuVertexY(nuVertex.GetY());
         const float nuWeightedDirZ(nuWeightedDir.GetZ());
         const float nuNSpacePointsInSphere(static_cast<float>(pointsInSphere.size()));
 
-        if (eigenValues.GetX() <= std::numeric_limits<float>::epsilon())
-            return;
+        if (eigenValues.GetX() <= std::numeric_limits<float>::epsilon()) return;
         const float nuEigenRatioInSphere(eigenValues.GetY() / eigenValues.GetX());
 
         // Cosmic-ray features
@@ -401,8 +349,7 @@ NeutrinoIdTool::SliceFeatures::SliceFeatures(const PfoList &nuPfos, const PfoLis
 
             nCRHitsTotal += spacePoints.size();
 
-            if (spacePoints.size() < 5)
-                continue;
+            if (spacePoints.size() < 5) continue;
 
             if (spacePoints.size() > nCRHitsMax)
             {
@@ -415,12 +362,10 @@ NeutrinoIdTool::SliceFeatures::SliceFeatures(const PfoList &nuPfos, const PfoLis
             }
         }
 
-        if (nCRHitsMax == 0)
-            return;
-        if (nCRHitsTotal == 0)
-            return;
+        if (nCRHitsMax == 0) return;
+        if (nCRHitsTotal == 0) return;
 
-        const float crFracHitsInLongestTrack = static_cast<float>(nCRHitsMax) / static_cast<float>(nCRHitsTotal);
+        const float crFracHitsInLongestTrack = static_cast<float>(nCRHitsMax)/static_cast<float>(nCRHitsTotal);
 
         // Push the features to the feature vector
         m_featureVector.push_back(nuNFinalStatePfos);
@@ -433,17 +378,6 @@ NeutrinoIdTool::SliceFeatures::SliceFeatures(const PfoList &nuPfos, const PfoLis
         m_featureVector.push_back(crLongestTrackDeflection);
         m_featureVector.push_back(crFracHitsInLongestTrack);
         m_featureVector.push_back(nCRHitsMax);
-
-        m_featureMap["NuNFinalStatePfos"] = nuNFinalStatePfos;
-        m_featureMap["NuNHitsTotal"] = nuNHitsTotal;
-        m_featureMap["NuVertexY"] = nuVertexY;
-        m_featureMap["NuWeightedDirZ"] = nuWeightedDirZ;
-        m_featureMap["NuNSpacePointsInSphere"] = nuNSpacePointsInSphere;
-        m_featureMap["NuEigenRatioInSphere"] = nuEigenRatioInSphere;
-        m_featureMap["CRLongestTrackDirY"] = crLongestTrackDirY;
-        m_featureMap["CRLongestTrackDeflection"] = crLongestTrackDeflection;
-        m_featureMap["CRFracHitsInLongestTrack"] = crFracHitsInLongestTrack;
-        m_featureMap["CRNHitsMax"] = nCRHitsMax;
 
         m_isAvailable = true;
     }
@@ -472,21 +406,10 @@ void NeutrinoIdTool::SliceFeatures::GetFeatureVector(LArMvaHelper::MvaFeatureVec
 
 //------------------------------------------------------------------------------------------------------------------------------------------
 
-void NeutrinoIdTool::SliceFeatures::GetFeatureMap(LArMvaHelper::DoubleMap &featureMap) const
-{
-    if (!m_isAvailable)
-        throw StatusCodeException(STATUS_CODE_NOT_FOUND);
-
-    featureMap.insert(m_featureMap.begin(), m_featureMap.end());
-}
-
-//------------------------------------------------------------------------------------------------------------------------------------------
-
 float NeutrinoIdTool::SliceFeatures::GetNeutrinoProbability(const SupportVectorMachine &supportVectorMachine) const
 {
     // ATTN if one or more of the features can not be calculated, then default to calling the slice a cosmic ray
-    if (!this->IsFeatureVectorAvailable())
-        return 0.f;
+    if (!this->IsFeatureVectorAvailable()) return 0.f;
 
     LArMvaHelper::MvaFeatureVector featureVector;
     this->GetFeatureVector(featureVector);
@@ -514,8 +437,7 @@ void NeutrinoIdTool::SliceFeatures::GetSpacePoints(const ParticleFlowObject *con
     if (clusters3D.size() > 1)
         throw StatusCodeException(STATUS_CODE_OUT_OF_RANGE);
 
-    if (clusters3D.empty())
-        return;
+    if (clusters3D.empty()) return;
 
     CaloHitList caloHits;
     clusters3D.front()->GetOrderedCaloHitList().FillCaloHitList(caloHits);
@@ -528,7 +450,8 @@ void NeutrinoIdTool::SliceFeatures::GetSpacePoints(const ParticleFlowObject *con
 
 CartesianVector NeutrinoIdTool::SliceFeatures::GetDirectionFromVertex(const CartesianPointVector &spacePoints, const CartesianVector &vertex) const
 {
-    return this->GetDirection(spacePoints, [&](const CartesianVector &pointA, const CartesianVector &pointB) {
+    return this->GetDirection(spacePoints, [&] (const CartesianVector &pointA, const CartesianVector &pointB)
+    {
         return ((pointA - vertex).GetMagnitude() < (pointB - vertex).GetMagnitude());
     });
 }
@@ -537,22 +460,25 @@ CartesianVector NeutrinoIdTool::SliceFeatures::GetDirectionFromVertex(const Cart
 
 CartesianVector NeutrinoIdTool::SliceFeatures::GetUpperDirection(const CartesianPointVector &spacePoints) const
 {
-    return this->GetDirection(
-        spacePoints, [&](const CartesianVector &pointA, const CartesianVector &pointB) { return (pointA.GetY() > pointB.GetY()); });
+    return this->GetDirection(spacePoints, [&] (const CartesianVector &pointA, const CartesianVector &pointB)
+    {
+        return (pointA.GetY() > pointB.GetY());
+    });
 }
 
 //------------------------------------------------------------------------------------------------------------------------------------------
 
 CartesianVector NeutrinoIdTool::SliceFeatures::GetLowerDirection(const CartesianPointVector &spacePoints) const
 {
-    return this->GetDirection(
-        spacePoints, [&](const CartesianVector &pointA, const CartesianVector &pointB) { return (pointA.GetY() < pointB.GetY()); });
+    return this->GetDirection(spacePoints, [&] (const CartesianVector &pointA, const CartesianVector &pointB)
+    {
+        return (pointA.GetY() < pointB.GetY());
+    });
 }
 
 //------------------------------------------------------------------------------------------------------------------------------------------
 
-CartesianVector NeutrinoIdTool::SliceFeatures::GetDirection(const CartesianPointVector &spacePoints,
-    std::function<bool(const CartesianVector &pointA, const CartesianVector &pointB)> fShouldChooseA) const
+CartesianVector NeutrinoIdTool::SliceFeatures::GetDirection(const CartesianPointVector &spacePoints, std::function<bool(const CartesianVector &pointA, const CartesianVector &pointB)> fShouldChooseA) const
 {
     // ATTN If wire w pitches vary between TPCs, exception will be raised in initialisation of lar pseudolayer plugin
     const LArTPC *const pFirstLArTPC(m_pTool->GetPandora().GetGeometry()->GetLArTPCMap().begin()->second);
@@ -570,17 +496,16 @@ CartesianVector NeutrinoIdTool::SliceFeatures::GetDirection(const CartesianPoint
     const CartesianVector startDir(isMinStart ? dirMin : dirMax);
 
     const bool shouldFlip((endPoint - startPoint).GetUnitVector().GetDotProduct(startDir) < 0.f);
-    return (shouldFlip ? startDir * (-1.f) : startDir);
+    return (shouldFlip ? startDir*(-1.f) : startDir);
 }
 
 //------------------------------------------------------------------------------------------------------------------------------------------
 
-void NeutrinoIdTool::SliceFeatures::GetPointsInSphere(const CartesianPointVector &spacePoints, const CartesianVector &vertex,
-    const float radius, CartesianPointVector &spacePointsInSphere) const
+void NeutrinoIdTool::SliceFeatures::GetPointsInSphere(const CartesianPointVector &spacePoints, const CartesianVector &vertex, const float radius, CartesianPointVector &spacePointsInSphere) const
 {
     for (const CartesianVector &point : spacePoints)
     {
-        if ((point - vertex).GetMagnitudeSquared() <= radius * radius)
+        if ((point - vertex).GetMagnitudeSquared() <= radius*radius)
             spacePointsInSphere.push_back(point);
     }
 }
@@ -589,46 +514,51 @@ void NeutrinoIdTool::SliceFeatures::GetPointsInSphere(const CartesianPointVector
 
 StatusCode NeutrinoIdTool::ReadSettings(const TiXmlHandle xmlHandle)
 {
-    PANDORA_RETURN_RESULT_IF_AND_IF(STATUS_CODE_SUCCESS, STATUS_CODE_NOT_FOUND, !=, XmlHelper::ReadValue(xmlHandle, "UseTrainingMode", m_useTrainingMode));
+    PANDORA_RETURN_RESULT_IF_AND_IF(STATUS_CODE_SUCCESS, STATUS_CODE_NOT_FOUND, !=, XmlHelper::ReadValue(xmlHandle,
+        "UseTrainingMode", m_useTrainingMode));
 
     if (m_useTrainingMode)
     {
-        PANDORA_RETURN_RESULT_IF(STATUS_CODE_SUCCESS, !=, XmlHelper::ReadValue(xmlHandle, "TrainingOutputFileName", m_trainingOutputFile));
+        PANDORA_RETURN_RESULT_IF(STATUS_CODE_SUCCESS, !=, XmlHelper::ReadValue(xmlHandle,
+            "TrainingOutputFileName", m_trainingOutputFile));
     }
 
-    PANDORA_RETURN_RESULT_IF_AND_IF(STATUS_CODE_SUCCESS, STATUS_CODE_NOT_FOUND, !=, XmlHelper::ReadValue(xmlHandle, "MinimumPurity", m_minPurity));
+    PANDORA_RETURN_RESULT_IF_AND_IF(STATUS_CODE_SUCCESS, STATUS_CODE_NOT_FOUND, !=, XmlHelper::ReadValue(xmlHandle,
+        "MinimumPurity", m_minPurity));
 
-    PANDORA_RETURN_RESULT_IF_AND_IF(
-        STATUS_CODE_SUCCESS, STATUS_CODE_NOT_FOUND, !=, XmlHelper::ReadValue(xmlHandle, "MinimumCompleteness", m_minCompleteness));
+    PANDORA_RETURN_RESULT_IF_AND_IF(STATUS_CODE_SUCCESS, STATUS_CODE_NOT_FOUND, !=, XmlHelper::ReadValue(xmlHandle,
+        "MinimumCompleteness", m_minCompleteness));
 
-    PANDORA_RETURN_RESULT_IF_AND_IF(
-        STATUS_CODE_SUCCESS, STATUS_CODE_NOT_FOUND, !=, XmlHelper::ReadValue(xmlHandle, "SelectNuanceCode", m_selectNuanceCode));
+    PANDORA_RETURN_RESULT_IF_AND_IF(STATUS_CODE_SUCCESS, STATUS_CODE_NOT_FOUND, !=, XmlHelper::ReadValue(xmlHandle,
+        "SelectNuanceCode", m_selectNuanceCode));
 
     if (m_selectNuanceCode)
     {
-        PANDORA_RETURN_RESULT_IF(STATUS_CODE_SUCCESS, !=, XmlHelper::ReadValue(xmlHandle, "NuanceCode", m_nuance));
+        PANDORA_RETURN_RESULT_IF(STATUS_CODE_SUCCESS, !=, XmlHelper::ReadValue(xmlHandle,
+            "NuanceCode", m_nuance));
     }
 
-    PANDORA_RETURN_RESULT_IF_AND_IF(
-        STATUS_CODE_SUCCESS, STATUS_CODE_NOT_FOUND, !=, XmlHelper::ReadValue(xmlHandle, "MinimumNeutrinoProbability", m_minProbability));
+    PANDORA_RETURN_RESULT_IF_AND_IF(STATUS_CODE_SUCCESS, STATUS_CODE_NOT_FOUND, !=, XmlHelper::ReadValue(xmlHandle,
+        "MinimumNeutrinoProbability", m_minProbability));
 
-    PANDORA_RETURN_RESULT_IF_AND_IF(STATUS_CODE_SUCCESS, STATUS_CODE_NOT_FOUND, !=, XmlHelper::ReadValue(xmlHandle, "MaximumNeutrinos", m_maxNeutrinos));
+    PANDORA_RETURN_RESULT_IF_AND_IF(STATUS_CODE_SUCCESS, STATUS_CODE_NOT_FOUND, !=, XmlHelper::ReadValue(xmlHandle,
+        "MaximumNeutrinos", m_maxNeutrinos));
 
-    PANDORA_RETURN_RESULT_IF_AND_IF(STATUS_CODE_SUCCESS, STATUS_CODE_NOT_FOUND, !=, XmlHelper::ReadValue(xmlHandle, "PersistFeatures", m_persistFeatures));
-
-    PANDORA_RETURN_RESULT_IF_AND_IF(STATUS_CODE_SUCCESS, STATUS_CODE_NOT_FOUND, !=,
-        XmlHelper::ReadValue(xmlHandle, "FilePathEnvironmentVariable", m_filePathEnvironmentVariable));
+    PANDORA_RETURN_RESULT_IF_AND_IF(STATUS_CODE_SUCCESS, STATUS_CODE_NOT_FOUND, !=, XmlHelper::ReadValue(xmlHandle,
+        "FilePathEnvironmentVariable", m_filePathEnvironmentVariable));
 
     if (!m_useTrainingMode)
     {
-        std::string mvaName;
-        PANDORA_RETURN_RESULT_IF(STATUS_CODE_SUCCESS, !=, XmlHelper::ReadValue(xmlHandle, "MvaName", mvaName));
+        std::string svmName;
+        PANDORA_RETURN_RESULT_IF(STATUS_CODE_SUCCESS, !=, XmlHelper::ReadValue(xmlHandle,
+            "SvmName", svmName));
 
-        std::string mvaFileName;
-        PANDORA_RETURN_RESULT_IF(STATUS_CODE_SUCCESS, !=, XmlHelper::ReadValue(xmlHandle, "MvaFileName", mvaFileName));
+        std::string svmFileName;
+        PANDORA_RETURN_RESULT_IF(STATUS_CODE_SUCCESS, !=, XmlHelper::ReadValue(xmlHandle,
+            "SvmFileName", svmFileName));
 
-        const std::string fullMvaFileName(LArFileHelper::FindFileInPath(mvaFileName, m_filePathEnvironmentVariable));
-        m_supportVectorMachine.Initialize(fullMvaFileName, mvaName);
+        const std::string fullSvmFileName(LArFileHelper::FindFileInPath(svmFileName, m_filePathEnvironmentVariable));
+        m_supportVectorMachine.Initialize(fullSvmFileName, svmName);
     }
 
     return STATUS_CODE_SUCCESS;
