@@ -31,7 +31,7 @@ StatusCode LArDLHelper::LoadModel(const std::string &filename, LArDLHelper::Torc
 
 //------------------------------------------------------------------------------------------------------------------------------------------
 
-void LArDLHelper::InitialiseInput(const at::IntList dimensions, TorchInput &tensor)
+void LArDLHelper::InitialiseInput(const at::IntArrayRef dimensions, TorchInput &tensor)
 {
     tensor = torch::zeros(dimensions);
 }
@@ -40,7 +40,7 @@ void LArDLHelper::InitialiseInput(const at::IntList dimensions, TorchInput &tens
 
 void LArDLHelper::Forward(TorchModel &model, const TorchInputVector &input, TorchOutput &output)
 {
-    output = model->forward(input).toTensor();
+    output = model.forward(input).toTensor();
 }
 
 } // namespace lar_dl_content
