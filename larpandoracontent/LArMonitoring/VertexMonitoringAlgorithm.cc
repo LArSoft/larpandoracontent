@@ -133,29 +133,12 @@ StatusCode VertexMonitoringAlgorithm::AssessVertices() const
             const float dx{delta.GetX()}, dy{delta.GetY()}, dz{delta.GetZ()}, dr{delta.GetMagnitude()};
             const float trueNuEnergy{pTrueNeutrino->GetEnergy()};
             const int success{1};
-
-            // Was the true 3D vertex in any gap?
-            const int isInGapUTrue(LArGeometryHelper::IsInGap3D(this->GetPandora(), trueVertex, TPC_VIEW_U));
-            const int isInGapVTrue(LArGeometryHelper::IsInGap3D(this->GetPandora(), trueVertex, TPC_VIEW_V));
-            const int isInGapWTrue(LArGeometryHelper::IsInGap3D(this->GetPandora(), trueVertex, TPC_VIEW_W));
-
-            // Was the reco vertex, reconstructed in a gap?
-            const int isInGapUReco(LArGeometryHelper::IsInGap3D(this->GetPandora(), recoVertex, TPC_VIEW_U));
-            const int isInGapVReco(LArGeometryHelper::IsInGap3D(this->GetPandora(), recoVertex, TPC_VIEW_V));
-            const int isInGapWReco(LArGeometryHelper::IsInGap3D(this->GetPandora(), recoVertex, TPC_VIEW_W));
-
             PANDORA_MONITORING_API(SetTreeVariable(this->GetPandora(), m_treename.c_str(), "success", success));
             PANDORA_MONITORING_API(SetTreeVariable(this->GetPandora(), m_treename.c_str(), "trueNuEnergy", trueNuEnergy));
             PANDORA_MONITORING_API(SetTreeVariable(this->GetPandora(), m_treename.c_str(), "dx", dx));
             PANDORA_MONITORING_API(SetTreeVariable(this->GetPandora(), m_treename.c_str(), "dy", dy));
             PANDORA_MONITORING_API(SetTreeVariable(this->GetPandora(), m_treename.c_str(), "dz", dz));
             PANDORA_MONITORING_API(SetTreeVariable(this->GetPandora(), m_treename.c_str(), "dr", dr));
-            PANDORA_MONITORING_API(SetTreeVariable(this->GetPandora(), m_treename.c_str(), "isInGapUTrue", isInGapUTrue));
-            PANDORA_MONITORING_API(SetTreeVariable(this->GetPandora(), m_treename.c_str(), "isInGapVTrue", isInGapVTrue));
-            PANDORA_MONITORING_API(SetTreeVariable(this->GetPandora(), m_treename.c_str(), "isInGapWTrue", isInGapWTrue));
-            PANDORA_MONITORING_API(SetTreeVariable(this->GetPandora(), m_treename.c_str(), "isInGapUReco", isInGapUReco));
-            PANDORA_MONITORING_API(SetTreeVariable(this->GetPandora(), m_treename.c_str(), "isInGapVReco", isInGapVReco));
-            PANDORA_MONITORING_API(SetTreeVariable(this->GetPandora(), m_treename.c_str(), "isInGapWReco", isInGapWReco));
             PANDORA_MONITORING_API(FillTree(this->GetPandora(), m_treename.c_str()));
         }
     }
