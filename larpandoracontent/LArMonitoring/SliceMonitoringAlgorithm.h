@@ -31,7 +31,7 @@ public:
 private:
     void RearrangeHits(const pandora::Algorithm *const pAlgorithm, SlicingAlgorithm::SliceList &inputSliceList, SlicingAlgorithm::SliceList &outputSliceList);
     void WriteOutHits(const std::map<unsigned int, pandora::CaloHitList> &inputSliceHits, const pandora::CaloHitList &threeDHits,
-                      const pandora::ClusterList *clusterList, const LArMCParticleHelper::MCContributionMap &mcToTrueHitListMap);
+                      const LArMCParticleHelper::MCContributionMap &mcToTrueHitListMap);
     pandora::StatusCode ReadSettings(const pandora::TiXmlHandle xmlHandle);
 
     bool m_trainingMode;              ///< Training mode
@@ -39,7 +39,6 @@ private:
     std::string m_treename;           ///< The name of the ROOT tree
     std::string m_trainingOutputFile; ///< Output name for training examples
 
-    pandora::StringVector m_inputClusterListNames; ///< The list of input cluster list names
     std::string m_trackPfoListName;   ///< Track PFOs to use for writing out training files
     std::string m_showerPfoListName;  ///< Shower PFOs to write out in the training files
 };
