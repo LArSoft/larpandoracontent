@@ -72,16 +72,16 @@ StatusCode DlVertexingAlgorithm::Run()
 }
 
 // TODO: This needs to be more elegant, but also depends on how/where the metadata is stored.
-bool isCRHit(const CaloHit *pCaloHit)
+bool ShouldUtiliseCaloHit(const CaloHit *pCaloHit)
 {
     try
     {
         LArCaloHit *pLArCaloHit{const_cast<LArCaloHit *>(dynamic_cast<const LArCaloHit *>(pCaloHit))};
-        return pLArCaloHit->GetTrackProbability() > 0.6;
+        return pLArCaloHit->GetShowerProbability() > pLArCaloHit->GetTrackProbability();
     }
     catch (StatusCodeException &e)
     {
-        return false;
+        return true;
     }
 }
 
@@ -414,7 +414,7 @@ StatusCode DlVertexingAlgorithm::MakeNetworkInputFromHits(const CaloHitList &cal
 
     for (const CaloHit *pCaloHit : caloHits)
     {
-        if (isCRHit(pCaloHit))
+        if (! ShouldUtiliseCaloHit(pCaloHit))
             continue;
 
         const float x{pCaloHit->GetPositionVector().GetX()};
@@ -683,7 +683,7 @@ void DlVertexingAlgorithm::GetHitRegion(const CaloHitList &caloHitList, float &x
                 continue;
             for (const CaloHit *const pCaloHit : *pCaloHitList)
             {
-                if (isCRHit(pCaloHit))
+                if (! ShouldUtiliseCaloHit(pCaloHit))
                     continue;
 
                 const CartesianVector &pos{pCaloHit->GetPositionVector()};
@@ -712,7 +712,7 @@ void DlVertexingAlgorithm::GetHitRegion(const CaloHitList &caloHitList, float &x
         int nHitsUpstream{0}, nHitsDownstream{0};
         for (const CaloHit *const pCaloHit : caloHitList)
         {
-            if (isCRHit(pCaloHit))
+            if (! ShouldUtiliseCaloHit(pCaloHit))
                 continue;
 
             const CartesianVector &pos{pCaloHit->GetPositionVector()};
