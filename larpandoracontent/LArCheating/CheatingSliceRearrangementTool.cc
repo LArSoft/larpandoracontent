@@ -55,7 +55,7 @@ void CheatingSliceRearrangementTool::SelectSlices(const pandora::Algorithm *cons
             localNuHitList.push_back(static_cast<const CaloHit *>(pCaloHit->GetParentAddress()));
         }
 
-        const unsigned int nuLikeHitCount(localNuHitList.size());
+        const int nuLikeHitCount(localNuHitList.size());
         const float slicePurity(localHitList.size() / (float) nuLikeHitCount);
 
         sliceMetrics.insert({sliceNumber, {localNuHitList, slicePurity}});
@@ -92,7 +92,7 @@ void CheatingSliceRearrangementTool::SelectSlices(const pandora::Algorithm *cons
         caloHitsToMove.insert(caloHitsToMove.end(), sliceNuHits.begin(), sliceNuHits.end());
     }
 
-    for (int sliceNumber = 0; sliceNumber < inputSliceVector.size(); ++sliceNumber)
+    for (unsigned int sliceNumber = 0; sliceNumber < inputSliceVector.size(); ++sliceNumber)
     {
         auto sliceHits(inputSliceVector[sliceNumber]);
 
