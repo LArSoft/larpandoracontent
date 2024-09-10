@@ -33,7 +33,7 @@ NeutrinoIdTool::NeutrinoIdTool() :
     m_minCompleteness(0.9f),
     m_minProbability(0.0f),
     m_maxNeutrinos(1),
-    m_persistFeatures(true),
+    m_persistFeatures(false),
     m_filePathEnvironmentVariable("FW_SEARCH_PATH")
 {
 }
@@ -621,15 +621,14 @@ StatusCode NeutrinoIdTool::ReadSettings(const TiXmlHandle xmlHandle)
 
     if (!m_useTrainingMode)
     {
-        std::string svmName;
-        PANDORA_RETURN_RESULT_IF(STATUS_CODE_SUCCESS, !=, XmlHelper::ReadValue(xmlHandle,
-            "SvmName", svmName));
+        std::string mvaName;
+        PANDORA_RETURN_RESULT_IF(STATUS_CODE_SUCCESS, !=, XmlHelper::ReadValue(xmlHandle, "MvaName", mvaName));
 
-        std::string svmFileName;
-        PANDORA_RETURN_RESULT_IF(STATUS_CODE_SUCCESS, !=, XmlHelper::ReadValue(xmlHandle, "SvmFileName", svmFileName));
+        std::string mvaFileName;
+        PANDORA_RETURN_RESULT_IF(STATUS_CODE_SUCCESS, !=, XmlHelper::ReadValue(xmlHandle, "MvaFileName", mvaFileName));
 
-        const std::string fullSvmFileName(LArFileHelper::FindFileInPath(svmFileName, m_filePathEnvironmentVariable));
-        m_supportVectorMachine.Initialize(fullSvmFileName, svmName);
+        const std::string fullMvaFileName(LArFileHelper::FindFileInPath(mvaFileName, m_filePathEnvironmentVariable));
+        m_supportVectorMachine.Initialize(fullMvaFileName, mvaName);
     }
 
     return STATUS_CODE_SUCCESS;
