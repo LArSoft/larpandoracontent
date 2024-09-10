@@ -283,35 +283,9 @@ StatusCode VertexMonitoringAlgorithm::AssessVertices() const
             PANDORA_MONITORING_API(SetTreeVariable(this->GetPandora(), m_treename.c_str(), "trueNuHitsV", (int) vTrueHits.size()));
             PANDORA_MONITORING_API(SetTreeVariable(this->GetPandora(), m_treename.c_str(), "trueNuHitsW", (int) wTrueHits.size()));
 
-            PANDORA_MONITORING_API(SetTreeVariable(this->GetPandora(), m_treename.c_str(), "dx", -999.f));
-            PANDORA_MONITORING_API(SetTreeVariable(this->GetPandora(), m_treename.c_str(), "dy", -999.f));
-            PANDORA_MONITORING_API(SetTreeVariable(this->GetPandora(), m_treename.c_str(), "dz", -999.f));
-            PANDORA_MONITORING_API(SetTreeVariable(this->GetPandora(), m_treename.c_str(), "dr", -999.f));
             PANDORA_MONITORING_API(SetTreeVariable(this->GetPandora(), m_treename.c_str(), "isInGapUTrue", isInGapUTrue));
             PANDORA_MONITORING_API(SetTreeVariable(this->GetPandora(), m_treename.c_str(), "isInGapVTrue", isInGapVTrue));
             PANDORA_MONITORING_API(SetTreeVariable(this->GetPandora(), m_treename.c_str(), "isInGapWTrue", isInGapWTrue));
-            PANDORA_MONITORING_API(SetTreeVariable(this->GetPandora(), m_treename.c_str(), "isInGapUReco", -999));
-            PANDORA_MONITORING_API(SetTreeVariable(this->GetPandora(), m_treename.c_str(), "isInGapVReco", -999));
-            PANDORA_MONITORING_API(SetTreeVariable(this->GetPandora(), m_treename.c_str(), "isInGapWReco", -999));
-            PANDORA_MONITORING_API(SetTreeVariable(this->GetPandora(), m_treename.c_str(), "isInSliceU", -999));
-            PANDORA_MONITORING_API(SetTreeVariable(this->GetPandora(), m_treename.c_str(), "isInSliceV", -999));
-            PANDORA_MONITORING_API(SetTreeVariable(this->GetPandora(), m_treename.c_str(), "isInSliceW", -999));
-
-            PANDORA_MONITORING_API(SetTreeVariable(this->GetPandora(), m_treename.c_str(), "recoSliceHitsU", -999));
-            PANDORA_MONITORING_API(SetTreeVariable(this->GetPandora(), m_treename.c_str(), "recoSliceHitsV", -999));
-            PANDORA_MONITORING_API(SetTreeVariable(this->GetPandora(), m_treename.c_str(), "recoSliceHitsW", -999));
-            PANDORA_MONITORING_API(SetTreeVariable(this->GetPandora(), m_treename.c_str(), "recoNuHitsU", -999));
-            PANDORA_MONITORING_API(SetTreeVariable(this->GetPandora(), m_treename.c_str(), "recoNuHitsV", -999));
-            PANDORA_MONITORING_API(SetTreeVariable(this->GetPandora(), m_treename.c_str(), "recoNuHitsW", -999));
-
-            PANDORA_MONITORING_API(SetTreeVariable(this->GetPandora(), m_treename.c_str(), "nuSliceCompU", -999.f));
-            PANDORA_MONITORING_API(SetTreeVariable(this->GetPandora(), m_treename.c_str(), "nuSlicePurU", -999.f));
-            PANDORA_MONITORING_API(SetTreeVariable(this->GetPandora(), m_treename.c_str(), "nuSliceCompV", -999.f));
-            PANDORA_MONITORING_API(SetTreeVariable(this->GetPandora(), m_treename.c_str(), "nuSlicePurV", -999.f));
-            PANDORA_MONITORING_API(SetTreeVariable(this->GetPandora(), m_treename.c_str(), "nuSliceCompW", -999.f));
-            PANDORA_MONITORING_API(SetTreeVariable(this->GetPandora(), m_treename.c_str(), "nuSlicePurW", -999.f));
-            PANDORA_MONITORING_API(FillTree(this->GetPandora(), m_treename.c_str()));
-
             PANDORA_MONITORING_API(FillTree(this->GetPandora(), m_treename.c_str()));
         }
     }

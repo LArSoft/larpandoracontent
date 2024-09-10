@@ -12,6 +12,9 @@
 
 #include "larpandoracontent/LArHelpers/LArMCParticleHelper.h"
 
+// #define HEP_EVD_PANDORA_HELPERS 1
+// #include "hep_evd.h"
+
 using namespace pandora;
 
 namespace lar_content
@@ -36,6 +39,9 @@ void CheatingSliceRearrangementTool::RearrangeHits(const pandora::Algorithm *con
     std::map<int, std::pair<CaloHitList, float>> sliceMetrics;
     std::map<int, CaloHitList> sliceHits;
 
+    // HepEVD::setHepEVDGeometry(this->GetPandora().GetGeometry());
+    // HepEVD::HepHitMap* caloHitToEvdHit = HepEVD::getHitMap();
+
     // Get all the hits in each slice, and then find out if they are neutrino or cosmic-ray induced.
     // We can then calculate the number of neutrino hits and the percentage of nu hits out of all the hits in the slice.
     //
@@ -55,9 +61,15 @@ void CheatingSliceRearrangementTool::RearrangeHits(const pandora::Algorithm *con
         for (const CaloHit *const pSliceCaloHit : slice.m_caloHitListW)
             localHitList.push_back(pSliceCaloHit);
 
+        // HepEVD::add2DHits(&localHitList);
+
         for (const CaloHit *const pCaloHit : localHitList)
         {
             const MCParticleWeightMap &hitMCParticleWeightMap(pCaloHit->GetMCParticleWeightMap());
+
+            caloHitToEvdHit->at(pCaloHit)->addProperties({
+                {"PreRearrangeSliceNum", sliceNumber}
+            });
 
             // INFO: At MicroBooNE, if there is any MC at all...its a nu-hit.
             if (hitMCParticleWeightMap.empty())
@@ -87,8 +99,10 @@ void CheatingSliceRearrangementTool::RearrangeHits(const pandora::Algorithm *con
         }
     }
 
-    if (bestSlice == -1)
+    if (bestSlice == -1) {
+        // HepEVD::saveState("SliceRearrangeCheat", 0, false);
         return;
+    }
 
     std::cout << "The best slice is slice " << bestSlice << std::endl;
 
@@ -111,14 +125,16 @@ void CheatingSliceRearrangementTool::RearrangeHits(const pandora::Algorithm *con
 
     std::cout << "Moving " << caloHitsToMove.size() << " hits to the best slice!" << std::endl;
 
-    if (caloHitsToMove.empty())
+    if (caloHitsToMove.empty()) {
+        // HepEVD::saveState("SliceRearrangeCheat", 0, false);
         return;
+    }
 
-    for (unsigned int sliceNumber = 0; sliceNumber < outputSliceList.size(); ++sliceNumber)
+    for (int sliceNumber = 0; sliceNumber < outputSliceList.size(); ++sliceNumber)
     {
         // If this is the target slice, move hits into it.
         // Alternatively, do a quick check to remove hits from other slices.
-        if (sliceNumber == (unsigned) bestSlice) {
+        if (sliceNumber == bestSlice) {
             this->AppendSliceHits(outputSliceList[sliceNumber].m_caloHitListU, caloHitsToMove, TPC_VIEW_U);
             this->AppendSliceHits(outputSliceList[sliceNumber].m_caloHitListV, caloHitsToMove, TPC_VIEW_V);
             this->AppendSliceHits(outputSliceList[sliceNumber].m_caloHitListW, caloHitsToMove, TPC_VIEW_W);
@@ -129,7 +145,16 @@ void CheatingSliceRearrangementTool::RearrangeHits(const pandora::Algorithm *con
             for (auto pCaloHit : sliceHits[sliceNumber]) {
 
                 if (std::find(caloHitsToMove.begin(), caloHitsToMove.end(), pCaloHit) != caloHitsToMove.end())
+                {
+                    // caloHitToEvdHit->at(pCaloHit)->addProperties({
+                    //     {"SwappedHit", bestSlice}
+                    // });
                     continue;
+                }
+
+                // caloHitToEvdHit->at(pCaloHit)->addProperties({
+                //     {"LeftHit", sliceNumber}
+                // });
 
                 filteredHits[pCaloHit->GetHitType()].push_back(pCaloHit);
             }
@@ -139,6 +164,30 @@ void CheatingSliceRearrangementTool::RearrangeHits(const pandora::Algorithm *con
             outputSliceList[sliceNumber].m_caloHitListW = filteredHits[TPC_VIEW_W];
         }
     }
+
+    std::cout << "Done!" << std::endl;
+
+//     for (int sliceNumber = 0; sliceNumber < outputSliceList.size(); ++sliceNumber)
+//     {
+//         auto slice(outputSliceList[sliceNumber]);
+//         CaloHitList localHitList{};
+
+//         for (const CaloHit *const pSliceCaloHit : slice.m_caloHitListU)
+//             localHitList.push_back(pSliceCaloHit);
+//         for (const CaloHit *const pSliceCaloHit : slice.m_caloHitListV)
+//             localHitList.push_back(pSliceCaloHit);
+//         for (const CaloHit *const pSliceCaloHit : slice.m_caloHitListW)
+//             localHitList.push_back(pSliceCaloHit);
+
+//         for (const CaloHit *const pCaloHit : localHitList)
+//         {
+//             caloHitToEvdHit->at(pCaloHit)->addProperties({
+//                 {"PostRearrangeSliceNum", sliceNumber}
+//             });
+//         }
+//     }
+
+//     HepEVD::saveState("SliceRearrangeCheat", 0, false);
 }
 
 //------------------------------------------------------------------------------------------------------------------------------------------
@@ -154,6 +203,8 @@ void CheatingSliceRearrangementTool::AppendSliceHits(CaloHitList &hits, CaloHitL
 
 StatusCode CheatingSliceRearrangementTool::ReadSettings(const TiXmlHandle xmlHandle)
 {
+    // PANDORA_RETURN_RESULT_IF_AND_IF(STATUS_CODE_SUCCESS, STATUS_CODE_NOT_FOUND, !=, XmlHelper::ReadValue(xmlHandle, "Threshold", m_threshold));
+
     return STATUS_CODE_SUCCESS;
 }
 
