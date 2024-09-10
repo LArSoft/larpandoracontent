@@ -10,8 +10,6 @@
 
 #include "larpandoracontent/LArControlFlow/SlicingAlgorithm.h"
 
-#include "larpandoracontent/LArHelpers/LArMCParticleHelper.h"
-
 namespace lar_content
 {
 
@@ -30,13 +28,10 @@ public:
 
 private:
     void RearrangeHits(const pandora::Algorithm *const pAlgorithm, SlicingAlgorithm::SliceList &inputSliceList, SlicingAlgorithm::SliceList &outputSliceList);
-    void WriteOutHits(SlicingAlgorithm::SliceList &inputSliceList, const LArMCParticleHelper::MCContributionMap &mcToTrueHitListMap);
     pandora::StatusCode ReadSettings(const pandora::TiXmlHandle xmlHandle);
 
-    bool m_trainingMode;              ///< Training mode
-    std::string m_filename;           ///< The filename of the ROOT output file
-    std::string m_treename;           ///< The name of the ROOT tree
-    std::string m_trainingOutputFile; ///< Output name for training examples.
+    std::string m_filename;         // The filename of the ROOT output file
+    std::string m_treename;         // The name of the ROOT tree
 };
 
 } // namespace lar_content
