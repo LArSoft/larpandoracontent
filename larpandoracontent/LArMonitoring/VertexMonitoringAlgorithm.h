@@ -28,7 +28,7 @@ public:
 
 private:
     pandora::StatusCode AssessVertices() const;
-    bool CheckIfSliceContainsVertex(const pandora::CaloHitList caloHitList, const pandora::CartesianVector trueVertex,
+    pandora::StatusCode CheckIfSliceContainsVertex(const pandora::CaloHitList caloHits, const pandora::CartesianVector trueVertex,
             const pandora::HitType view) const;
 
     pandora::StatusCode Run();
