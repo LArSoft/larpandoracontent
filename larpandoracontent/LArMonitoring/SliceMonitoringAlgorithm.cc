@@ -123,7 +123,7 @@ void SliceMonitoringAlgorithm::RearrangeHits(const pandora::Algorithm *const pAl
             mcHits = mcToTrueHitListMap.at(pTrueNeutrino);
 
         // First, assess the slices. We want to know which is the most-neutrino-filled, largest, etc.
-        std::pair<unsigned int, unsigned int> bestSlice({0, 0});
+        std::pair<int, int> bestSlice({0, 0});
         std::map<unsigned int, CaloHitList> matchedSliceHits;
         for (unsigned int sliceNumber = 0; sliceNumber < inputSliceList.size(); ++sliceNumber)
         {
@@ -223,9 +223,6 @@ void SliceMonitoringAlgorithm::RearrangeHits(const pandora::Algorithm *const pAl
                     nuComp = sliceNuHits.size() / (float)totalNuHitsInView.size();
                     nuPurity = sliceNuHits.size() / (float)allCaloHitsInView.size();
                 }
-
-                std::cout << sliceNumber << ": " << nuComp << " / " << nuPurity <<
-                        "(" << (sliceNumber == bestSlice.second) << ")" << std::endl;
 
                 PANDORA_MONITORING_API(SetTreeVariable(
                     this->GetPandora(), m_treename.c_str(),
