@@ -1,7 +1,7 @@
 /**
  *  @file   larpandoracontent/LArMonitoring/SliceMonitoringAlgorithm.h
  *
- *  @brief  Header file for the slice monitoring algorithm.
+ *  @brief  Header file for the particle visualisation algorithm.
  *
  *  $Log: $
  */
@@ -37,9 +37,6 @@ private:
     std::string m_filename;           ///< The filename of the ROOT output file
     std::string m_treename;           ///< The name of the ROOT tree
     std::string m_trainingOutputFile; ///< Output name for training examples.
-
-    std::string m_trackPfoListName;   ///< Track PFOs to use for writing out training files
-    std::string m_showerPfoListName;  ///< Shower PFOs to write out in the training files
 };
 
 } // namespace lar_content

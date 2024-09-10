@@ -25,7 +25,7 @@ using namespace pandora;
 namespace lar_content
 {
 
-SliceMonitoringAlgorithm::SliceMonitoringAlgorithm() : m_trackPfoListName(""), m_showerPfoListName("") {}
+SliceMonitoringAlgorithm::SliceMonitoringAlgorithm() {}
 
 //------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -51,15 +51,6 @@ void SliceMonitoringAlgorithm::RearrangeHits(const pandora::Algorithm *const pAl
         STATUS_CODE_SUCCESS, !=,
         PandoraContentApi::GetList(*pAlgorithm, "FullHitList", pCompleteCaloHitList));
 
-    const PfoList *pTrackPfos(nullptr);
-    PANDORA_THROW_RESULT_IF_AND_IF(
-        STATUS_CODE_SUCCESS, STATUS_CODE_NOT_FOUND, !=,
-        PandoraContentApi::GetList(*pAlgorithm, m_trackPfoListName, pTrackPfos));
-    const PfoList *pShowerPfos(nullptr);
-    PANDORA_THROW_RESULT_IF_AND_IF(
-        STATUS_CODE_SUCCESS, STATUS_CODE_NOT_FOUND, !=,
-        PandoraContentApi::GetList(*pAlgorithm, m_showerPfoListName, pShowerPfos));
-
     // Populate the complete calo hit list, based on every hit in every slice.
     CaloHitList fullSliceCaloHitList{};
     for (const auto &slice : inputSliceList)
@@ -74,31 +65,6 @@ void SliceMonitoringAlgorithm::RearrangeHits(const pandora::Algorithm *const pAl
 
     const MCParticle *pTrueNeutrino{nullptr};
     LArMCParticleHelper::MCContributionMap mcToTrueHitListMap;
-
-    // Also populate a list of 3D hits.
-    // This is useful so we can assess the 3D completeness -> i.e. how much of a particle's hit were made into 3D hits.
-    // Low 3D completeness == Hard to Slice
-    CaloHitList threeDHits;
-    for (const auto &pfoList : {pTrackPfos, pShowerPfos})
-    {
-        for (const auto pPfo : *pfoList )
-        {
-            CaloHitList pPfoHits;
-            LArPfoHelper::GetCaloHits(pPfo, TPC_3D, pPfoHits);
-            threeDHits.insert(threeDHits.end(), pPfoHits.begin(), pPfoHits.end());
-
-            try
-            {
-                const auto pfoMC = LArMCParticleHelper::GetMainMCParticle(pPfo);
-                for (const auto pCaloHit : pPfoHits)
-                {
-                    mcToTrueHitListMap[pfoMC].push_back(pCaloHit);
-                }
-            }
-            catch (StatusCodeException &) { }
-
-        }
-    }
 
     // Since the slice hits, and the full, unfiltered hits may not match up, first
     // perform a quick match between these two sets of hits.
