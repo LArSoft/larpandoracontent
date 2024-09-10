@@ -280,16 +280,6 @@ public:
     static void SelectCaloHits(const pandora::CaloHitList *const pCaloHitList, const MCRelationMap &mcToPrimaryMCMap,
         pandora::CaloHitList &selectedCaloHitList, const bool selectInputHits, const float maxPhotonPropagation);
 
-    /**
-     *  @brief  Get the hits in the intersection of two hit lists
-     *
-     *  @param  hitListA an input hit list
-     *  @param  hitListB another input hit list
-     *
-     *  @return The hits that are found in both hitListA and hitListB
-     */
-    static pandora::CaloHitList GetSharedHits(const pandora::CaloHitList &hitListA, const pandora::CaloHitList &hitListB);
-
 private:
     /**
      *  @brief  For a given Pfo, collect the hits which are reconstructable (=good hits belonging to a selected reconstructable MCParticle)
@@ -348,6 +338,16 @@ private:
      */
     static bool PassMCParticleChecks(const pandora::MCParticle *const pOriginalPrimary, const pandora::MCParticle *const pThisMCParticle,
         const pandora::MCParticle *const pHitMCParticle, const float maxPhotonPropagation);
+
+    /**
+     *  @brief  Get the hits in the intersection of two hit lists
+     *
+     *  @param  hitListA an input hit list
+     *  @param  hitListB another input hit list
+     *
+     *  @return The hits that are found in both hitListA and hitListB
+     */
+    static pandora::CaloHitList GetSharedHits(const pandora::CaloHitList &hitListA, const pandora::CaloHitList &hitListB);
 };
 
 } // namespace lar_content
