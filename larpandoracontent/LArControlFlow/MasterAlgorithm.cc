@@ -509,21 +509,6 @@ StatusCode MasterAlgorithm::RunSlicing(const VolumeIdToHitListMap &volumeIdToHit
 
 StatusCode MasterAlgorithm::RunSliceReconstruction(SliceVector &sliceVector, SliceHypotheses &nuSliceHypotheses, SliceHypotheses &crSliceHypotheses) const
 {
-    SliceVector selectedSliceVector;
-    if (m_shouldRunSlicing && !m_sliceSelectionToolVector.empty())
-    {
-        SliceVector inputSliceVector(sliceVector);
-        for (SliceSelectionBaseTool *const pSliceSelectionTool : m_sliceSelectionToolVector)
-        {
-            pSliceSelectionTool->SelectSlices(this, inputSliceVector, selectedSliceVector);
-            inputSliceVector = selectedSliceVector;
-        }
-    }
-    else
-    {
-        selectedSliceVector = std::move(sliceVector);
-    }
-
     unsigned int sliceCounter(0);
 
     for (const CaloHitList &sliceHits : sliceVector)
@@ -578,12 +563,6 @@ StatusCode MasterAlgorithm::RunSliceReconstruction(SliceVector &sliceVector, Sli
 
         ++sliceCounter;
     }
-
-
-    // ATTN: If we swapped these objects at the start, be sure to swap them back in case we ever want to use sliceVector
-    // after this function
-    if (!(m_shouldRunSlicing && !m_sliceSelectionToolVector.empty()))
-        sliceVector = std::move(selectedSliceVector);
 
     if (m_shouldRunNeutrinoRecoOption && m_shouldRunCosmicRecoOption && (nuSliceHypotheses.size() != crSliceHypotheses.size()))
         throw StatusCodeException(STATUS_CODE_INVALID_PARAMETER);
@@ -1083,21 +1062,6 @@ StatusCode MasterAlgorithm::ReadSettings(const TiXmlHandle xmlHandle)
         pExternalParameters = dynamic_cast<ExternalSteeringParameters*>(this->GetExternalParameters());
         if (!pExternalParameters) return STATUS_CODE_FAILURE;
     }
-
-    {
-        AlgorithmToolVector algorithmToolVector;
-        PANDORA_RETURN_RESULT_IF(
-            STATUS_CODE_SUCCESS, !=, XmlHelper::ProcessAlgorithmToolList(*this, xmlHandle, "SliceSelectionTools", algorithmToolVector));
-
-        for (AlgorithmTool *const pAlgorithmTool : algorithmToolVector)
-        {
-            SliceSelectionBaseTool *const pSliceSelectionTool(dynamic_cast<SliceSelectionBaseTool *>(pAlgorithmTool));
-            if (!pSliceSelectionTool)
-                return STATUS_CODE_INVALID_PARAMETER;
-            m_sliceSelectionToolVector.push_back(pSliceSelectionTool);
-        }
-    }
-
 
     PANDORA_RETURN_RESULT_IF(STATUS_CODE_SUCCESS, !=, this->ReadExternalSettings(pExternalParameters, !pExternalParameters ? InputBool() :
         pExternalParameters->m_shouldRunAllHitsCosmicReco, xmlHandle, "ShouldRunAllHitsCosmicReco", m_shouldRunAllHitsCosmicReco));
