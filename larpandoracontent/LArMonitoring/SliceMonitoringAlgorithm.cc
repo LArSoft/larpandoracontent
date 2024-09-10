@@ -85,7 +85,7 @@ StatusCode SliceMonitoringAlgorithm::AssessSlice() const
         const auto mcWeights = pLArCaloHit->GetMCParticleWeightMap();
 
         const MCParticle *largestContributor{nullptr};
-        float weight = -1;
+        float weight;
 
         if (mcWeights.empty()) continue;
 
@@ -227,6 +227,7 @@ StatusCode SliceMonitoringAlgorithm::AssessSlice() const
     else
     {
         const int success{0};
+        const float trueNuEnergy{pTrueNeutrino->GetEnergy()};
         PANDORA_MONITORING_API(SetTreeVariable(this->GetPandora(), m_treename.c_str(), "success", success));
         PANDORA_MONITORING_API(FillTree(this->GetPandora(), m_treename.c_str()));
     }
