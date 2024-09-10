@@ -76,6 +76,18 @@ void SliceMonitoringAlgorithm::RearrangeHits(const pandora::Algorithm *const pAl
     for (const CaloHit* pCaloHit : fullSliceCaloHitList)
         caloHitListMatchMap[getHitKey(pCaloHit)] = pCaloHit;
 
+    // Refactor: For slices find largest nu slice.
+    //           For slices, populate the below variables.
+    //             Can then add a "is best slice" tag for slice with most nu hits.
+    //          Also add:
+    //              IsBestSlice could be an int : 0 for yes, 1 for second best, 2
+    //              for third... UniqueEventID : Lets me split up the slices a bit
+    //              more, get an idea of how the event looks.
+    //                  I.e. nuCompU where eventID == "ajK92kb" to see the
+    //                  distribution of all the slices there.
+    //              Double check the variables work for both "slice level" and "nu
+    //              level"
+
     for (const CaloHit *pCaloHit : *pCompleteCaloHitList) {
 
         // If there is a match for this hit...we want to point the slice-based hit,
@@ -114,22 +126,17 @@ void SliceMonitoringAlgorithm::RearrangeHits(const pandora::Algorithm *const pAl
         mcToTrueHitListMap[largestContributor].push_back(pCaloHit);
     }
 
+    std::cout << "We found " << mcToTrueHitListMap.size() << " MCs..." << std::endl;
+
     if (pTrueNeutrino) {
         const float trueNuEnergy{pTrueNeutrino->GetEnergy()};
         const int success{1};
 
-        CaloHitList mcHits;
-        if (mcToTrueHitListMap.count(pTrueNeutrino) > 0)
-            mcHits = mcToTrueHitListMap.at(pTrueNeutrino);
-
-        // First, assess the slices. We want to know which is the most-neutrino-filled, largest, etc.
-        std::pair<int, int> bestSlice({0, 0});
-        std::map<unsigned int, CaloHitList> matchedSliceHits;
-        for (unsigned int sliceNumber = 0; sliceNumber < inputSliceList.size(); ++sliceNumber)
+        // Lets calculate some slice properties.
+        // Perform this for every given input slice.
+        for (const auto &slice : inputSliceList)
         {
-            const auto slice(inputSliceList[sliceNumber]);
-            CaloHitList sliceCaloHits(matchedSliceHits[sliceNumber]);
-
+            CaloHitList sliceCaloHits;
             for (const CaloHit *const pSliceCaloHit : slice.m_caloHitListU)
                 sliceCaloHits.push_back(caloHitListMatchMap[getHitKey(pSliceCaloHit)]);
             for (const CaloHit *const pSliceCaloHit : slice.m_caloHitListV)
@@ -137,32 +144,12 @@ void SliceMonitoringAlgorithm::RearrangeHits(const pandora::Algorithm *const pAl
             for (const CaloHit *const pSliceCaloHit : slice.m_caloHitListW)
                 sliceCaloHits.push_back(caloHitListMatchMap[getHitKey(pSliceCaloHit)]);
 
-
-            CaloHitList sliceNuHits;
-            std::set_intersection(sliceCaloHits.begin(), sliceCaloHits.end(),
-                                  mcHits.begin(), mcHits.end(),
-                                  std::inserter(sliceNuHits, sliceNuHits.end()));
-
-            if (sliceNuHits.size() > bestSlice.first)
-                bestSlice = {sliceNuHits.size(), sliceNumber};
-
-        }
-
-        // Lets calculate some slice properties.
-        // Perform this for every given input slice.
-        for (unsigned int sliceNumber = 0; sliceNumber < inputSliceList.size(); ++sliceNumber)
-        {
-            const auto slice(inputSliceList[sliceNumber]);
-            CaloHitList sliceCaloHits(matchedSliceHits[sliceNumber]);
+            CaloHitList mcHits;
+            if (mcToTrueHitListMap.count(pTrueNeutrino) > 0)
+                mcHits = mcToTrueHitListMap.at(pTrueNeutrino);
 
             PANDORA_MONITORING_API(SetTreeVariable(
                 this->GetPandora(), m_treename.c_str(), "success", success));
-            PANDORA_MONITORING_API(SetTreeVariable(
-                this->GetPandora(), m_treename.c_str(), "sliceNumber", (int) sliceNumber));
-            PANDORA_MONITORING_API(SetTreeVariable(
-                this->GetPandora(), m_treename.c_str(), "mostNuHitSlice", (int) bestSlice.second));
-            PANDORA_MONITORING_API(SetTreeVariable(
-                this->GetPandora(), m_treename.c_str(), "isBestSlice", (int) (sliceNumber == bestSlice.second)));
             PANDORA_MONITORING_API(SetTreeVariable(
                 this->GetPandora(), m_treename.c_str(), "trueNuEnergy", trueNuEnergy));
             PANDORA_MONITORING_API(SetTreeVariable(this->GetPandora(),
@@ -249,18 +236,15 @@ void SliceMonitoringAlgorithm::RearrangeHits(const pandora::Algorithm *const pAl
                     SetTreeVariable(this->GetPandora(), m_treename.c_str(),
                                     "nuSlicePur" + viewName, nuPurity));
             }
-
             PANDORA_MONITORING_API(FillTree(this->GetPandora(), m_treename.c_str()));
         }
     } else {
         // Lets calculate some slice properties.
-        for (unsigned int sliceNumber = 0; sliceNumber < inputSliceList.size(); ++sliceNumber)
+        for (const auto &slice : inputSliceList)
         {
             const int success{0};
             PANDORA_MONITORING_API(SetTreeVariable(
                 this->GetPandora(), m_treename.c_str(), "success", success));
-            PANDORA_MONITORING_API(SetTreeVariable(
-                this->GetPandora(), m_treename.c_str(), "sliceNumber", (int) sliceNumber));
             PANDORA_MONITORING_API(FillTree(this->GetPandora(), m_treename.c_str()));
         }
     }
