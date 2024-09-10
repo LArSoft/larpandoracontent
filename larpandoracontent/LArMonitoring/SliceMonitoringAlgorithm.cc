@@ -126,7 +126,6 @@ void SliceMonitoringAlgorithm::RearrangeHits(const pandora::Algorithm *const pAl
         CaloHitList mcHits;
         if (mcToTrueHitListMap.count(pTrueNeutrino) > 0)
             mcHits = mcToTrueHitListMap.at(pTrueNeutrino);
-        mcHits.sort();
 
         // First, assess the slices. We want to know which is the most-neutrino-filled, largest, etc.
         std::pair<unsigned int, unsigned int> bestSlice({0, 0});
@@ -144,7 +143,6 @@ void SliceMonitoringAlgorithm::RearrangeHits(const pandora::Algorithm *const pAl
                 sliceCaloHits.push_back(caloHitListMatchMap[getHitKey(pSliceCaloHit)]);
 
             CaloHitList sliceNuHits;
-            sliceCaloHits.sort();
             std::set_intersection(sliceCaloHits.begin(), sliceCaloHits.end(),
                                   mcHits.begin(), mcHits.end(),
                                   std::inserter(sliceNuHits, sliceNuHits.end()));
