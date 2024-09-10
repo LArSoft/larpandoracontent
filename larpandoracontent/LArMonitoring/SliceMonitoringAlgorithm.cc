@@ -49,69 +49,39 @@ StatusCode SliceMonitoringAlgorithm::AssessSlice() const
     const MCParticleList *pMCParticleList{nullptr};
     PANDORA_RETURN_RESULT_IF(STATUS_CODE_SUCCESS, !=, PandoraContentApi::GetCurrentList(*this, pMCParticleList));
 
-    const CaloHitList *pCaloSliceHitList{nullptr};
-    PANDORA_RETURN_RESULT_IF(STATUS_CODE_SUCCESS, !=, PandoraContentApi::GetCurrentList(*this, pCaloSliceHitList));
+    const CaloHitList *pCaloHitList{nullptr};
+    PANDORA_RETURN_RESULT_IF(STATUS_CODE_SUCCESS, !=, PandoraContentApi::GetCurrentList(*this, pCaloHitList));
 
     const CaloHitList *pCaloFullHitList{nullptr};
     PANDORA_RETURN_RESULT_IF(STATUS_CODE_SUCCESS, !=, PandoraContentApi::GetList(*this, "FullHitList", pCaloFullHitList));
 
+    MCParticleVector primaries;
+    LArMCParticleHelper::GetPrimaryMCParticleList(pMCParticleList, primaries);
+
     const MCParticle *pTrueNeutrino{nullptr};
-    LArMCParticleHelper::CaloHitToMCMap caloHitToPrimaryMCMap;
-    LArMCParticleHelper::MCContributionMap mcToTrueHitListMap;
 
-    // Since there is now two sets of calo hits...they will never match.
-    // So build up a 2D map based on the position and find the matches
-    // between the two lists manually.
-    // First, populate the map, then use that in the next loop, looking
-    // for exact matches.
-    std::map<std::pair<float, float>, const CaloHit *> caloHitListMatchMap;
-    CaloHitList pCaloHitListMatched;
-    for (const CaloHit* pCaloHit : *pCaloSliceHitList)
+    if (!primaries.empty())
     {
-        const auto pos = pCaloHit->GetPositionVector();
-        caloHitListMatchMap[{pos.GetX(), pos.GetZ()}] = pCaloHit;
-    }
-
-    for (const CaloHit* pCaloHit : *pCaloFullHitList)
-    {
-        // Now we can find the hits from the full list that match, and use them instead.
-        const auto pos = pCaloHit->GetPositionVector();
-        if (caloHitListMatchMap.count({pos.GetX(), pos.GetZ()}) > 0)
-            if (caloHitListMatchMap[{pos.GetX(), pos.GetZ()}]->GetHadronicEnergy() == pCaloHit->GetHadronicEnergy())
-                pCaloHitListMatched.push_back(pCaloHit);
-
-        // Then populate MC info.
-        LArCaloHit *pLArCaloHit{const_cast<LArCaloHit *>(dynamic_cast<const LArCaloHit *>(pCaloHit))};
-        const auto mcWeights = pLArCaloHit->GetMCParticleWeightMap();
-
-        const MCParticle *largestContributor{nullptr};
-        float weight;
-
-        if (mcWeights.empty()) continue;
-
-        for (const auto &mcWeight : mcWeights)
+        for (const MCParticle *primary : primaries)
         {
-            const MCParticle *mc{mcWeight.first};
-            const auto parent(LArMCParticleHelper::GetParentMCParticle(mc));
-
-            if (mcWeight.second > weight) largestContributor = mc;
-
-            if (LArMCParticleHelper::IsNeutrino(parent))
+            const MCParticleList &parents{primary->GetParentList()};
+            if (parents.size() == 1 && LArMCParticleHelper::IsNeutrino(parents.front()))
             {
-                pTrueNeutrino = parent;
-                largestContributor = parent;
+                pTrueNeutrino = parents.front();
+                break;
             }
         }
-
-        if (largestContributor == nullptr) continue;
-
-        caloHitToPrimaryMCMap[pCaloHit] = largestContributor;
-        mcToTrueHitListMap[largestContributor].push_back(pCaloHit);
     }
 
-    std::cout << "From " << pCaloFullHitList->size() << " hits, we ended up with " << caloHitToPrimaryMCMap.size() << " being mapped!" << std::endl;
-    std::cout << "From " << pCaloSliceHitList->size() << " hits, we ended up with " << pCaloHitListMatched.size() << " being matched!" << std::endl;
-    std::cout << "That is " << mcToTrueHitListMap.size() << " MCs matched!" << std::endl;
+    LArMCParticleHelper::MCRelationMap mcToPrimaryMCMap;
+
+    // Just point every MC to the neutrino, CR don't have MC.
+    for (const MCParticle *mc : *pMCParticleList)
+        mcToPrimaryMCMap[mc] = pTrueNeutrino;
+
+    LArMCParticleHelper::CaloHitToMCMap caloHitToPrimaryMCMap;
+    LArMCParticleHelper::MCContributionMap mcToTrueHitListMap;
+    LArMCParticleHelper::GetMCParticleToCaloHitMatches(pCaloFullHitList, mcToPrimaryMCMap, caloHitToPrimaryMCMap, mcToTrueHitListMap);
 
     if (pTrueNeutrino)
     {
@@ -140,7 +110,7 @@ StatusCode SliceMonitoringAlgorithm::AssessSlice() const
             trueNuHitsForView.sort();
 
             CaloHitList allCaloHitsInView;
-            std::copy_if(pCaloHitListMatched.begin(), pCaloHitListMatched.end(), std::back_inserter(allCaloHitsInView), [&](const pandora::CaloHit* hit) { return hit->GetHitType() == view; });
+            std::copy_if(pCaloHitList->begin(), pCaloHitList->end(), std::back_inserter(allCaloHitsInView), [&](const pandora::CaloHit* hit) { return hit->GetHitType() == view; });
             allCaloHitsInView.sort();
 
             // Now we have all the hits + all the MC-based (i.e. neutrino hits), get the overlap / missing / extra.
@@ -170,8 +140,7 @@ StatusCode SliceMonitoringAlgorithm::AssessSlice() const
             float nuComp(0.f);
             float nuPurity(1.f);
 
-            if (containsNeutrinoHits)
-            {
+            if (containsNeutrinoHits) {
                 nuComp = sliceNuHits.size() / (float) trueNuHitsForView.size();
                 nuPurity = sliceNuHits.size() / (float) allCaloHitsInView.size();
             }
@@ -180,18 +149,9 @@ StatusCode SliceMonitoringAlgorithm::AssessSlice() const
             std::vector<float> crHitTagScores({});
             int tagCorrect(0);
 
-            for (const CaloHit *pCaloHit : allCaloHitsInView)
-            {
-                const auto pos = pCaloHit->GetPositionVector();
-                const CaloHit* sliceHit(caloHitListMatchMap[{pos.GetX(), pos.GetZ()}]);
+            for (const CaloHit *pCaloHit : allCaloHitsInView) {
 
-                if (sliceHit->GetHadronicEnergy() != pCaloHit->GetHadronicEnergy())
-                {
-                    std::cout << "SliceVertexing: Slice to Full hit matching returned odd result!" << std::endl;
-                    throw STATUS_CODE_INVALID_PARAMETER;
-                }
-
-                LArCaloHit *pLArCaloHit{const_cast<LArCaloHit *>(dynamic_cast<const LArCaloHit *>(sliceHit))};
+                LArCaloHit *pLArCaloHit{const_cast<LArCaloHit *>(dynamic_cast<const LArCaloHit *>(pCaloHit))};
 
                 if (caloHitToPrimaryMCMap.count(pCaloHit) == 0) {
                     crHitTagScores.push_back(pLArCaloHit->GetTrackProbability());

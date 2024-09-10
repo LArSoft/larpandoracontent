@@ -8,7 +8,6 @@
 
 #include "Pandora/AlgorithmHeaders.h"
 
-#include "Pandora/StatusCodes.h"
 #include "larpandoracontent/LArObjects/LArCaloHit.h"
 
 #include "larpandoracontent/LArControlFlow/PreProcessingAlgorithm.h"
@@ -87,7 +86,7 @@ void PreProcessingAlgorithm::ProcessCaloHits()
     {
         LArCaloHit *pLArCaloHit{const_cast<LArCaloHit *>(dynamic_cast<const LArCaloHit *>(pCaloHit))};
 
-        if (pLArCaloHit && pLArCaloHit->GetNCellInteractionLengths() == -999.f) {
+        if (pLArCaloHit->GetNCellInteractionLengths() == -999.f) {
             fullHitList.push_back(pCaloHit);
             continue;
         }
@@ -160,7 +159,7 @@ void PreProcessingAlgorithm::ProcessCaloHits()
         PANDORA_THROW_RESULT_IF(STATUS_CODE_SUCCESS, !=, PandoraContentApi::SaveList(*this, filteredCaloHitListW, m_outputCaloHitListNameW));
 
     if (!filteredFullHitList.empty())
-        PANDORA_THROW_RESULT_IF_AND_IF(STATUS_CODE_SUCCESS, STATUS_CODE_ALREADY_PRESENT, !=, PandoraContentApi::SaveList(*this, filteredFullHitList, "FullHitList"));
+        PANDORA_THROW_RESULT_IF(STATUS_CODE_SUCCESS, !=, PandoraContentApi::SaveList(*this, filteredFullHitList, "FullHitList"));
 
 }
 
