@@ -169,65 +169,6 @@ const MCParticle *LArMCParticleHelper::GetParentMCParticle(const MCParticle *con
 
 //------------------------------------------------------------------------------------------------------------------------------------------
 
-void LArMCParticleHelper::GetAllDescendentMCParticles(const pandora::MCParticle *const pMCParticle, pandora::MCParticleList &descendentMCParticleList)
-{
-    for (const MCParticle *pDaughterMCParticle : pMCParticle->GetDaughterList())
-    {
-        if (std::find(descendentMCParticleList.begin(), descendentMCParticleList.end(), pDaughterMCParticle) == descendentMCParticleList.end())
-        {
-            descendentMCParticleList.emplace_back(pDaughterMCParticle);
-            LArMCParticleHelper::GetAllDescendentMCParticles(pDaughterMCParticle, descendentMCParticleList);
-        }
-    }
-}
-
-//------------------------------------------------------------------------------------------------------------------------------------------
-
-void LArMCParticleHelper::GetAllDescendentMCParticles(const MCParticle *const pMCParticle, MCParticleList &descendentTrackParticles,
-    MCParticleList &leadingShowerParticles, MCParticleList &leadingNeutrons)
-{
-    for (const MCParticle *pDaughterMCParticle : pMCParticle->GetDaughterList())
-    {
-        if (std::find(descendentTrackParticles.begin(), descendentTrackParticles.end(), pDaughterMCParticle) == descendentTrackParticles.end())
-        {
-            const int pdg{std::abs(pDaughterMCParticle->GetParticleId())};
-            if (pdg == E_MINUS || pdg == PHOTON)
-            {
-                leadingShowerParticles.emplace_back(pDaughterMCParticle);
-            }
-            else if (pdg == NEUTRON)
-            {
-                leadingNeutrons.emplace_back(pDaughterMCParticle);
-            }
-            else
-            {
-                descendentTrackParticles.emplace_back(pDaughterMCParticle);
-                LArMCParticleHelper::GetAllDescendentMCParticles(pDaughterMCParticle, descendentTrackParticles, leadingShowerParticles, leadingNeutrons);
-            }
-        }
-    }
-}
-
-//------------------------------------------------------------------------------------------------------------------------------------------
-
-void LArMCParticleHelper::GetAllAncestorMCParticles(const pandora::MCParticle *const pMCParticle, pandora::MCParticleList &ancestorMCParticleList)
-{
-    const MCParticleList &parentMCParticleList = pMCParticle->GetParentList();
-    if (parentMCParticleList.empty())
-        return;
-    if (parentMCParticleList.size() != 1)
-        throw StatusCodeException(STATUS_CODE_INVALID_PARAMETER);
-
-    const MCParticle *pParentMCParticle = *parentMCParticleList.begin();
-    if (std::find(ancestorMCParticleList.begin(), ancestorMCParticleList.end(), pParentMCParticle) == ancestorMCParticleList.end())
-    {
-        ancestorMCParticleList.push_back(pParentMCParticle);
-        LArMCParticleHelper::GetAllAncestorMCParticles(pParentMCParticle, ancestorMCParticleList);
-    }
-}
-
-//------------------------------------------------------------------------------------------------------------------------------------------
-
 void LArMCParticleHelper::GetPrimaryMCParticleList(const MCParticleList *const pMCParticleList, MCParticleVector &mcPrimaryVector)
 {
     for (const MCParticle *const pMCParticle : *pMCParticleList)
