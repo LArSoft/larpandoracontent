@@ -64,30 +64,14 @@ DlEventSlicingTool::~DlEventSlicingTool()
 void DlEventSlicingTool::RunSlicing(const Algorithm *const pAlgorithm, const HitTypeToNameMap &caloHitListNames, const HitTypeToNameMap &clusterListNames,
     SliceList &sliceList)
 {
-    Slice neutrinoSlice;
-    this->TagHits(pAlgorithm, caloHitListNames, clusterListNames, neutrinoSlice);
+    this->TagHits(pAlgorithm, caloHitListNames, clusterListNames, sliceList);
     EventSlicingTool::RunSlicing(pAlgorithm, caloHitListNames, clusterListNames, sliceList);
-
-    // We now need to merge the neutrino slice with the other slices
-    // This is done by removing any hits in the other slices that are also in the neutrino slice
-    for (Slice &slice : sliceList)
-    {
-        for (const CaloHit *pCaloHit : neutrinoSlice.m_caloHitListU)
-            slice.m_caloHitListU.remove(pCaloHit);
-        for (const CaloHit *pCaloHit : neutrinoSlice.m_caloHitListV)
-            slice.m_caloHitListV.remove(pCaloHit);
-        for (const CaloHit *pCaloHit : neutrinoSlice.m_caloHitListW)
-            slice.m_caloHitListW.remove(pCaloHit);
-    }
-
-    // Add the neutrino slice to the slice list
-    sliceList.push_back(neutrinoSlice);
 }
 
 //-----------------------------------------------------------------------------------------------------------------------------------------
 
 void DlEventSlicingTool::TagHits(const Algorithm *const pAlgorithm, const HitTypeToNameMap &caloHitListNames, const HitTypeToNameMap &clusterListNames,
-    Slice &neutrinoSlice)
+    SliceList &sliceList)
 {
 
     std::map<HitType, float> wireMin, wireMax;
@@ -111,6 +95,8 @@ void DlEventSlicingTool::TagHits(const Algorithm *const pAlgorithm, const HitTyp
         driftMin = std::min(viewDriftMin, driftMin);
         driftMax = std::max(viewDriftMax, driftMax);
     }
+
+    Slice neutrinoSlice;
 
     for (const auto &hitTypeListNamePair : caloHitListNames)
     {
@@ -194,6 +180,7 @@ void DlEventSlicingTool::TagHits(const Algorithm *const pAlgorithm, const HitTyp
         {
             // const std::string neutrinoListName("NeutrinoSlice_" + listName);
             // const std::string otherListName("OtherSlice_" + listName);
+            // const std::string backgroundListName("BackgroundHits_" + listName);
 
             // PANDORA_MONITORING_API(VisualizeCaloHits(this->GetPandora(), &neutrinoSliceHits, neutrinoListName, BLUE));
             // PANDORA_MONITORING_API(VisualizeCaloHits(this->GetPandora(), &otherHits, otherListName, RED));
@@ -212,14 +199,14 @@ void DlEventSlicingTool::TagHits(const Algorithm *const pAlgorithm, const HitTyp
             default:
                 break;
         }
-
-        std::cout << "DlEventSlicingTool: Sliced view " << view << " into " << neutrinoSliceHits.size() << " neutrino hits and " << otherHits.size() << " other hits" << std::endl;
     }
 
     if (m_visualise)
     {
         PANDORA_MONITORING_API(ViewEvent(this->GetPandora()));
     }
+
+    sliceList.push_back(neutrinoSlice);
 
     return;
 }
