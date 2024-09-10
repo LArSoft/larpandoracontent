@@ -644,9 +644,6 @@ void DlVertexingAlgorithm::GetHitRegion(const CaloHitList &caloHitList, float &x
     // Find the range of x and z values in the view
     for (const CaloHit *pCaloHit : caloHitList)
     {
-        if (isCRHit(pCaloHit))
-            continue;
-
         const float x{pCaloHit->GetPositionVector().GetX()};
         const float z{pCaloHit->GetPositionVector().GetZ()};
         xMin = std::min(x, xMin);
