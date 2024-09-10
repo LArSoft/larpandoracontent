@@ -105,8 +105,7 @@ StatusCode DlVertexingAlgorithm::PrepareTrainingSample()
             return STATUS_CODE_NOT_ALLOWED;
 
         CartesianPointVector vertices;
-        std::map<const CaloHit*, int> hitPdgCode;
-
+        CaloHitList mcHits; // ATTN: Lets just assume every item with MC is a neutrino... CR is overlay.
         for (const MCParticle *mc : hierarchy)
         {
             if (LArMCParticleHelper::IsNeutrino(mc))
@@ -114,8 +113,7 @@ StatusCode DlVertexingAlgorithm::PrepareTrainingSample()
                 vertices.push_back(mc->GetVertex());
             }
 
-            for (const auto hit : mcToHitsMap[mc])
-                hitPdgCode.insert({hit, mc->GetParticleId()});
+            mcHits.insert(mcHits.end(), mcToHitsMap[mc].begin(), mcToHitsMap[mc].end());
         }
 
         if (vertices.empty())
@@ -159,14 +157,14 @@ StatusCode DlVertexingAlgorithm::PrepareTrainingSample()
         for (const CaloHit *pCaloHit : *pCaloHitList)
         {
             const float x{pCaloHit->GetPositionVector().GetX()}, z{pCaloHit->GetPositionVector().GetZ()}, adc{pCaloHit->GetMipEquivalentEnergy()};
-            const float particlePdg(hitPdgCode.count(pCaloHit) != 0 ? hitPdgCode[pCaloHit] : 0);
+            const float hitFromNeutrino(std::find(mcHits.begin(), mcHits.end(), pCaloHit) != mcHits.end());
             // If on a refinement pass, drop hits outside the region of interest
             if (m_pass > 1 && (x < xMin || x > xMax || z < zMin || z > zMax))
                 continue;
             featureVector.emplace_back(static_cast<double>(x));
             featureVector.emplace_back(static_cast<double>(z));
             featureVector.emplace_back(static_cast<double>(adc));
-            featureVector.emplace_back(static_cast<double>(particlePdg));
+            featureVector.emplace_back(static_cast<double>(hitFromNeutrino));
             ++nHits;
         }
         featureVector.insert(featureVector.begin() + 8, static_cast<double>(nHits));
@@ -817,7 +815,7 @@ void DlVertexingAlgorithm::PopulateRootTree(const std::vector<VertexTuple> &vert
                         {
                             const LArTransformationPlugin *transform{this->GetPandora().GetPlugins()->GetLArTransformationPlugin()};
                             const CartesianVector &trueVertex{primaries.front()->GetVertex()};
-                            if (LArVertexHelper::IsInFiducialVolume(this->GetPandora(), trueVertex, m_detector))
+                            if (LArVertexHelper::IsInFiducialVolume(this->GetPandora(), trueVertex, "dune_fd_hd"))
                             {
                                 const CartesianVector &recoVertex{vertexTuples.front().GetPosition()};
                                 const float tx{trueVertex.GetX()};
