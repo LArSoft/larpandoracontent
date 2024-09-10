@@ -97,7 +97,7 @@ void CheatingSliceRearrangementTool::RearrangeHits(const pandora::Algorithm *con
     for (unsigned int sliceNumber = 0; sliceNumber < inputSliceList.size(); ++sliceNumber)
     {
 
-        if (sliceNumber == (unsigned) bestSlice) continue;
+        if (sliceNumber == bestSlice) continue;
 
         const auto sliceNuHits(sliceMetrics[sliceNumber].first);
         const auto slicePurity(sliceMetrics[sliceNumber].second);

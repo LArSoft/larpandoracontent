@@ -299,6 +299,15 @@ void DlEventSlicingTool::TagHits(const Algorithm *const pAlgorithm, const HitTyp
             LArCaloHit *pLArCaloHit{const_cast<LArCaloHit *>(dynamic_cast<const LArCaloHit *>(pCaloHit))};
             pLArCaloHit->SetShowerProbability(probNeutrino);
             pLArCaloHit->SetTrackProbability(probOther);
+
+            caloHitToEvdHit->at(pCaloHit)->addProperties({
+                {"Neutrino-Like", probNeutrino},
+                {"Other-like", probOther},
+                {"StrongNeutrino", (float) probNeutrino > 0.6},
+                {"StrongOther", (float) probOther > 0.6},
+                {"isNeutrino", (float) probNeutrino > probOther},
+                {"isOther", (float) probNeutrino < probOther},
+             });
         }
 
         if (m_visualise)

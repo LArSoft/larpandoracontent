@@ -70,35 +70,10 @@ SOURCES += $(wildcard $(PROJECT_DIR)/larpandoracontent/LArVertex/*.cc)
 OBJECTS = $(SOURCES:.cc=.o)
 DEPENDS = $(OBJECTS:.o=.d)
 
-ifdef PANDORA_LIBTORCH
-ifndef TORCH_DIR
-   	$(error "Error: TORCH_DIR not specified.")
-endif
-	DEFINES += -DLIBTORCH_DL=1
-	PROJECT_DL_LIBRARY = $(PROJECT_LIBRARY_DIR)/libLArDLContent.so
-	DL_LIBS = $(LIBS) -lLArContent ${TORCH_DIR}/lib/libtorch.so ${TORCH_DIR}/lib/libtorch_cpu.so ${TORCH_DIR}/lib/libc10.so
-	DL_SOURCES = $(wildcard $(PROJECT_DIR)/larpandoradlcontent/*.cc)
-	DL_SOURCES += $(wildcard $(PROJECT_DIR)/larpandoradlcontent/LArControlFlow/*.cc)
-	DL_SOURCES += $(wildcard $(PROJECT_DIR)/larpandoradlcontent/LArHelpers/*.cc)
-	DL_SOURCES += $(wildcard $(PROJECT_DIR)/larpandoradlcontent/LArVertex/*.cc)
-	DL_SOURCES += $(wildcard $(PROJECT_DIR)/larpandoradlcontent/LArSliceTagging/*.cc)
-	DL_OBJECTS = $(DL_SOURCES:.cc=.o)
-	DL_DEPENDS = $(DL_OBJECTS:.o=.d)
-	INCLUDES += -isystem $(TORCH_DIR)/include/ -isystem $(TORCH_DIR)/include/torch/csrc/api/include/
-endif
-
-ifdef PANDORA_LIBTORCH
-all: library dl_library
-else
 all: library
-endif
-
 
 library: $(SOURCES) $(OBJECTS)
 	$(CC) $(OBJECTS) $(LIBS) -shared -o $(PROJECT_LIBRARY)
-
-dl_library: $(DL_SOURCES) $(DL_OBJECTS)
-	$(CC) $(DL_OBJECTS) $(DL_LIBS) -shared -o $(PROJECT_DL_LIBRARY)
 
 -include $(DEPENDS)
 
@@ -109,7 +84,6 @@ clean:
 	rm -f $(OBJECTS)
 	rm -f $(DEPENDS)
 	rm -f $(PROJECT_LIBRARY)
-	rm -f $(PROJECT_DL_LIBRARY)
 
 install:
 ifdef INCLUDE_TARGET
@@ -117,7 +91,4 @@ ifdef INCLUDE_TARGET
 endif
 ifdef LIB_TARGET
 	cp $(PROJECT_LIBRARY) ${LIB_TARGET}
-ifdef PANDORA_LIBTORCH
-	cp $(PROJECT_DL_LIBRARY) ${LIB_TARGET}
-endif
 endif
