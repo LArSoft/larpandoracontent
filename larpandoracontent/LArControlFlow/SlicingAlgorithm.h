@@ -15,7 +15,6 @@ namespace lar_content
 {
 
 class EventSlicingBaseTool;
-class SliceRearrangementBaseTool;
 
 //------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -49,7 +48,6 @@ private:
     pandora::StatusCode ReadSettings(const pandora::TiXmlHandle xmlHandle);
 
     EventSlicingBaseTool       *m_pEventSlicingTool;                ///< The address of the event slicing tool
-    SliceRearrangementBaseTool *m_pSliceRearrangementTool;          ///< The address of the slicing rearrangement tool
     std::string                 m_slicingListDeletionAlgorithm;     ///< The name of the slicing list deletion algorithm
 
     HitTypeToNameMap            m_caloHitListNames;                 ///< The hit type to calo hit list name map
@@ -78,26 +76,6 @@ public:
      */
     virtual void RunSlicing(const pandora::Algorithm *const pAlgorithm, const SlicingAlgorithm::HitTypeToNameMap &caloHitListNames,
         const SlicingAlgorithm::HitTypeToNameMap &clusterListNames, SlicingAlgorithm::SliceList &sliceList) = 0;
-};
-
-//------------------------------------------------------------------------------------------------------------------------------------------
-//------------------------------------------------------------------------------------------------------------------------------------------
-
-/**
- *  @brief  SliceRearrangementBaseTool class
- */
-class SliceRearrangementBaseTool : public pandora::AlgorithmTool
-{
-public:
-    /**
-     *  @brief  Run the slicing tool
-     *
-     *  @param  pAlgorithm address of the calling algorithm
-     *  @param  inputSliceList to receive the populated slice list
-     *  @param  outputSliceList to receive the populated slice list
-     */
-    virtual void RearrangeHits(const pandora::Algorithm *const pAlgorithm, SlicingAlgorithm::SliceList &inputSliceList,
-        SlicingAlgorithm::SliceList &outputSliceList) = 0;
 };
 
 } // namespace lar_content

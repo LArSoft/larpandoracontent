@@ -12,9 +12,6 @@
 
 #include "larpandoracontent/LArHelpers/LArMCParticleHelper.h"
 
-#define HEP_EVD_PANDORA_HELPERS 1
-#include "hep_evd.h"
-
 using namespace pandora;
 
 namespace lar_content
@@ -27,60 +24,39 @@ CheatingSliceRearrangementTool::CheatingSliceRearrangementTool() :
 
 //-----------------------------------------------------------------------------------------------------------------------------------------
 
-void CheatingSliceRearrangementTool::RearrangeHits(const pandora::Algorithm *const /*pAlgorithm*/,
-                                                   SlicingAlgorithm::SliceList &inputSliceList, SlicingAlgorithm::SliceList &outputSliceList)
+void CheatingSliceRearrangementTool::SelectSlices(const pandora::Algorithm *const /*pAlgorithm*/, const SliceVector &inputSliceVector, SliceVector &outputSliceVector)
 {
-
-    // Before anything else, copy over the full slices, so we can quit out early if needed.
-    for (unsigned int sliceNumber = 0; sliceNumber < inputSliceList.size(); ++sliceNumber)
-        outputSliceList.push_back(inputSliceList[sliceNumber]);
-
     int bestSlice(-1);
     std::map<int, std::pair<CaloHitList, float>> sliceMetrics;
-    std::map<int, CaloHitList> sliceHits;
-
-    HepEVD::setHepEVDGeometry(this->GetPandora().GetGeometry());
-    HepEVD::HepHitMap* caloHitToEvdHit = HepEVD::getHitMap();
 
     // Get all the hits in each slice, and then find out if they are neutrino or cosmic-ray induced.
     // We can then calculate the number of neutrino hits and the percentage of nu hits out of all the hits in the slice.
     //
     // That info can be used to pick a slice as the "main" neutrino slice, and move neutrino hits from the other slices
     // into that slice.
-    for (unsigned int sliceNumber = 0; sliceNumber < inputSliceList.size(); ++sliceNumber)
+    for (unsigned int sliceNumber = 0; sliceNumber < inputSliceVector.size(); ++sliceNumber)
     {
-        const auto slice(inputSliceList[sliceNumber]);
+        const auto sliceHits(inputSliceVector[sliceNumber]);
         CaloHitList localHitList{};
         CaloHitList localNuHitList{};
 
         // ATTN Must ensure we copy the hit actually owned by master instance; access differs with/without slicing enabled
-        for (const CaloHit *const pSliceCaloHit : slice.m_caloHitListU)
-            localHitList.push_back(pSliceCaloHit);
-        for (const CaloHit *const pSliceCaloHit : slice.m_caloHitListV)
-            localHitList.push_back(pSliceCaloHit);
-        for (const CaloHit *const pSliceCaloHit : slice.m_caloHitListW)
-            localHitList.push_back(pSliceCaloHit);
-
-        HepEVD::add2DHits(&localHitList);
+        for (const CaloHit *const pSliceCaloHit : sliceHits)
+            localHitList.push_back(static_cast<const CaloHit *>(pSliceCaloHit->GetParentAddress()));
 
         for (const CaloHit *const pCaloHit : localHitList)
         {
             const MCParticleWeightMap &hitMCParticleWeightMap(pCaloHit->GetMCParticleWeightMap());
 
-            caloHitToEvdHit->at(pCaloHit)->addProperties({
-                {"SliceNumber", sliceNumber}
-            });
-
             // INFO: At MicroBooNE, if there is any MC at all...its a nu-hit.
             if (hitMCParticleWeightMap.empty())
                 continue;
 
-            localNuHitList.push_back(pCaloHit);
+            localNuHitList.push_back(static_cast<const CaloHit *>(pCaloHit->GetParentAddress()));
         }
 
         const unsigned int nuLikeHitCount(localNuHitList.size());
-        const float slicePurity(nuLikeHitCount / (float) localHitList.size());
-        sliceHits[sliceNumber] = localHitList;
+        const float slicePurity(localHitList.size() / (float) nuLikeHitCount);
 
         sliceMetrics.insert({sliceNumber, {localNuHitList, slicePurity}});
 
@@ -99,21 +75,13 @@ void CheatingSliceRearrangementTool::RearrangeHits(const pandora::Algorithm *con
         }
     }
 
-    if (bestSlice == -1) {
-        HepEVD::saveState("SliceRearrangeCheat");
-        HepEVD::startServer();
+    if (bestSlice == -1)
         return;
-    }
-
-    std::cout << "The best slice is slice " << bestSlice << std::endl;
 
     CaloHitList caloHitsToMove{};
 
-    for (unsigned int sliceNumber = 0; sliceNumber < inputSliceList.size(); ++sliceNumber)
+    for (unsigned int sliceNumber = 0; sliceNumber < inputSliceVector.size(); ++sliceNumber)
     {
-
-        if (sliceNumber == bestSlice) continue;
-
         const auto sliceNuHits(sliceMetrics[sliceNumber].first);
         const auto slicePurity(sliceMetrics[sliceNumber].second);
         CaloHitList localHitList{};
@@ -124,66 +92,30 @@ void CheatingSliceRearrangementTool::RearrangeHits(const pandora::Algorithm *con
         caloHitsToMove.insert(caloHitsToMove.end(), sliceNuHits.begin(), sliceNuHits.end());
     }
 
-    std::cout << "Moving " << caloHitsToMove.size() << " hits to the best slice!" << std::endl;
-
-    if (caloHitsToMove.empty()) {
-        HepEVD::saveState("SliceRearrangeCheat");
-        HepEVD::startServer();
-        return;
-    }
-
-    for (int sliceNumber = 0; sliceNumber < inputSliceList.size(); ++sliceNumber)
+    for (int sliceNumber = 0; sliceNumber < inputSliceVector.size(); ++sliceNumber)
     {
-        auto slice(outputSliceList[sliceNumber]);
+        auto sliceHits(inputSliceVector[sliceNumber]);
 
         // If this is the target slice, move hits into it.
         // Alternatively, do a quick check to remove hits from other slices.
         if (sliceNumber == bestSlice) {
-            this->AppendSliceHits(slice.m_caloHitListU, caloHitsToMove, TPC_VIEW_U);
-            this->AppendSliceHits(slice.m_caloHitListV, caloHitsToMove, TPC_VIEW_V);
-            this->AppendSliceHits(slice.m_caloHitListW, caloHitsToMove, TPC_VIEW_W);
+            sliceHits.insert(sliceHits.end(), caloHitsToMove.begin(), caloHitsToMove.end());
         } else {
-
-            std::map<pandora::HitType, CaloHitList> filteredHits;
-
-            for (auto pCaloHit : sliceHits[sliceNumber]) {
-
+            CaloHitList filteredHits{};
+            for (auto pCaloHit : sliceHits) {
                 if (std::find(caloHitsToMove.begin(), caloHitsToMove.end(), pCaloHit) != caloHitsToMove.end())
-                {
-                    caloHitToEvdHit->at(pCaloHit)->addProperties({
-                        {"SwappedHit", bestSlice}
-                    });
                     continue;
-                }
 
-                caloHitToEvdHit->at(pCaloHit)->addProperties({
-                    {"LeftHit", sliceNumber}
-                });
-
-                filteredHits[pCaloHit->GetHitType()].push_back(pCaloHit);
+                filteredHits.push_back(pCaloHit);
             }
 
-            slice.m_caloHitListU = filteredHits[TPC_VIEW_U];
-            slice.m_caloHitListV = filteredHits[TPC_VIEW_V];
-            slice.m_caloHitListW = filteredHits[TPC_VIEW_W];
+            sliceHits = filteredHits;
         }
-    }
 
-    std::cout << "Done!" << std::endl;
-
-    HepEVD::saveState("SliceRearrangeCheat");
-    HepEVD::startServer();
-}
-
-//------------------------------------------------------------------------------------------------------------------------------------------
-void CheatingSliceRearrangementTool::AppendSliceHits(CaloHitList &hits, CaloHitList &hitsToFilter, pandora::HitType targetHitType)
-{
-    for (const auto &hit : hitsToFilter)
-    {
-        if (hit->GetHitType() == targetHitType)
-            hits.push_back(hit);
+        outputSliceVector.push_back(sliceHits);
     }
 }
+
 //------------------------------------------------------------------------------------------------------------------------------------------
 
 StatusCode CheatingSliceRearrangementTool::ReadSettings(const TiXmlHandle xmlHandle)
