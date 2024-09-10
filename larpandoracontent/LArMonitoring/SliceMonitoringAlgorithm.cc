@@ -128,7 +128,7 @@ void SliceMonitoringAlgorithm::RearrangeHits(const pandora::Algorithm *const pAl
         for (unsigned int sliceNumber = 0; sliceNumber < inputSliceList.size(); ++sliceNumber)
         {
             const auto slice(inputSliceList[sliceNumber]);
-            CaloHitList sliceCaloHits({});
+            CaloHitList sliceCaloHits(matchedSliceHits[sliceNumber]);
 
             for (const CaloHit *const pSliceCaloHit : slice.m_caloHitListU)
                 sliceCaloHits.push_back(caloHitListMatchMap[getHitKey(pSliceCaloHit)]);
@@ -146,7 +146,6 @@ void SliceMonitoringAlgorithm::RearrangeHits(const pandora::Algorithm *const pAl
             if (sliceNuHits.size() > bestSlice.first)
                 bestSlice = {sliceNuHits.size(), sliceNumber};
 
-            matchedSliceHits[sliceNumber] = sliceCaloHits;
         }
 
         // Lets calculate some slice properties.
@@ -155,7 +154,6 @@ void SliceMonitoringAlgorithm::RearrangeHits(const pandora::Algorithm *const pAl
         {
             const auto slice(inputSliceList[sliceNumber]);
             CaloHitList sliceCaloHits(matchedSliceHits[sliceNumber]);
-            std::cout << "There is " << sliceCaloHits.size() << " hits to pick from..." << std::endl;
 
             PANDORA_MONITORING_API(SetTreeVariable(
                 this->GetPandora(), m_treename.c_str(), "success", success));
@@ -227,11 +225,7 @@ void SliceMonitoringAlgorithm::RearrangeHits(const pandora::Algorithm *const pAl
                 }
 
                 std::cout << sliceNumber << ": " << nuComp << " / " << nuPurity <<
-                        "(" << (sliceNumber == bestSlice.second) <<
-                        " / " << (sliceNuHits.size()) <<
-                        " / " << (sliceCRHits.size()) <<
-                        " / " << (allCaloHitsInView.size()) <<
-                        ")" << std::endl;
+                        "(" << (sliceNumber == bestSlice.second) << ")" << std::endl;
 
                 PANDORA_MONITORING_API(SetTreeVariable(
                     this->GetPandora(), m_treename.c_str(),
