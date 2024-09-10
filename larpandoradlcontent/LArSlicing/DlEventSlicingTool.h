@@ -12,9 +12,7 @@
 #include "Pandora/AlgorithmHeaders.h"
 
 #include "larpandoracontent/LArControlFlow/SlicingAlgorithm.h"
-#include "larpandoracontent/LArThreeDReco/LArEventBuilding/EventSlicingTool.h"
 
-#include "larpandoracontent/LArControlFlow/SlicingAlgorithm.h"
 #include "larpandoradlcontent/LArHelpers/LArDLHelper.h"
 
 #include <map>
@@ -27,7 +25,7 @@ namespace lar_dl_content
 /**
  *  @brief  DlEventSlicingTool class
  */
-class DlEventSlicingTool : public EventSlicingTool
+class DlEventSlicingTool : public EventSlicingBaseTool
 {
 public:
 
@@ -48,9 +46,6 @@ protected:
     pandora::StatusCode ReadSettings(const pandora::TiXmlHandle xmlHandle);
     pandora::StatusCode PrepareTrainingSample();
     void RunSlicing(const pandora::Algorithm *const pAlgorithm, const SlicingAlgorithm::HitTypeToNameMap &caloHitListNames,
-        const SlicingAlgorithm::HitTypeToNameMap &clusterListNames, SlicingAlgorithm::SliceList &sliceList);
-
-    void TagHits(const pandora::Algorithm *const pAlgorithm, const SlicingAlgorithm::HitTypeToNameMap &caloHitListNames,
         const SlicingAlgorithm::HitTypeToNameMap &clusterListNames, SlicingAlgorithm::SliceList &sliceList);
 
     /**

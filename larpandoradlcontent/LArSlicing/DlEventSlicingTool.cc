@@ -18,7 +18,6 @@
 #include "larpandoracontent/LArHelpers/LArGeometryHelper.h"
 #include "larpandoracontent/LArHelpers/LArMvaHelper.h"
 
-#include "larpandoracontent/LArThreeDReco/LArEventBuilding/EventSlicingTool.h"
 #include "larpandoradlcontent/LArSlicing/DlEventSlicingTool.h"
 #include "larpandoradlcontent/LArVertex/DlVertexingAlgorithm.h"
 
@@ -64,16 +63,6 @@ DlEventSlicingTool::~DlEventSlicingTool()
 void DlEventSlicingTool::RunSlicing(const Algorithm *const pAlgorithm, const HitTypeToNameMap &caloHitListNames, const HitTypeToNameMap &clusterListNames,
     SliceList &sliceList)
 {
-    this->TagHits(pAlgorithm, caloHitListNames, clusterListNames, sliceList);
-    EventSlicingTool::RunSlicing(pAlgorithm, caloHitListNames, clusterListNames, sliceList);
-}
-
-//-----------------------------------------------------------------------------------------------------------------------------------------
-
-void DlEventSlicingTool::TagHits(const Algorithm *const pAlgorithm, const HitTypeToNameMap &caloHitListNames, const HitTypeToNameMap &clusterListNames,
-    SliceList &sliceList)
-{
-
     std::map<HitType, float> wireMin, wireMax;
     float driftMin{std::numeric_limits<float>::max()}, driftMax{-std::numeric_limits<float>::max()};
 
@@ -82,7 +71,7 @@ void DlEventSlicingTool::TagHits(const Algorithm *const pAlgorithm, const HitTyp
         const auto listName = hitTypeListNamePair.second;
         const CaloHitList *pCaloHitList{nullptr};
         PANDORA_THROW_RESULT_IF_AND_IF(
-            STATUS_CODE_SUCCESS, STATUS_CODE_NOT_INITIALIZED, !=,
+            STATUS_CODE_SUCCESS, STATUS_CODE_NOT_INITIALIZED, !=, 
             PandoraContentApi::GetList(*pAlgorithm, listName, pCaloHitList)
         );
 
@@ -161,29 +150,16 @@ void DlEventSlicingTool::TagHits(const Algorithm *const pAlgorithm, const HitTyp
             // Adjust probabilities to ignore null hits and update LArCaloHit
             probNeutrino *= recipSum;
             probOther *= recipSum;
-
-            LArCaloHit *pLArCaloHit{const_cast<LArCaloHit *>(dynamic_cast<const LArCaloHit *>(pCaloHit))};
-            pLArCaloHit->SetShowerProbability(probNeutrino);
-            pLArCaloHit->SetTrackProbability(probOther);
-
-            caloHitToEvdHit->at(pCaloHit)->addProperties({
-                {"Neutrino-Like", probNeutrino},
-                {"Other-like", probOther},
-                {"StrongNeutrino", (float) probNeutrino > 0.6},
-                {"StrongOther", (float) probOther > 0.6},
-                {"isNeutrino", (float) probNeutrino > probOther},
-                {"isOther", (float) probNeutrino < probOther},
-             });
         }
 
         if (m_visualise)
         {
-            // const std::string neutrinoListName("NeutrinoSlice_" + listName);
-            // const std::string otherListName("OtherSlice_" + listName);
-            // const std::string backgroundListName("BackgroundHits_" + listName);
+            const std::string neutrinoListName("NeutrinoSlice_" + listName);
+            const std::string otherListName("OtherSlice_" + listName);
+            const std::string backgroundListName("BackgroundHits_" + listName);
 
-            // PANDORA_MONITORING_API(VisualizeCaloHits(this->GetPandora(), &neutrinoSliceHits, neutrinoListName, BLUE));
-            // PANDORA_MONITORING_API(VisualizeCaloHits(this->GetPandora(), &otherHits, otherListName, RED));
+            PANDORA_MONITORING_API(VisualizeCaloHits(this->GetPandora(), &neutrinoSliceHits, neutrinoListName, BLUE));
+            PANDORA_MONITORING_API(VisualizeCaloHits(this->GetPandora(), &otherHits, otherListName, RED));
         }
 
         switch (view) {
@@ -338,7 +314,7 @@ StatusCode DlEventSlicingTool::ReadSettings(const TiXmlHandle xmlHandle)
         PANDORA_RETURN_RESULT_IF(STATUS_CODE_SUCCESS, !=, XmlHelper::ReadValue(xmlHandle, "RootFileName", m_rootFileName));
     }
 
-    return EventSlicingTool::ReadSettings(xmlHandle);
+    return STATUS_CODE_SUCCESS;
 }
 
 } // namespace lar_dl_content
