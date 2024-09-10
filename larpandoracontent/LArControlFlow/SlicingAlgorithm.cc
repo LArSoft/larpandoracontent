@@ -103,7 +103,7 @@ StatusCode SlicingAlgorithm::ReadSettings(const TiXmlHandle xmlHandle)
         return STATUS_CODE_INVALID_PARAMETER;
 
     pAlgorithmTool = nullptr;
-    PANDORA_RETURN_RESULT_IF_AND_IF(STATUS_CODE_SUCCESS, STATUS_CODE_NOT_FOUND, !=, XmlHelper::ProcessAlgorithmTool(*this, xmlHandle, "SliceRearrangement", pAlgorithmTool));
+    PANDORA_RETURN_RESULT_IF(STATUS_CODE_SUCCESS, !=, XmlHelper::ProcessAlgorithmTool(*this, xmlHandle, "SliceRearrangement", pAlgorithmTool));
     m_pSliceRearrangementTool = dynamic_cast<SliceRearrangementBaseTool*>(pAlgorithmTool);
 
     PANDORA_RETURN_RESULT_IF(STATUS_CODE_SUCCESS, !=, XmlHelper::ProcessAlgorithm(*this, xmlHandle, "SlicingListDeletion", m_slicingListDeletionAlgorithm));
