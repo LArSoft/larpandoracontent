@@ -30,14 +30,13 @@ public:
 
 private:
     void RearrangeHits(const pandora::Algorithm *const pAlgorithm, SlicingAlgorithm::SliceList &inputSliceList, SlicingAlgorithm::SliceList &outputSliceList);
-    void WriteOutHits(const std::map<unsigned int, pandora::CaloHitList> &inputSliceHits, const pandora::CaloHitList &threeDHits,
-                      const LArMCParticleHelper::MCContributionMap &mcToTrueHitListMap);
+    void WriteOutHits(SlicingAlgorithm::SliceList &inputSliceList, const LArMCParticleHelper::MCContributionMap &mcToTrueHitListMap);
     pandora::StatusCode ReadSettings(const pandora::TiXmlHandle xmlHandle);
 
     bool m_trainingMode;              ///< Training mode
     std::string m_filename;           ///< The filename of the ROOT output file
     std::string m_treename;           ///< The name of the ROOT tree
-    std::string m_trainingOutputFile; ///< Output name for training examples
+    std::string m_trainingOutputFile; ///< Output name for training examples.
 
     std::string m_trackPfoListName;   ///< Track PFOs to use for writing out training files
     std::string m_showerPfoListName;  ///< Shower PFOs to write out in the training files
