@@ -687,8 +687,7 @@ void DlVertexingAlgorithm::GetHitRegion(const CaloHitList &caloHitList, float &x
         PANDORA_THROW_RESULT_IF(STATUS_CODE_SUCCESS, !=, PandoraContentApi::GetList(*this, m_inputVertexListName, pVertexList));
         if (pVertexList->empty())
             throw StatusCodeException(STATUS_CODE_NOT_FOUND);
-        // TODO: Replace this back to front, and instead empty the list out.
-        const CartesianVector &vertex{pVertexList->back()->GetPosition()};
+        const CartesianVector &vertex{pVertexList->front()->GetPosition()};
 
         // Get hit distribution left/right asymmetry
         int nHitsLeft{0}, nHitsRight{0};
