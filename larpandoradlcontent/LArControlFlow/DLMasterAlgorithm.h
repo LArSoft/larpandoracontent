@@ -26,9 +26,9 @@ public:
 
 private:
     pandora::StatusCode Run();
-    pandora::StatusCode RegisterCustomContent(const pandora::Pandora *const pPandora) const;
 
 protected:
+    pandora::StatusCode RegisterCustomContent(const pandora::Pandora *const pPandora) const;
     pandora::StatusCode ReadSettings(const pandora::TiXmlHandle xmlHandle);
 };
 
