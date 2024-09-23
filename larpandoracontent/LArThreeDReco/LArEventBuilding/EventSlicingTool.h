@@ -9,6 +9,7 @@
 #define LAR_EVENT_SLICING_TOOL_H 1
 
 #include "larpandoracontent/LArControlFlow/SlicingAlgorithm.h"
+#include "larpandoracontent/LArObjects/LArPointingCluster.h"
 
 #include "larpandoracontent/LArObjects/LArThreeDSlidingConeFitResult.h"
 
@@ -38,7 +39,7 @@ public:
     void RunSlicing(const pandora::Algorithm *const pAlgorithm, const SlicingAlgorithm::HitTypeToNameMap &caloHitListNames,
         const SlicingAlgorithm::HitTypeToNameMap &clusterListNames, SlicingAlgorithm::SliceList &sliceList);
 
-private:
+protected:
     /**
      *  @brief  Copy all the input hits in an event into a single slice
      *
