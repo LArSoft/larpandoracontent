@@ -141,7 +141,6 @@ void SliceMonitoringAlgorithm::RearrangeHits(const pandora::Algorithm *const pAl
 
             if (LArMCParticleHelper::IsNeutrino(parent)) {
                 pTrueNeutrino = parent;
-                // largestContributor = parent;
             }
         }
 
@@ -149,24 +148,18 @@ void SliceMonitoringAlgorithm::RearrangeHits(const pandora::Algorithm *const pAl
             continue;
 
         mcToTrueHitListMap[largestContributor].push_back(pCaloHit);
-
-        // WARN: This is valid at MicroBooNE, due to overlay information,
-        //       but won't be valid if the cosmic rays have MC.
-        mcToTrueHitListMap[pTrueNeutrino].push_back(pCaloHit);
     }
 
     if (pTrueNeutrino) {
         const float trueNuEnergy{pTrueNeutrino->GetEnergy()};
         const int success{1};
 
+        // WARN: This is valid at MicroBooNE, due to overlay information,
+        //       but won't be valid if the cosmic rays have MC.
         CaloHitList mcHits;
         if (mcToTrueHitListMap.count(pTrueNeutrino) > 0)
-            std::copy_if(mcToTrueHitListMap.at(pTrueNeutrino).begin(),
-                         mcToTrueHitListMap.at(pTrueNeutrino).end(),
-                         std::back_inserter(mcHits),
-                         [&](const pandora::CaloHit *hit) {
-                         return hit->GetHitType() != TPC_3D;
-                         });
+            for (const auto &mcHitPair : mcToTrueHitListMap)
+                mcHits.insert(mcHits.end(), mcHitPair.second.begin(), mcHitPair.second.end());
         // ATTN: Sort the list of MC hits, as the later std::set_XXX functions
         //       are undefined if run on unsorted sets.
         mcHits.sort();
@@ -237,8 +230,6 @@ void SliceMonitoringAlgorithm::RearrangeHits(const pandora::Algorithm *const pAl
                              return hit->GetHitType() == view;
                              });
                 totalNuHitsInView.sort();
-
-                std::cout << "Nu Hits: " << totalNuHitsInView.size() << std::endl;
 
                 CaloHitList allCaloHitsInView;
                 std::copy_if(sliceCaloHits.begin(), sliceCaloHits.end(),
@@ -372,9 +363,6 @@ void SliceMonitoringAlgorithm::WriteOutHits(const std::map<unsigned int, CaloHit
             ++threeDHitsCount;
     }
 
-    std::cout << "2D Hit MC Count: " << twoDHitMCCount << std::endl;
-    std::cout << "3D Hit MC Count: " << threeDHitsCount << std::endl;
-
     const std::map<HitType, std::string> allViews({
         {TPC_VIEW_U, "_U_View"}, {TPC_VIEW_V, "_V_View"},
         {TPC_VIEW_W, "_W_View"}, {TPC_3D, "_3D_Hits"}
@@ -414,9 +402,6 @@ void SliceMonitoringAlgorithm::WriteOutHits(const std::map<unsigned int, CaloHit
             featureVector.emplace_back(static_cast<double>(particlePdg));
             featureVector.emplace_back(static_cast<double>(sliceNumber));
         }
-
-        std::cout << "2D MC Written Count: " << twoDMCWrittenCount << std::endl;
-        std::cout << "3D MC Written Count: " << threeDMCWrittenCount << std::endl;
 
         const std::string trainingFileName{m_trainingOutputFile + viewName + ".csv"};
         LArMvaHelper::ProduceTrainingExample(trainingFileName, true, featureVector);
