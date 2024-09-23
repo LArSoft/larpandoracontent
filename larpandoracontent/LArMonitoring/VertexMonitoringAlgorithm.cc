@@ -295,9 +295,9 @@ StatusCode VertexMonitoringAlgorithm::AssessVertices() const
 
 //------------------------------------------------------------------------------------------------------------------------------------------
 
-bool CheckIfSliceContainsVertex(const pandora::CaloHitList caloHits, const pandora::CartesianVector trueVertex, const HitType view) const
+bool VertexMonitoringAlgorithm::CheckIfSliceContainsVertex(const pandora::CaloHitList caloHitList, const pandora::CartesianVector trueVertex, const HitType view) const
 {
-    const auto projectedVertex = LArGeometryHelper::ProjectPositionOntoView(trueVertex, view);
+    const auto projectedVertex = LArGeometryHelper::ProjectPosition(this->GetPandora(), trueVertex, view);
 
     float minX{std::numeric_limits<float>::max()};
     float maxX{std::numeric_limits<float>::min()};
