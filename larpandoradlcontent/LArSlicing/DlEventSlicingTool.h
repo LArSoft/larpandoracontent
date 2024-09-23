@@ -23,9 +23,9 @@ using namespace lar_content;
 namespace lar_dl_content
 {
 /**
- *  @brief  DlEventSlicing class
+ *  @brief  DlEventSlicingTool class
  */
-class DlEventSlicing : public EventSlicingBaseTool
+class DlEventSlicingTool : public EventSlicingBaseTool
 {
 public:
 
@@ -37,9 +37,9 @@ public:
     /**
      *  @brief Default constructor
      */
-    DlEventSlicing();
+    DlEventSlicingTool();
 
-    virtual ~DlEventSlicing();
+    virtual ~DlEventSlicingTool();
 
 protected:
 
@@ -91,7 +91,6 @@ private:
     std::string m_trainingOutputFile;         ///< Output file name for training examples
     std::string m_inputVertexListName;        ///< Input vertex list name if 2nd pass
     std::string m_outputVertexListName;       ///< Output vertex list name
-    pandora::StringVector m_caloHitListNames; ///< Names of input calo hit lists
     LArDLHelper::TorchModel m_modelU;         ///< The model for the U view
     LArDLHelper::TorchModel m_modelV;         ///< The model for the V view
     LArDLHelper::TorchModel m_modelW;         ///< The model for the W view

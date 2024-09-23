@@ -1,7 +1,7 @@
 /**
- *  @file   larpandoradlcontent/LArSliceTagging/DlSliceHitTagAlgorithm.cc
+ *  @file   larpandoradlcontent/LArSliceTagging/DlEventSlicingTool.cc
  *
- *  @brief  Implementation of the deep learning slice hit tagging.
+ *  @brief  Implementation of the deep learning slicing tool class.
  *
  *  $Log: $
  */
@@ -31,9 +31,9 @@ typedef SlicingAlgorithm::HitTypeToNameMap HitTypeToNameMap;
 typedef SlicingAlgorithm::SliceList SliceList;
 typedef SlicingAlgorithm::Slice Slice;
 
-DlEventSlicing::DlEventSlicing(): m_nClasses(3) {}
+DlEventSlicingTool::DlEventSlicingTool(): m_nClasses(3) {}
 
-DlEventSlicing::~DlEventSlicing()
+DlEventSlicingTool::~DlEventSlicingTool()
 {
     if (m_writeTree)
     {
@@ -43,14 +43,14 @@ DlEventSlicing::~DlEventSlicing()
         }
         catch (StatusCodeException e)
         {
-            std::cout << "DlEventSlicing: Unable to write to ROOT tree" << std::endl;
+            std::cout << "DlEventSlicingTool: Unable to write to ROOT tree" << std::endl;
         }
     }
 }
 
 //-----------------------------------------------------------------------------------------------------------------------------------------
 
-void DlEventSlicing::RunSlicing(const Algorithm *const pAlgorithm, const HitTypeToNameMap &caloHitListNames, const HitTypeToNameMap &clusterListNames,
+void DlEventSlicingTool::RunSlicing(const Algorithm *const pAlgorithm, const HitTypeToNameMap &caloHitListNames, const HitTypeToNameMap &clusterListNames,
     SliceList &sliceList)
 {
     std::map<HitType, float> wireMin, wireMax;
@@ -75,9 +75,13 @@ void DlEventSlicing::RunSlicing(const Algorithm *const pAlgorithm, const HitType
         driftMax = std::max(viewDriftMax, driftMax);
     }
 
+    Slice neutrinoSlice;
+
     for (const auto &hitTypeListNamePair : caloHitListNames)
     {
+        HitType view{hitTypeListNamePair.first};
         const auto listName = hitTypeListNamePair.second;
+
         const CaloHitList *pCaloHitList{nullptr};
         PANDORA_THROW_RESULT_IF_AND_IF(
             STATUS_CODE_SUCCESS, STATUS_CODE_NOT_INITIALIZED, !=,
@@ -87,7 +91,6 @@ void DlEventSlicing::RunSlicing(const Algorithm *const pAlgorithm, const HitType
         if (pCaloHitList == nullptr || pCaloHitList->empty())
             continue;
 
-        HitType view{pCaloHitList->front()->GetHitType()};
         const bool isU{view == TPC_VIEW_U}, isV{view == TPC_VIEW_V}, isW{view == TPC_VIEW_W};
         if (!isU && !isV && !isW)
             return;
@@ -112,7 +115,7 @@ void DlEventSlicing::RunSlicing(const Algorithm *const pAlgorithm, const HitType
         // the argmax result is a 1 x height x width tensor where each element is a class id
         auto classesAccessor{output.accessor<float, 4>()};
 
-        CaloHitList backgroundHits, neutrinoHits, cosmicRayHits;
+        CaloHitList neutrinoSliceHits, otherHits;
         for (const CaloHit *pCaloHit : *pCaloHitList)
         {
             auto found{caloHitToPixelMap.find(pCaloHit)};
@@ -126,37 +129,41 @@ void DlEventSlicing::RunSlicing(const Algorithm *const pAlgorithm, const HitType
             // Apply softmax to loss to get actual probability
             float probNull = classesAccessor[0][0][pixelZ][pixelX];
             float probNeutrino = classesAccessor[0][1][pixelZ][pixelX];
-            float probCosmic = classesAccessor[0][2][pixelZ][pixelX];
+            float probOther = classesAccessor[0][2][pixelZ][pixelX];
 
-            if (probNeutrino > probCosmic && probNeutrino > probNull)
-                neutrinoHits.push_back(pCaloHit);
-            else if (probCosmic > probNeutrino && probCosmic > probNull)
-                cosmicRayHits.push_back(pCaloHit);
-            else
-                backgroundHits.push_back(pCaloHit);
+            if (probNeutrino > probOther && probNeutrino > probNull)
+                neutrinoSliceHits.push_back(pCaloHit);
+            else if (probOther > probNeutrino && probOther > probNull)
+                otherHits.push_back(pCaloHit);
 
-            float recipSum = 1.f / (probNeutrino + probCosmic);
+            float recipSum = 1.f / (probNeutrino + probOther);
             // Adjust probabilities to ignore null hits and update LArCaloHit
             probNeutrino *= recipSum;
-            probCosmic *= recipSum;
-
-            // TODO: Awful hack for proof of principle.
-            //       Store Neutrino score in Shower, CR in track for later use.
-            //       Need a smart way to persist the slice level metadata.
-            LArCaloHit *pLArCaloHit{const_cast<LArCaloHit *>(dynamic_cast<const LArCaloHit *>(pCaloHit))};
-            pLArCaloHit->SetShowerProbability(probNeutrino);
-            pLArCaloHit->SetTrackProbability(probCosmic);
+            probOther *= recipSum;
         }
 
         if (m_visualise)
         {
-            const std::string neutrinoListName("NeutrinoHits_" + listName);
-            const std::string cosmicListName("CosmicHits_" + listName);
+            const std::string neutrinoListName("NeutrinoSlice_" + listName);
+            const std::string otherListName("OtherSlice_" + listName);
             const std::string backgroundListName("BackgroundHits_" + listName);
 
-            PANDORA_MONITORING_API(VisualizeCaloHits(this->GetPandora(), &neutrinoHits, neutrinoListName, BLUE));
-            PANDORA_MONITORING_API(VisualizeCaloHits(this->GetPandora(), &cosmicRayHits, cosmicListName, RED));
-            PANDORA_MONITORING_API(VisualizeCaloHits(this->GetPandora(), &backgroundHits, backgroundListName, BLACK));
+            PANDORA_MONITORING_API(VisualizeCaloHits(this->GetPandora(), &neutrinoSliceHits, neutrinoListName, BLUE));
+            PANDORA_MONITORING_API(VisualizeCaloHits(this->GetPandora(), &otherHits, otherListName, RED));
+        }
+
+        switch (view) {
+            case TPC_VIEW_U:
+                neutrinoSlice.m_caloHitListU = neutrinoSliceHits;
+                break;
+            case TPC_VIEW_V:
+                neutrinoSlice.m_caloHitListV = neutrinoSliceHits;
+                break;
+            case TPC_VIEW_W:
+                neutrinoSlice.m_caloHitListW = neutrinoSliceHits;
+                break;
+            default:
+                break;
         }
     }
 
@@ -170,7 +177,7 @@ void DlEventSlicing::RunSlicing(const Algorithm *const pAlgorithm, const HitType
 
 //-----------------------------------------------------------------------------------------------------------------------------------------
 
-StatusCode DlEventSlicing::MakeNetworkInputFromHits(const CaloHitList &caloHits, const HitType view, const float xMin,
+StatusCode DlEventSlicingTool::MakeNetworkInputFromHits(const CaloHitList &caloHits, const HitType view, const float xMin,
     const float xMax, const float zMin, const float zMax, LArDLHelper::TorchInput &networkInput, PixelVector &pixelVector,
     CaloHitToPixelMap *caloHitToPixelMap) const
 {
@@ -221,7 +228,7 @@ StatusCode DlEventSlicing::MakeNetworkInputFromHits(const CaloHitList &caloHits,
 
 //-----------------------------------------------------------------------------------------------------------------------------------------
 
-void DlEventSlicing::GetHitRegion(const CaloHitList &caloHitList, float &xMin, float &xMax, float &zMin, float &zMax) const
+void DlEventSlicingTool::GetHitRegion(const CaloHitList &caloHitList, float &xMin, float &xMax, float &zMin, float &zMax) const
 {
     xMin = std::numeric_limits<float>::max();
     xMax = -std::numeric_limits<float>::max();
@@ -272,40 +279,28 @@ void DlEventSlicing::GetHitRegion(const CaloHitList &caloHitList, float &xMin, f
 
 //-----------------------------------------------------------------------------------------------------------------------------------------
 
-StatusCode DlEventSlicing::ReadSettings(const TiXmlHandle xmlHandle)
+StatusCode DlEventSlicingTool::ReadSettings(const TiXmlHandle xmlHandle)
 {
-    PANDORA_RETURN_RESULT_IF_AND_IF(STATUS_CODE_SUCCESS, STATUS_CODE_NOT_FOUND, !=, XmlHelper::ReadValue(xmlHandle, "TrainingMode", m_trainingMode));
     PANDORA_RETURN_RESULT_IF_AND_IF(STATUS_CODE_SUCCESS, STATUS_CODE_NOT_FOUND, !=, XmlHelper::ReadValue(xmlHandle, "Visualise", m_visualise));
     PANDORA_RETURN_RESULT_IF_AND_IF(STATUS_CODE_SUCCESS, STATUS_CODE_NOT_FOUND, !=, XmlHelper::ReadValue(xmlHandle, "ImageHeight", m_height));
     PANDORA_RETURN_RESULT_IF_AND_IF(STATUS_CODE_SUCCESS, STATUS_CODE_NOT_FOUND, !=, XmlHelper::ReadValue(xmlHandle, "ImageWidth", m_width));
 
-    if (m_trainingMode)
+    std::string modelName;
+    PANDORA_RETURN_RESULT_IF(STATUS_CODE_SUCCESS, !=, XmlHelper::ReadValue(xmlHandle, "ModelFileNameU", modelName));
+    modelName = LArFileHelper::FindFileInPath(modelName, "FW_SEARCH_PATH");
+    LArDLHelper::LoadModel(modelName, m_modelU);
+    PANDORA_RETURN_RESULT_IF(STATUS_CODE_SUCCESS, !=, XmlHelper::ReadValue(xmlHandle, "ModelFileNameV", modelName));
+    modelName = LArFileHelper::FindFileInPath(modelName, "FW_SEARCH_PATH");
+    LArDLHelper::LoadModel(modelName, m_modelV);
+    PANDORA_RETURN_RESULT_IF(STATUS_CODE_SUCCESS, !=, XmlHelper::ReadValue(xmlHandle, "ModelFileNameW", modelName));
+    modelName = LArFileHelper::FindFileInPath(modelName, "FW_SEARCH_PATH");
+    LArDLHelper::LoadModel(modelName, m_modelW);
+    PANDORA_RETURN_RESULT_IF_AND_IF(STATUS_CODE_SUCCESS, STATUS_CODE_NOT_FOUND, !=, XmlHelper::ReadValue(xmlHandle, "WriteTree", m_writeTree));
+    if (m_writeTree)
     {
-        PANDORA_RETURN_RESULT_IF(STATUS_CODE_SUCCESS, !=, XmlHelper::ReadValue(xmlHandle, "TrainingOutputFileName", m_trainingOutputFile));
+        PANDORA_RETURN_RESULT_IF(STATUS_CODE_SUCCESS, !=, XmlHelper::ReadValue(xmlHandle, "RootTreeName", m_rootTreeName));
+        PANDORA_RETURN_RESULT_IF(STATUS_CODE_SUCCESS, !=, XmlHelper::ReadValue(xmlHandle, "RootFileName", m_rootFileName));
     }
-    else
-    {
-        std::string modelName;
-        PANDORA_RETURN_RESULT_IF(STATUS_CODE_SUCCESS, !=, XmlHelper::ReadValue(xmlHandle, "ModelFileNameU", modelName));
-        modelName = LArFileHelper::FindFileInPath(modelName, "FW_SEARCH_PATH");
-        LArDLHelper::LoadModel(modelName, m_modelU);
-        PANDORA_RETURN_RESULT_IF(STATUS_CODE_SUCCESS, !=, XmlHelper::ReadValue(xmlHandle, "ModelFileNameV", modelName));
-        modelName = LArFileHelper::FindFileInPath(modelName, "FW_SEARCH_PATH");
-        LArDLHelper::LoadModel(modelName, m_modelV);
-        PANDORA_RETURN_RESULT_IF(STATUS_CODE_SUCCESS, !=, XmlHelper::ReadValue(xmlHandle, "ModelFileNameW", modelName));
-        modelName = LArFileHelper::FindFileInPath(modelName, "FW_SEARCH_PATH");
-        LArDLHelper::LoadModel(modelName, m_modelW);
-        PANDORA_RETURN_RESULT_IF_AND_IF(STATUS_CODE_SUCCESS, STATUS_CODE_NOT_FOUND, !=, XmlHelper::ReadValue(xmlHandle, "WriteTree", m_writeTree));
-        if (m_writeTree)
-        {
-            PANDORA_RETURN_RESULT_IF(STATUS_CODE_SUCCESS, !=, XmlHelper::ReadValue(xmlHandle, "RootTreeName", m_rootTreeName));
-            PANDORA_RETURN_RESULT_IF(STATUS_CODE_SUCCESS, !=, XmlHelper::ReadValue(xmlHandle, "RootFileName", m_rootFileName));
-        }
-        PANDORA_RETURN_RESULT_IF(STATUS_CODE_SUCCESS, !=, XmlHelper::ReadValue(xmlHandle, "OutputVertexListName", m_outputVertexListName));
-    }
-
-    PANDORA_RETURN_RESULT_IF_AND_IF(
-        STATUS_CODE_SUCCESS, STATUS_CODE_NOT_FOUND, !=, XmlHelper::ReadVectorOfValues(xmlHandle, "CaloHitListNames", m_caloHitListNames));
 
     return STATUS_CODE_SUCCESS;
 }

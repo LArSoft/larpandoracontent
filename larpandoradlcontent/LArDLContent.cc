@@ -14,6 +14,7 @@
 
 #include "larpandoradlcontent/LArControlFlow/DLMasterAlgorithm.h"
 #include "larpandoradlcontent/LArSliceTagging/DlSliceHitTagAlgorithm.h"
+#include "larpandoradlcontent/LArSlicing/DlEventSlicingTool.h"
 #include "larpandoradlcontent/LArVertex/DlVertexingAlgorithm.h"
 #include "larpandoradlcontent/LArVertex/DlCheatedVertexingAlgorithm.h"
 
@@ -26,7 +27,8 @@
     d("LArDLVertexing",                         DlVertexingAlgorithm)                                                                      \
     d("LArCheatedDLVertexing",                  DlCheatedVertexingAlgorithm)
 
-#define LAR_DL_ALGORITHM_TOOL_LIST(d)
+#define LAR_DL_ALGORITHM_TOOL_LIST(d)                                                                                                      \
+    d("LArDLEventSlicing",                      DlEventSlicingTool)
 
 #define DL_FACTORY Factory
 
