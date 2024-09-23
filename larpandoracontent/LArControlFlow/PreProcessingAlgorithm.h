@@ -70,6 +70,7 @@ private:
     std::string         m_outputCaloHitListNameW;           ///< The output calo hit list name for TPC_VIEW_W hits
     std::string         m_filteredCaloHitListName;          ///< The output calo hit list name for all U, V and W hits
     std::string         m_currentCaloHitListReplacement;    ///< The name of the calo hit list to replace the current list (optional)
+    bool                m_dropNonMCHits;                    ///< Only use hits that have a valid MC match
 };
 
 } // namespace lar_content
