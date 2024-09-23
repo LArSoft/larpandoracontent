@@ -51,7 +51,7 @@ protected:
         const SlicingAlgorithm::HitTypeToNameMap &clusterListNames, SlicingAlgorithm::SliceList &sliceList);
 
     void TagHits(const pandora::Algorithm *const pAlgorithm, const SlicingAlgorithm::HitTypeToNameMap &caloHitListNames,
-        const SlicingAlgorithm::HitTypeToNameMap &clusterListNames, SlicingAlgorithm::Slice &neutrinoSlice);
+        SlicingAlgorithm::Slice &neutrinoSlice);
 
     /**
      *  @brief  Populate a root true with vertex information.

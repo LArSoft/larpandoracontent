@@ -53,13 +53,12 @@ void SliceMonitoringAlgorithm::RearrangeHits(const pandora::Algorithm *const pAl
         PandoraContentApi::GetList(*pAlgorithm, "FullHitList", pCompleteCaloHitList));
 
     const PfoList *pTrackPfos(nullptr);
-    PANDORA_THROW_RESULT_IF_AND_IF(
-        STATUS_CODE_SUCCESS, STATUS_CODE_NOT_FOUND, !=,
-        PandoraContentApi::GetList(*pAlgorithm, m_trackPfoListName, pTrackPfos));
+    if (PandoraContentApi::GetList(*pAlgorithm, m_trackPfoListName, pTrackPfos) != STATUS_CODE_SUCCESS)
+        pTrackPfos = new PfoList();
+
     const PfoList *pShowerPfos(nullptr);
-    PANDORA_THROW_RESULT_IF_AND_IF(
-        STATUS_CODE_SUCCESS, STATUS_CODE_NOT_FOUND, !=,
-        PandoraContentApi::GetList(*pAlgorithm, m_showerPfoListName, pShowerPfos));
+    if (PandoraContentApi::GetList(*pAlgorithm, m_showerPfoListName, pShowerPfos) != STATUS_CODE_SUCCESS)
+        pShowerPfos = new PfoList();
 
     ClusterList *pClusterList(new ClusterList());
     for (const auto &clusterListName : m_inputClusterListNames)
@@ -114,10 +113,11 @@ void SliceMonitoringAlgorithm::RearrangeHits(const pandora::Algorithm *const pAl
 
     // Since the slice hits, and the full, unfiltered hits may not match up, first
     // perform a quick match between these two sets of hits.
-    std::map<const std::tuple<float, float, float>, const CaloHit*> caloHitListMatchMap;
-    auto getHitKey = [](const CaloHit* pCaloHit) -> std::tuple<float, float, float> {
+    typedef const std::tuple<HitType, float, float, float> CaloKey;
+    std::map<CaloKey, const CaloHit*> caloHitListMatchMap;
+    auto getHitKey = [](const CaloHit* pCaloHit) -> CaloKey {
         const auto pos = pCaloHit->GetPositionVector();
-        return {pos.GetX(), pos.GetZ(), pCaloHit->GetHadronicEnergy()};
+        return {pCaloHit->GetHitType(), pos.GetX(), pos.GetZ(), pCaloHit->GetHadronicEnergy()};
     };
     CaloHitList matchedCaloHitList;
 
@@ -282,10 +282,11 @@ void SliceMonitoringAlgorithm::RearrangeHits(const pandora::Algorithm *const pAl
                 }
 
                 std::cout << sliceNumber << ": " << nuComp << " / " << nuPurity <<
-                        "(" << (sliceNumber == bestSlice.second) <<
+                        " (" << (sliceNumber == bestSlice.second) <<
                         " / " << (sliceNuHits.size()) <<
                         " / " << (sliceCRHits.size()) <<
                         " / " << (allCaloHitsInView.size()) <<
+                        " / " << (missingNuHits.size()) <<
                         ")" << std::endl;
 
                 PANDORA_MONITORING_API(SetTreeVariable(
