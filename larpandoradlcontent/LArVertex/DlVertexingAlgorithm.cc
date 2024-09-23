@@ -11,6 +11,7 @@
 
 #include <torch/script.h>
 #include <torch/torch.h>
+#include <ATen/ATen.h>
 
 #include "larpandoracontent/LArHelpers/LArFileHelper.h"
 #include "larpandoracontent/LArHelpers/LArGeometryHelper.h"
@@ -147,6 +148,7 @@ StatusCode DlVertexingAlgorithm::PrepareTrainingSample()
             featureVector.emplace_back(static_cast<double>(x));
             featureVector.emplace_back(static_cast<double>(z));
             featureVector.emplace_back(static_cast<double>(adc));
+            featureVector.emplace_back(static_cast<double>(hitFromNeutrino));
             ++nHits;
         }
         featureVector.insert(featureVector.begin() + 2, static_cast<double>(nHits));
@@ -203,8 +205,11 @@ StatusCode DlVertexingAlgorithm::Infer()
         auto classesAccessor{classes.accessor<int64_t, 3>()};
         const double scaleFactor{std::sqrt(m_height * m_height + m_width * m_width)};
         std::map<int, bool> haveSeenMap;
-        for (const auto [row, col] : pixelVector)
+        for (const auto &pixel : pixelVector)
         {
+            const auto row = pixel.first;
+            const auto col = pixel.second;
+
             const auto cls{classesAccessor[0][row][col]};
             if (cls > 0 && cls < m_nClasses)
             {
@@ -399,8 +404,11 @@ StatusCode DlVertexingAlgorithm::MakeWirePlaneCoordinatesFromPixels(
     const float xShift{static_cast<float>(dx * 0.5f)};
     const float zShift{static_cast<float>(dz * 0.5f)};
 
-    for (const auto [row, col] : pixelVector)
+    for (const auto &pixel : pixelVector)
     {
+        const auto row = pixel.first;
+        const auto col = pixel.second;
+
         const float x{static_cast<float>(col * dx + xMin + xShift)};
         const float z{static_cast<float>(dz * ((m_height - 1) - row) + zMin + zShift)};
         CartesianVector pt(x, 0.f, z);
@@ -459,8 +467,11 @@ void DlVertexingAlgorithm::GetCanvasParameters(const LArDLHelper::TorchOutput &n
     // the argmax result is a 1 x height x width tensor where each element is a class id
     auto classesAccessor{classes.accessor<int64_t, 3>()};
     int colOffsetMin{0}, colOffsetMax{0}, rowOffsetMin{0}, rowOffsetMax{0};
-    for (const auto [row, col] : pixelVector)
+    for (const auto &pixel : pixelVector)
     {
+        const auto row = pixel.first;
+        const auto col = pixel.second;
+
         const auto cls{classesAccessor[0][row][col]};
         const double threshold{m_thresholds[cls]};
         if (threshold > 0. && threshold < 1.)
@@ -575,9 +586,9 @@ StatusCode DlVertexingAlgorithm::CompleteMCHierarchy(const LArMCParticleHelper::
 {
     try
     {
-        for (const auto [mc, hits] : mcToHitsMap)
+        for (const auto &pair : mcToHitsMap)
         {
-            (void)hits;
+            const auto mc = pair.first;
             mcHierarchy.push_back(mc);
             LArMCParticleHelper::GetAllAncestorMCParticles(mc, mcHierarchy);
         }

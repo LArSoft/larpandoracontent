@@ -15,9 +15,6 @@
 #include "larpandoracontent/LArHelpers/LArPfoHelper.h"
 #include "larpandoracontent/LArHelpers/LArVertexHelper.h"
 
-// Temporary includes for SCE correction
-#include "TFile.h"
-
 using namespace pandora;
 
 namespace lar_content
@@ -99,30 +96,7 @@ StatusCode VertexMonitoringAlgorithm::AssessVertices() const
         }
     }
 
-    // Load the SCE correction information.
-    TFile inFile(m_pathToSCEFile.c_str(), "READ");
-
-    if (!inFile.IsOpen())
-    {
-        std::cout << "VertexMonitoringAlgorithm: Could not find the space charge effect file!" << std::endl;
-        return STATUS_CODE_NOT_FOUND;
-    }
-
-    TH3F* hDx = (TH3F*)inFile.Get("hDx");
-    TH3F* hDy = (TH3F*)inFile.Get("hDy");
-    TH3F* hDz = (TH3F*)inFile.Get("hDz");
-
-    // Correct the truth information, first by transforming them to match the expected form in the SCE map.
     const CartesianVector &trueVertex{pTrueNeutrino->GetVertex()};
-    const CartesianVector transformedVertex(TransformVertex(trueVertex));
-
-    // Then calculate any offset with the loaded maps.
-    const CartesianVector positionOffset(GetPositionOffset(transformedVertex, hDx, hDy, hDz));
-
-    // Finally, correct the true position with the calculated offsets.
-    const CartesianVector trueVertexSCE(trueVertex.GetX() - positionOffset.GetX(),
-                                        trueVertex.GetY() - positionOffset.GetY(),
-                                        trueVertex.GetZ() - positionOffset.GetZ());
 
     if (pRecoNeutrino && pTrueNeutrino)
     {
@@ -131,9 +105,9 @@ StatusCode VertexMonitoringAlgorithm::AssessVertices() const
 
         if (m_visualise)
         {
-            const CartesianVector tu(trueVertexSCE.GetX(), 0.f, static_cast<float>(transform->YZtoU(trueVertexSCE.GetY(), trueVertexSCE.GetZ())));
-            const CartesianVector tv(trueVertexSCE.GetX(), 0.f, static_cast<float>(transform->YZtoV(trueVertexSCE.GetY(), trueVertexSCE.GetZ())));
-            const CartesianVector tw(trueVertexSCE.GetX(), 0.f, static_cast<float>(transform->YZtoW(trueVertexSCE.GetY(), trueVertexSCE.GetZ())));
+            const CartesianVector tu(trueVertex.GetX(), 0.f, static_cast<float>(transform->YZtoU(trueVertex.GetY(), trueVertex.GetZ())));
+            const CartesianVector tv(trueVertex.GetX(), 0.f, static_cast<float>(transform->YZtoV(trueVertex.GetY(), trueVertex.GetZ())));
+            const CartesianVector tw(trueVertex.GetX(), 0.f, static_cast<float>(transform->YZtoW(trueVertex.GetY(), trueVertex.GetZ())));
 
             const CartesianVector ru(recoVertex.GetX(), 0.f, static_cast<float>(transform->YZtoU(recoVertex.GetY(), recoVertex.GetZ())));
             const CartesianVector rv(recoVertex.GetX(), 0.f, static_cast<float>(transform->YZtoV(recoVertex.GetY(), recoVertex.GetZ())));
@@ -153,9 +127,9 @@ StatusCode VertexMonitoringAlgorithm::AssessVertices() const
             PANDORA_MONITORING_API(AddMarkerToVisualization(this->GetPandora(), &rw, "W reco vertex", RED, 2));
         }
 
-        if (m_writeFile && IsInFiducialVolume(trueVertexSCE))
+        if (m_writeFile && LArVertexHelper::IsInFiducialVolume(this->GetPandora(), trueVertex, m_detectorName))
         {
-            const CartesianVector delta{recoVertex - trueVertexSCE};
+            const CartesianVector delta{recoVertex - trueVertex};
             const float dx{delta.GetX()}, dy{delta.GetY()}, dz{delta.GetZ()}, dr{delta.GetMagnitude()};
             const float trueNuEnergy{pTrueNeutrino->GetEnergy()};
             const int success{1};
@@ -170,7 +144,7 @@ StatusCode VertexMonitoringAlgorithm::AssessVertices() const
     }
     else if (pTrueNeutrino)
     {
-        if (m_writeFile && IsInFiducialVolume(trueVertexSCE))
+        if (m_writeFile && LArVertexHelper::IsInFiducialVolume(this->GetPandora(), trueVertex, m_detectorName))
         {
             const int success{0};
             const float dx{-999.f}, dy{-999.f}, dz{-999.f}, dr{-999.f};
@@ -190,95 +164,11 @@ StatusCode VertexMonitoringAlgorithm::AssessVertices() const
 
 //------------------------------------------------------------------------------------------------------------------------------------------
 
-CartesianVector VertexMonitoringAlgorithm::TransformVertex(const CartesianVector& trueVertex) const
-{
-    // First, transform the position to match the SCE maps
-    // Correct as of August 2019 -> TODO: Check if changed.
-    const float newX(2.50f - (2.50f / 2.56f) * (trueVertex.GetX() / 100.0f));
-    const float newY((2.50f / 2.33f) * ((trueVertex.GetY() / 100.0f) + 1.165f));
-    const float newZ((10.0f / 10.37f) * (trueVertex.GetZ() / 100.0f));
-
-    return CartesianVector(newX, newY, newZ);
-}
-
-//------------------------------------------------------------------------------------------------------------------------------------------
-
-CartesianVector VertexMonitoringAlgorithm::GetPositionOffset(const CartesianVector& transformedVertex, TH3F* dX, TH3F* dY, TH3F* dZ) const
-{
-    // Interpolate to get the positions offsets.
-    const float xOffset(dX->Interpolate(transformedVertex.GetX(), transformedVertex.GetY(), transformedVertex.GetZ()));
-    const float yOffset(dY->Interpolate(transformedVertex.GetX(), transformedVertex.GetY(), transformedVertex.GetZ()));
-    const float zOffset(dZ->Interpolate(transformedVertex.GetX(), transformedVertex.GetY(), transformedVertex.GetZ()));
-
-    return CartesianVector(xOffset, yOffset, zOffset);
-}
-
-//------------------------------------------------------------------------------------------------------------------------------------------
-
-bool VertexMonitoringAlgorithm::IsInFiducialVolume(const CartesianVector &vertex) const
-{
-    const LArTPCMap &larTPCMap(this->GetPandora().GetGeometry()->GetLArTPCMap());
-
-    if (larTPCMap.empty())
-    {
-        std::cout << "VertexMonitoringAlgorithm::IsInFiducialVolume - LArTPC description not registered with Pandora as required " << std::endl;
-        throw StatusCodeException(STATUS_CODE_NOT_INITIALIZED);
-    }
-
-    float tpcMinX{std::numeric_limits<float>::max()}, tpcMaxX{-std::numeric_limits<float>::max()};
-    float tpcMinY{std::numeric_limits<float>::max()}, tpcMaxY{-std::numeric_limits<float>::max()};
-    float tpcMinZ{std::numeric_limits<float>::max()}, tpcMaxZ{-std::numeric_limits<float>::max()};
-
-    for (const auto &[volumeId, pLArTPC] : larTPCMap)
-    {
-        (void)volumeId;
-        const float centreX{pLArTPC->GetCenterX()}, halfWidthX{0.5f * pLArTPC->GetWidthX()};
-        const float centreY{pLArTPC->GetCenterY()}, halfWidthY{0.5f * pLArTPC->GetWidthY()};
-        const float centreZ{pLArTPC->GetCenterZ()}, halfWidthZ{0.5f * pLArTPC->GetWidthZ()};
-        tpcMinX = std::min(tpcMinX, centreX - halfWidthX);
-        tpcMaxX = std::max(tpcMaxX, centreX + halfWidthX);
-        tpcMinY = std::min(tpcMinY, centreY - halfWidthY);
-        tpcMaxY = std::max(tpcMaxY, centreY + halfWidthY);
-        tpcMinZ = std::min(tpcMinZ, centreZ - halfWidthZ);
-        tpcMaxZ = std::max(tpcMaxZ, centreZ + halfWidthZ);
-    }
-
-    const float x{vertex.GetX()};
-    const float y{vertex.GetY()};
-    const float z{vertex.GetZ()};
-
-    if (m_detectorName == "dune_fd_hd")
-    {
-        return (tpcMinX + 50.f) < x && x < (tpcMaxX - 50.f) && (tpcMinY + 50.f) < y && y < (tpcMaxY - 50.f) && (tpcMinZ + 50.f) < z &&
-               z < (tpcMaxZ - 150.f);
-    }
-
-    if (m_detectorName == "microboone")
-    {
-        return (tpcMinX + 10.f) < x && x < (tpcMaxX - 10.f) &&
-               (tpcMinY + 10.f) < y && y < (tpcMaxY - 10.f) &&
-               (tpcMinZ + 10.f) < z && z < (tpcMaxZ - 50.f);
-    }
-
-    if (m_detectorName == "microboone_dead_region")
-    {
-        return (tpcMinX + 10.f) < x && x < (tpcMaxX - 10.f) &&
-               (tpcMinY + 10.f) < y && y < (tpcMaxY - 10.f) &&
-               (tpcMinZ + 10.f) < z && z < (tpcMaxZ - 50.f) &&
-               !((675 >= z) && (z <= 775)); // Additional restraint to ignore dead region.
-    }
-
-    throw StatusCodeException(STATUS_CODE_INVALID_PARAMETER);
-}
-
-//------------------------------------------------------------------------------------------------------------------------------------------
-
 StatusCode VertexMonitoringAlgorithm::ReadSettings(const TiXmlHandle xmlHandle)
 {
     PANDORA_RETURN_RESULT_IF_AND_IF(STATUS_CODE_SUCCESS, STATUS_CODE_NOT_FOUND, !=, XmlHelper::ReadValue(xmlHandle, "Visualize", m_visualise));
     PANDORA_RETURN_RESULT_IF_AND_IF(STATUS_CODE_SUCCESS, STATUS_CODE_NOT_FOUND, !=, XmlHelper::ReadValue(xmlHandle, "WriteFile", m_writeFile));
     PANDORA_RETURN_RESULT_IF_AND_IF(STATUS_CODE_SUCCESS, STATUS_CODE_NOT_FOUND, !=, XmlHelper::ReadValue(xmlHandle, "DetectorName", m_detectorName));
-    PANDORA_RETURN_RESULT_IF_AND_IF(STATUS_CODE_SUCCESS, STATUS_CODE_NOT_FOUND, !=, XmlHelper::ReadValue(xmlHandle, "SCEFilePath", m_pathToSCEFile));
 
     if (m_writeFile)
     {

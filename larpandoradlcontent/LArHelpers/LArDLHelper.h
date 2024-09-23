@@ -10,6 +10,7 @@
 
 #include <torch/script.h>
 #include <torch/torch.h>
+#include <ATen/ATen.h>
 
 #include "Pandora/StatusCodes.h"
 
@@ -22,7 +23,7 @@ namespace lar_dl_content
 class LArDLHelper
 {
 public:
-    typedef torch::jit::script::Module TorchModel;
+    typedef std::shared_ptr<torch::jit::script::Module> TorchModel;
     typedef torch::Tensor TorchInput;
     typedef std::vector<torch::jit::IValue> TorchInputVector;
     typedef at::Tensor TorchOutput;
@@ -43,7 +44,7 @@ public:
      *  @param  dimensions the size of each dimension of the tensor: pass as {a, b, c, d} for example
      *  @param  tensor the tensor to be initialised
      */
-    static void InitialiseInput(const at::IntArrayRef dimensions, TorchInput &tensor);
+    static void InitialiseInput(const at::IntList dimensions, TorchInput &tensor);
 
     /**
      *  @brief  Run a deep learning model
