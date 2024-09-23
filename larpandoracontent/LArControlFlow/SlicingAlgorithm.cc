@@ -28,10 +28,18 @@ StatusCode SlicingAlgorithm::Run()
 {
     SliceList sliceList;
     m_pEventSlicingTool->RunSlicing(this, m_caloHitListNames, m_clusterListNames, sliceList);
-    PANDORA_RETURN_RESULT_IF(STATUS_CODE_SUCCESS, !=, PandoraContentApi::RunDaughterAlgorithm(*this, m_slicingListDeletionAlgorithm));
 
     if (sliceList.empty())
         return STATUS_CODE_SUCCESS;
+
+    if (m_pSliceRearrangementTool != nullptr)
+    {
+        SliceList outputSliceList;
+        m_pSliceRearrangementTool->RearrangeHits(this, sliceList, outputSliceList);
+        sliceList = outputSliceList;
+    }
+
+    PANDORA_RETURN_RESULT_IF(STATUS_CODE_SUCCESS, !=, PandoraContentApi::RunDaughterAlgorithm(*this, m_slicingListDeletionAlgorithm));
 
     std::string clusterListName;
     const ClusterList *pClusterList(nullptr);
@@ -93,6 +101,10 @@ StatusCode SlicingAlgorithm::ReadSettings(const TiXmlHandle xmlHandle)
 
     if (!m_pEventSlicingTool)
         return STATUS_CODE_INVALID_PARAMETER;
+
+    pAlgorithmTool = nullptr;
+    PANDORA_RETURN_RESULT_IF(STATUS_CODE_SUCCESS, !=, XmlHelper::ProcessAlgorithmTool(*this, xmlHandle, "SliceRearrangement", pAlgorithmTool));
+    m_pSliceRearrangementTool = dynamic_cast<SliceRearrangementBaseTool*>(pAlgorithmTool);
 
     PANDORA_RETURN_RESULT_IF(STATUS_CODE_SUCCESS, !=, XmlHelper::ProcessAlgorithm(*this, xmlHandle, "SlicingListDeletion", m_slicingListDeletionAlgorithm));
 
