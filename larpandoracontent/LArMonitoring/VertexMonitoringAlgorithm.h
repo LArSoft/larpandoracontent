@@ -28,6 +28,8 @@ public:
 
 private:
     pandora::StatusCode AssessVertices() const;
+    pandora::StatusCode CheckIfSliceContainsVertex(const pandora::CaloHitList caloHits, const pandora::CartesianVector trueVertex,
+            const pandora::HitType view) const;
 
     pandora::StatusCode Run();
     pandora::StatusCode ReadSettings(const pandora::TiXmlHandle xmlHandle);
