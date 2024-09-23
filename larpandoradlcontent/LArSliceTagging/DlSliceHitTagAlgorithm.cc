@@ -47,8 +47,8 @@ DlSliceHitTagAlgorithm::~DlSliceHitTagAlgorithm()
 
 StatusCode DlSliceHitTagAlgorithm::Run()
 {
-    // 4 Output classes, NULL, Nu Track, Nu Shower, Cosmic.
-    m_nClasses = 4;
+    // 3 Output classes, NULL, Nu, Cosmic.
+    m_nClasses = 3;
 
     if (m_trainingMode)
         return this->PrepareTrainingSample();
@@ -220,10 +220,8 @@ StatusCode DlSliceHitTagAlgorithm::Infer()
 
             // Apply softmax to loss to get actual probability
             float probNull = classesAccessor[0][0][pixelZ][pixelX];
-            float probTrack = classesAccessor[0][1][pixelZ][pixelX];
-            float probShower = classesAccessor[0][2][pixelZ][pixelX];
-            float probCosmic = classesAccessor[0][3][pixelZ][pixelX];
-            float probNeutrino = probTrack + probShower;
+            float probNeutrino = classesAccessor[0][1][pixelZ][pixelX];
+            float probCosmic = classesAccessor[0][2][pixelZ][pixelX];
 
             if (probNeutrino > probCosmic && probNeutrino > probNull)
                 neutrinoHits.push_back(pCaloHit);
@@ -234,8 +232,8 @@ StatusCode DlSliceHitTagAlgorithm::Infer()
 
             float recipSum = 1.f / (probNeutrino + probCosmic);
             // Adjust probabilities to ignore null hits and update LArCaloHit
-            probShower *= recipSum;
-            probTrack *= recipSum;
+            probNeutrino *= recipSum;
+            probCosmic *= recipSum;
 
             // TODO: Awful hack for proof of principle.
             //       Store Neutrino score in Shower, CR in track for later use.
@@ -243,13 +241,6 @@ StatusCode DlSliceHitTagAlgorithm::Infer()
             LArCaloHit *pLArCaloHit{const_cast<LArCaloHit *>(dynamic_cast<const LArCaloHit *>(pCaloHit))};
             pLArCaloHit->SetShowerProbability(probNeutrino);
             pLArCaloHit->SetTrackProbability(probCosmic);
-
-            // caloHitToEvdHit[listName].at(pCaloHit)->addProperties({
-            //     {"Neutrino-Like", probNeutrino},
-            //     {"Cosmic-Like", probCosmic},
-            //     {"isNeutrino", (float) probNeutrino > probCosmic},
-            //     {"isCosmicRay", (float) probNeutrino < probCosmic}
-            // });
         }
 
         if (m_visualise)
