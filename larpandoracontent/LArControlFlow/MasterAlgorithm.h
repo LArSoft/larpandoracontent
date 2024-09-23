@@ -333,6 +333,7 @@ protected:
     StitchingToolVector         m_stitchingToolVector;              ///< The stitching tool vector
     CosmicRayTaggingToolVector  m_cosmicRayTaggingToolVector;       ///< The cosmic-ray tagging tool vector
     SliceIdToolVector           m_sliceIdToolVector;                ///< The slice id tool vector
+    SliceSelectionToolVector    m_sliceSelectionToolVector;         ///< The slice selection tool vector
 
     std::string                 m_filePathEnvironmentVariable;      ///< The environment variable providing a list of paths to xml files
     std::string                 m_crSettingsFile;                   ///< The cosmic-ray reconstruction settings file
