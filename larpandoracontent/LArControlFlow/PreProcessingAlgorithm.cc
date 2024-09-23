@@ -93,7 +93,7 @@ void PreProcessingAlgorithm::ProcessCaloHits()
             continue;
         }
 
-        if (pLArCaloHit->GetMCParticleWeightMap().empty())
+        if (m_dropNonMCHits && pLArCaloHit->GetMCParticleWeightMap().empty())
             continue;
 
         if (m_processedHits.count(pCaloHit))
