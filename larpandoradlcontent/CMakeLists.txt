@@ -1,10 +1,5 @@
-find_ups_product( libtorch )
-if (cetmodules_FOUND)
-  set(CET_PUBLIC PUBLIC)
-else()
-  unset(CET_PUBLIC)
-endif()
 
+find_ups_product( libtorch )
 find_package(Torch ${CET_PUBLIC} REQUIRED)
 
 include_directories(SYSTEM ${TORCH_INCLUDE_DIRS})
