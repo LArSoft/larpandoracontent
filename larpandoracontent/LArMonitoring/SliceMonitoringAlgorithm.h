@@ -8,7 +8,7 @@
 #ifndef LAR_SLICE_MONITORING_ALGORITHM_H
 #define LAR_SLICE_MONITORING_ALGORITHM_H 1
 
-#include "Pandora/Algorithm.h"
+#include "larpandoracontent/LArControlFlow/SlicingAlgorithm.h"
 
 namespace lar_content
 {
@@ -16,7 +16,7 @@ namespace lar_content
 /**
  *  @brief  SliceMonitoringAlgorithm class
  */
-class SliceMonitoringAlgorithm : public pandora::Algorithm
+class SliceMonitoringAlgorithm : public SliceRearrangementBaseTool
 {
 public:
     /**
@@ -27,9 +27,7 @@ public:
     virtual ~SliceMonitoringAlgorithm();
 
 private:
-    pandora::StatusCode AssessSlice() const;
-
-    pandora::StatusCode Run();
+    void RearrangeHits(const pandora::Algorithm *const pAlgorithm, SlicingAlgorithm::SliceList &inputSliceList, SlicingAlgorithm::SliceList &outputSliceList);
     pandora::StatusCode ReadSettings(const pandora::TiXmlHandle xmlHandle);
 
     std::string m_filename;         // The filename of the ROOT output file
