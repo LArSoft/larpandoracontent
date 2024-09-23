@@ -14,6 +14,7 @@
 #include "larpandoracontent/LArHelpers/LArMCParticleHelper.h"
 #include "larpandoracontent/LArHelpers/LArPfoHelper.h"
 #include "larpandoracontent/LArHelpers/LArVertexHelper.h"
+#include <iterator>
 
 using namespace pandora;
 
@@ -87,8 +88,29 @@ StatusCode VertexMonitoringAlgorithm::AssessVertices() const
         }
     }
 
+    // Build up a map of every PFO to the slice it was reconstructed in.
+    std::map<const ParticleFlowObject*, float> pfoToSliceIdMap;
+    std::map<float, std::map<HitType, CaloHitList>> sliceIdToTotalHits;
+
     for (const ParticleFlowObject *pPfo : *pPfoList)
     {
+        const PropertiesMap &properties(pPfo->GetPropertiesMap());
+        const PropertiesMap::const_iterator iter(properties.find("SliceIndex"));
+
+        if (iter != properties.end()) {
+            pfoToSliceIdMap.insert({pPfo, iter->second});
+
+            for (const auto &view : {TPC_VIEW_U, TPC_VIEW_V, TPC_VIEW_W}) {
+                CaloHitList caloHits;
+                LArPfoHelper::GetCaloHits(pPfo, view, caloHits);
+                sliceIdToTotalHits[iter->second][view].insert(
+                    sliceIdToTotalHits[iter->second][view].end(),
+                    caloHits.begin(), caloHits.end()
+                );
+            }
+        } else
+            pfoToSliceIdMap.insert({pPfo, -1});
+
         if (LArPfoHelper::IsNeutrino(pPfo))
         {
             pRecoNeutrino = pPfo;
@@ -144,8 +166,42 @@ StatusCode VertexMonitoringAlgorithm::AssessVertices() const
             const int isInGapVReco(LArGeometryHelper::IsInGap3D(this->GetPandora(), recoVertex, TPC_VIEW_V));
             const int isInGapWReco(LArGeometryHelper::IsInGap3D(this->GetPandora(), recoVertex, TPC_VIEW_W));
 
+            // Lets calculate some slice properties.
+            const float sliceIndex(pfoToSliceIdMap.at(pRecoNeutrino));
+            const auto mcHits = mcToHitsMap.at(pTrueNeutrino);
+            CaloHitList uTrueHits, vTrueHits, wTrueHits;
+            std::copy_if(mcHits.begin(), mcHits.end(), std::back_inserter(uTrueHits), [](const pandora::CaloHit* hit) { return hit->GetHitType() == TPC_VIEW_U; });
+            std::copy_if(mcHits.begin(), mcHits.end(), std::back_inserter(vTrueHits), [](const pandora::CaloHit* hit) { return hit->GetHitType() == TPC_VIEW_V; });
+            std::copy_if(mcHits.begin(), mcHits.end(), std::back_inserter(wTrueHits), [](const pandora::CaloHit* hit) { return hit->GetHitType() == TPC_VIEW_W; });
+
+            const auto uRecoHits = sliceIdToTotalHits.at(sliceIndex).at(TPC_VIEW_U);
+            const auto vRecoHits = sliceIdToTotalHits.at(sliceIndex).at(TPC_VIEW_V);
+            const auto wRecoHits = sliceIdToTotalHits.at(sliceIndex).at(TPC_VIEW_W);
+
+            CaloHitList caloHits;
+            LArPfoHelper::GetCaloHits(pRecoNeutrino, TPC_VIEW_U, caloHits);
+            LArPfoHelper::GetCaloHits(pRecoNeutrino->GetDaughterPfoList(), TPC_VIEW_U, caloHits);
+            const float nuCompU = LArMCParticleHelper::GetSharedHits(uTrueHits, caloHits).size() / (float) uTrueHits.size();
+            const float nuPurityU = LArMCParticleHelper::GetSharedHits(uTrueHits, caloHits).size() / (float) uRecoHits.size();
+
+            caloHits.clear();
+            LArPfoHelper::GetCaloHits(pRecoNeutrino, TPC_VIEW_V, caloHits);
+            LArPfoHelper::GetCaloHits(pRecoNeutrino->GetDaughterPfoList(), TPC_VIEW_V, caloHits);
+            const float nuCompV = LArMCParticleHelper::GetSharedHits(vTrueHits, caloHits).size() / (float) vTrueHits.size();
+            const float nuPurityV = LArMCParticleHelper::GetSharedHits(vTrueHits, caloHits).size() / (float) vRecoHits.size();
+
+            caloHits.clear();
+            LArPfoHelper::GetCaloHits(pRecoNeutrino, TPC_VIEW_W, caloHits);
+            LArPfoHelper::GetCaloHits(pRecoNeutrino->GetDaughterPfoList(), TPC_VIEW_W, caloHits);
+            const float nuCompW = LArMCParticleHelper::GetSharedHits(wTrueHits, caloHits).size() / (float) wTrueHits.size();
+            const float nuPurityW = LArMCParticleHelper::GetSharedHits(wTrueHits, caloHits).size() / (float) wRecoHits.size();
+
             PANDORA_MONITORING_API(SetTreeVariable(this->GetPandora(), m_treename.c_str(), "success", success));
             PANDORA_MONITORING_API(SetTreeVariable(this->GetPandora(), m_treename.c_str(), "trueNuEnergy", trueNuEnergy));
+            PANDORA_MONITORING_API(SetTreeVariable(this->GetPandora(), m_treename.c_str(), "trueNuHits", mcHits.size()));
+            PANDORA_MONITORING_API(SetTreeVariable(this->GetPandora(), m_treename.c_str(), "recoNuHitsU", uRecoHits.size()));
+            PANDORA_MONITORING_API(SetTreeVariable(this->GetPandora(), m_treename.c_str(), "recoNuHitsV", vRecoHits.size()));
+            PANDORA_MONITORING_API(SetTreeVariable(this->GetPandora(), m_treename.c_str(), "recoNuHitsW", wRecoHits.size()));
             PANDORA_MONITORING_API(SetTreeVariable(this->GetPandora(), m_treename.c_str(), "dx", dx));
             PANDORA_MONITORING_API(SetTreeVariable(this->GetPandora(), m_treename.c_str(), "dy", dy));
             PANDORA_MONITORING_API(SetTreeVariable(this->GetPandora(), m_treename.c_str(), "dz", dz));
@@ -156,6 +212,13 @@ StatusCode VertexMonitoringAlgorithm::AssessVertices() const
             PANDORA_MONITORING_API(SetTreeVariable(this->GetPandora(), m_treename.c_str(), "isInGapUReco", isInGapUReco));
             PANDORA_MONITORING_API(SetTreeVariable(this->GetPandora(), m_treename.c_str(), "isInGapVReco", isInGapVReco));
             PANDORA_MONITORING_API(SetTreeVariable(this->GetPandora(), m_treename.c_str(), "isInGapWReco", isInGapWReco));
+
+            PANDORA_MONITORING_API(SetTreeVariable(this->GetPandora(), m_treename.c_str(), "nuSliceCompU", nuCompU));
+            PANDORA_MONITORING_API(SetTreeVariable(this->GetPandora(), m_treename.c_str(), "nuSlicePurU", nuPurityU));
+            PANDORA_MONITORING_API(SetTreeVariable(this->GetPandora(), m_treename.c_str(), "nuSliceCompV", nuCompV));
+            PANDORA_MONITORING_API(SetTreeVariable(this->GetPandora(), m_treename.c_str(), "nuSlicePurV", nuPurityV));
+            PANDORA_MONITORING_API(SetTreeVariable(this->GetPandora(), m_treename.c_str(), "nuSliceCompW", nuCompW));
+            PANDORA_MONITORING_API(SetTreeVariable(this->GetPandora(), m_treename.c_str(), "nuSlicePurW", nuPurityW));
             PANDORA_MONITORING_API(FillTree(this->GetPandora(), m_treename.c_str()));
         }
     }
