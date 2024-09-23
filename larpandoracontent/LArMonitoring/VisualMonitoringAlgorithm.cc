@@ -12,9 +12,6 @@
 
 using namespace pandora;
 
-#define HEP_EVD_PANDORA_HELPERS 1
-#include "hep_evd.h"
-
 namespace lar_content
 {
 
@@ -44,97 +41,85 @@ VisualMonitoringAlgorithm::VisualMonitoringAlgorithm() :
 
 StatusCode VisualMonitoringAlgorithm::Run()
 {
-    std::string stateName(m_caloHitListNames.size() == 0 ? "3D" : "2D");
-    HepEVD::setHepEVDGeometry(this->GetPandora().GetGeometry());
+    PANDORA_MONITORING_API(SetEveDisplayParameters(this->GetPandora(), m_showDetector, (m_detectorView.find("xz") != std::string::npos) ? DETECTOR_VIEW_XZ :
+        (m_detectorView.find("xy") != std::string::npos) ? DETECTOR_VIEW_XY : DETECTOR_VIEW_DEFAULT, m_transparencyThresholdE, m_energyScaleThresholdE, m_scalingFactor));
 
     // Show current mc particles
     if (m_showCurrentMCParticles)
     {
-        stateName = "CurrentMC";
         this->VisualizeMCParticleList(std::string());
     }
 
     // Show specified lists of mc particles
     for (StringVector::const_iterator iter = m_mcParticleListNames.begin(), iterEnd = m_mcParticleListNames.end(); iter != iterEnd; ++iter)
     {
-        stateName = "SelectedMC";
         this->VisualizeMCParticleList(*iter);
     }
 
     // Show current calo hit list
     if (m_showCurrentCaloHits)
     {
-        stateName = "CurrentCaloHitLists";
         this->VisualizeCaloHitList(std::string());
     }
 
     // Show specified lists of calo hits
     for (StringVector::const_iterator iter = m_caloHitListNames.begin(), iterEnd = m_caloHitListNames.end(); iter != iterEnd; ++iter)
     {
-        stateName = "SelectedCaloHitLists";
         this->VisualizeCaloHitList(*iter);
     }
 
     // Show current cluster list
     if (m_showCurrentClusters)
     {
-        stateName = "CurrentClusters";
         this->VisualizeClusterList(std::string());
     }
 
     // Show specified lists of clusters
     for (StringVector::const_iterator iter = m_clusterListNames.begin(), iterEnd = m_clusterListNames.end(); iter != iterEnd; ++iter)
     {
-        stateName = "SelectedClusters";
         this->VisualizeClusterList(*iter);
     }
 
-    // // Show current track list
-    // if (m_showCurrentTracks)
-    // {
-    //     this->VisualizeTrackList(std::string());
-    // }
+    // Show current track list
+    if (m_showCurrentTracks)
+    {
+        this->VisualizeTrackList(std::string());
+    }
 
-    // // Show specified lists of tracks
-    // for (StringVector::const_iterator iter = m_trackListNames.begin(), iterEnd = m_trackListNames.end(); iter != iterEnd; ++iter)
-    // {
-    //     this->VisualizeTrackList(*iter);
-    // }
+    // Show specified lists of tracks
+    for (StringVector::const_iterator iter = m_trackListNames.begin(), iterEnd = m_trackListNames.end(); iter != iterEnd; ++iter)
+    {
+        this->VisualizeTrackList(*iter);
+    }
 
     // Show current particle flow objects
     if (m_showCurrentPfos)
     {
-        stateName = "CurrentPfos";
         this->VisualizeParticleFlowList(std::string());
     }
 
     // Show specified lists of pfo
     for (StringVector::const_iterator iter = m_pfoListNames.begin(), iterEnd = m_pfoListNames.end(); iter != iterEnd; ++iter)
     {
-        stateName = "SelectedPfos";
         this->VisualizeParticleFlowList(*iter);
     }
 
     // Show current vertex objects
     if (m_showCurrentVertices)
     {
-        stateName = "CurrentVertices";
         this->VisualizeVertexList(std::string());
     }
 
     // Show specified lists of vertices
     for (StringVector::const_iterator iter = m_vertexListNames.begin(), iterEnd = m_vertexListNames.end(); iter != iterEnd; ++iter)
     {
-        stateName = "SelectedVertices";
         this->VisualizeVertexList(*iter);
     }
 
     // Finally, display the event and pause application
     if (m_displayEvent)
     {
-        HepEVD::saveState(stateName, 1, true);
-    } else {
-        HepEVD::saveState(stateName, 99, false);
+        PANDORA_MONITORING_API(ViewEvent(this->GetPandora()));
     }
 
     return STATUS_CODE_SUCCESS;
@@ -144,7 +129,29 @@ StatusCode VisualMonitoringAlgorithm::Run()
 
 void VisualMonitoringAlgorithm::VisualizeMCParticleList(const std::string &listName) const
 {
-    HepEVD::showMC(*this, listName);
+    const MCParticleList *pMCParticleList = NULL;
+
+    if (listName.empty())
+    {
+        if (STATUS_CODE_SUCCESS != PandoraContentApi::GetCurrentList(*this, pMCParticleList))
+        {
+            if (PandoraContentApi::GetSettings(*this)->ShouldDisplayAlgorithmInfo())
+                std::cout << "VisualMonitoringAlgorithm: mc particle list unavailable." << std::endl;
+            return;
+        }
+    }
+    else
+    {
+        if (STATUS_CODE_SUCCESS != PandoraContentApi::GetList(*this, listName, pMCParticleList))
+        {
+            if (PandoraContentApi::GetSettings(*this)->ShouldDisplayAlgorithmInfo())
+                std::cout << "VisualMonitoringAlgorithm: mc particle list unavailable." << std::endl;
+            return;
+        }
+    }
+
+    PANDORA_MONITORING_API(VisualizeMCParticles(this->GetPandora(), pMCParticleList, listName.empty() ? "CurrentMCParticles" : listName.c_str(),
+        AUTO, &m_particleSuppressionMap));
 }
 
 //------------------------------------------------------------------------------------------------------------------------------------------
@@ -186,14 +193,47 @@ void VisualMonitoringAlgorithm::VisualizeCaloHitList(const std::string &listName
         }
     }
 
-    HepEVD::addHits(&caloHitList);
+    PANDORA_MONITORING_API(VisualizeCaloHits(this->GetPandora(), &caloHitList, listName.empty() ? "CurrentCaloHits" : listName.c_str(),
+        (m_hitColors.find("energy") != std::string::npos ? AUTOENERGY : GRAY)));
 }
 
 //------------------------------------------------------------------------------------------------------------------------------------------
 
 void VisualMonitoringAlgorithm::VisualizeTrackList(const std::string &listName) const
 {
-    return;
+    const TrackList *pTrackList = NULL;
+
+    if (listName.empty())
+    {
+        if (STATUS_CODE_SUCCESS != PandoraContentApi::GetCurrentList(*this, pTrackList))
+        {
+            if (PandoraContentApi::GetSettings(*this)->ShouldDisplayAlgorithmInfo())
+                std::cout << "VisualMonitoringAlgorithm: current track list unavailable." << std::endl;
+            return;
+        }
+    }
+    else
+    {
+        if (STATUS_CODE_SUCCESS != PandoraContentApi::GetList(*this, listName, pTrackList))
+        {
+            if (PandoraContentApi::GetSettings(*this)->ShouldDisplayAlgorithmInfo())
+                std::cout << "VisualMonitoringAlgorithm: track list " << listName << " unavailable." << std::endl;
+            return;
+        }
+    }
+
+    // Filter track list
+    TrackList trackList;
+
+    for (TrackList::const_iterator iter = pTrackList->begin(), iterEnd = pTrackList->end(); iter != iterEnd; ++iter)
+    {
+        const Track *const pTrack = *iter;
+
+        if (!m_showOnlyAvailable || pTrack->IsAvailable())
+            trackList.push_back(pTrack);
+    }
+
+    PANDORA_MONITORING_API(VisualizeTracks(this->GetPandora(), &trackList, listName.empty() ? "CurrentTracks" : listName.c_str(), GRAY));
 }
 
 //------------------------------------------------------------------------------------------------------------------------------------------
@@ -232,7 +272,11 @@ void VisualMonitoringAlgorithm::VisualizeClusterList(const std::string &listName
             clusterList.push_back(pCluster);
     }
 
-    HepEVD::addClusters(&clusterList, listName == "" ? "DefaultClusterList" : listName);
+    PANDORA_MONITORING_API(VisualizeClusters(this->GetPandora(), &clusterList, listName.empty() ? "CurrentClusters" : listName.c_str(),
+        (m_hitColors.find("particleid") != std::string::npos) ? AUTOID :
+        (m_hitColors.find("iterate") != std::string::npos) ? AUTOITER :
+        (m_hitColors.find("energy") != std::string::npos) ? AUTOENERGY : AUTO,
+        m_showAssociatedTracks));
 }
 
 //------------------------------------------------------------------------------------------------------------------------------------------
@@ -260,7 +304,11 @@ void VisualMonitoringAlgorithm::VisualizeParticleFlowList(const std::string &lis
         }
     }
 
-    HepEVD::addPFOs(this->GetPandora(), pPfoList);
+    PANDORA_MONITORING_API(VisualizeParticleFlowObjects(this->GetPandora(), pPfoList, listName.empty() ? "CurrentPfos" : listName.c_str(),
+        (m_hitColors.find("particleid") != std::string::npos) ? AUTOID :
+        (m_hitColors.find("iterate") != std::string::npos ? AUTOITER :
+        (m_hitColors.find("energy") != std::string::npos ? AUTOENERGY :
+        AUTO)), m_showPfoVertices, m_showPfoHierarchy));
 }
 
 //------------------------------------------------------------------------------------------------------------------------------------------
@@ -289,33 +337,17 @@ void VisualMonitoringAlgorithm::VisualizeVertexList(const std::string &listName)
     }
 
     // Filter vertex list
-    HepEVD::Markers vertexList;
+    VertexList vertexList;
 
     for (VertexList::const_iterator iter = pVertexList->begin(), iterEnd = pVertexList->end(); iter != iterEnd; ++iter)
     {
         const Vertex *const pVertex = *iter;
 
-        if (m_showOnlyAvailable && pVertex->IsAvailable())
-            continue;
-
-        const auto pos = pVertex->GetPosition();
-        HepEVD::Point vertexMarker({pos.GetX(), pos.GetY(), pos.GetZ()});
-
-        if (pVertex->GetVertexType() == VertexType::VERTEX_U)
-            vertexMarker.setHitType(HepEVD::TWO_D_U);
-        if (pVertex->GetVertexType() == VertexType::VERTEX_V)
-            vertexMarker.setHitType(HepEVD::TWO_D_V);
-        if (pVertex->GetVertexType() == VertexType::VERTEX_W)
-            vertexMarker.setHitType(HepEVD::TWO_D_W);
-
-        if (pVertex->GetVertexType() != VertexType::VERTEX_3D)
-            vertexMarker.setDim(HepEVD::TWO_D);
-        else
-            vertexMarker.setDim(HepEVD::THREE_D);
-        vertexList.push_back(vertexMarker);
+        if (!m_showOnlyAvailable || pVertex->IsAvailable())
+            vertexList.push_back(pVertex);
     }
 
-    HepEVD::addMarkers(vertexList);
+    PANDORA_MONITORING_API(VisualizeVertices(this->GetPandora(), &vertexList, listName.empty() ? "CurrentVertices" : listName.c_str(), AUTO));
 }
 
 //------------------------------------------------------------------------------------------------------------------------------------------
@@ -333,6 +365,12 @@ StatusCode VisualMonitoringAlgorithm::ReadSettings(const TiXmlHandle xmlHandle)
 
     PANDORA_RETURN_RESULT_IF_AND_IF(STATUS_CODE_SUCCESS, STATUS_CODE_NOT_FOUND, !=, XmlHelper::ReadVectorOfValues(xmlHandle,
         "CaloHitListNames", m_caloHitListNames));
+
+    PANDORA_RETURN_RESULT_IF_AND_IF(STATUS_CODE_SUCCESS, STATUS_CODE_NOT_FOUND, !=, XmlHelper::ReadValue(xmlHandle,
+        "ShowCurrentTracks", m_showCurrentTracks));
+
+    PANDORA_RETURN_RESULT_IF_AND_IF(STATUS_CODE_SUCCESS, STATUS_CODE_NOT_FOUND, !=, XmlHelper::ReadVectorOfValues(xmlHandle,
+        "TrackListNames", m_trackListNames));
 
     PANDORA_RETURN_RESULT_IF_AND_IF(STATUS_CODE_SUCCESS, STATUS_CODE_NOT_FOUND, !=, XmlHelper::ReadValue(xmlHandle,
         "ShowCurrentClusters", m_showCurrentClusters));
@@ -356,10 +394,61 @@ StatusCode VisualMonitoringAlgorithm::ReadSettings(const TiXmlHandle xmlHandle)
         "DisplayEvent", m_displayEvent));
 
     PANDORA_RETURN_RESULT_IF_AND_IF(STATUS_CODE_SUCCESS, STATUS_CODE_NOT_FOUND, !=, XmlHelper::ReadValue(xmlHandle,
+        "ShowDetector", m_showDetector));
+
+    PANDORA_RETURN_RESULT_IF_AND_IF(STATUS_CODE_SUCCESS, STATUS_CODE_NOT_FOUND, !=, XmlHelper::ReadValue(xmlHandle,
+        "DetectorView", m_detectorView));
+    std::transform(m_detectorView.begin(), m_detectorView.end(), m_detectorView.begin(), ::tolower);
+
+    PANDORA_RETURN_RESULT_IF_AND_IF(STATUS_CODE_SUCCESS, STATUS_CODE_NOT_FOUND, !=, XmlHelper::ReadValue(xmlHandle,
         "ShowOnlyAvailable", m_showOnlyAvailable));
 
     PANDORA_RETURN_RESULT_IF_AND_IF(STATUS_CODE_SUCCESS, STATUS_CODE_NOT_FOUND, !=, XmlHelper::ReadValue(xmlHandle,
+        "ShowAssociatedTracks", m_showAssociatedTracks));
+
+    PANDORA_RETURN_RESULT_IF_AND_IF(STATUS_CODE_SUCCESS, STATUS_CODE_NOT_FOUND, !=, XmlHelper::ReadValue(xmlHandle,
+        "HitColors", m_hitColors));
+    std::transform(m_hitColors.begin(), m_hitColors.end(), m_hitColors.begin(), ::tolower);
+
+    PANDORA_RETURN_RESULT_IF_AND_IF(STATUS_CODE_SUCCESS, STATUS_CODE_NOT_FOUND, !=, XmlHelper::ReadValue(xmlHandle,
         "ThresholdEnergy", m_thresholdEnergy));
+
+    PANDORA_RETURN_RESULT_IF_AND_IF(STATUS_CODE_SUCCESS, STATUS_CODE_NOT_FOUND, !=, XmlHelper::ReadValue(xmlHandle,
+        "TransparencyThresholdE", m_transparencyThresholdE));
+
+    PANDORA_RETURN_RESULT_IF_AND_IF(STATUS_CODE_SUCCESS, STATUS_CODE_NOT_FOUND, !=, XmlHelper::ReadValue(xmlHandle,
+        "EnergyScaleThresholdE", m_energyScaleThresholdE));
+
+    PANDORA_RETURN_RESULT_IF_AND_IF(STATUS_CODE_SUCCESS, STATUS_CODE_NOT_FOUND, !=, XmlHelper::ReadValue(xmlHandle,
+        "ScalingFactor", m_scalingFactor));
+
+    PANDORA_RETURN_RESULT_IF_AND_IF(STATUS_CODE_SUCCESS, STATUS_CODE_NOT_FOUND, !=, XmlHelper::ReadValue(xmlHandle,
+        "ShowPfoVertices", m_showPfoVertices));
+
+    PANDORA_RETURN_RESULT_IF_AND_IF(STATUS_CODE_SUCCESS, STATUS_CODE_NOT_FOUND, !=, XmlHelper::ReadValue(xmlHandle,
+        "ShowPfoHierarchy", m_showPfoHierarchy));
+
+    PANDORA_RETURN_RESULT_IF_AND_IF(STATUS_CODE_SUCCESS, STATUS_CODE_NOT_FOUND, !=, XmlHelper::ReadVectorOfValues(xmlHandle,
+        "SuppressMCParticles", m_suppressMCParticles));
+
+    for (StringVector::iterator iter = m_suppressMCParticles.begin(), iterEnd = m_suppressMCParticles.end(); iter != iterEnd; ++iter)
+    {
+        const std::string pdgEnergy(*iter);
+        StringVector pdgEnergySeparated;
+        const std::string delimiter = ":";
+        XmlHelper::TokenizeString(pdgEnergy, pdgEnergySeparated, delimiter);
+
+        if (pdgEnergySeparated.size() != 2)
+            return STATUS_CODE_INVALID_PARAMETER;
+
+        int pdgCode(0);
+        float energy(0.f);
+
+        if (!StringToType(pdgEnergySeparated.at(0), pdgCode) || !StringToType(pdgEnergySeparated.at(1), energy))
+            return STATUS_CODE_INVALID_PARAMETER;
+
+        m_particleSuppressionMap.insert(PdgCodeToEnergyMap::value_type(pdgCode, energy));
+    }
 
     return STATUS_CODE_SUCCESS;
 }
