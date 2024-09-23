@@ -70,15 +70,118 @@ void DlEventSlicingTool::RunSlicing(const Algorithm *const pAlgorithm, const Hit
 
     // We now need to merge the neutrino slice with the other slices
     // This is done by removing any hits in the other slices that are also in the neutrino slice
+    // We should be careful to respect the previous clustering of the hits though.
+
+    std::map<const CaloHit*, bool> nuLikeHits;
+    for (const CaloHit *pCaloHit : neutrinoSlice.m_caloHitListU)
+        nuLikeHits.insert({pCaloHit, true});
+    for (const CaloHit *pCaloHit : neutrinoSlice.m_caloHitListV)
+        nuLikeHits.insert({pCaloHit, true});
+    for (const CaloHit *pCaloHit : neutrinoSlice.m_caloHitListW)
+        nuLikeHits.insert({pCaloHit, true});
+
+    const auto addToSlice = [&](const CaloHit *hit, Slice &slice) {
+        if (hit->GetHitType() == TPC_VIEW_U)
+            slice.m_caloHitListU.push_back(hit);
+        else if (hit->GetHitType() == TPC_VIEW_V)
+            slice.m_caloHitListV.push_back(hit);
+        else if (hit->GetHitType() == TPC_VIEW_W)
+            slice.m_caloHitListW.push_back(hit);
+    };
+
+    const ClusterList *pClusterList = NULL;
+    PANDORA_THROW_RESULT_IF(STATUS_CODE_SUCCESS, !=, PandoraContentApi::GetCurrentList(*pAlgorithm, pClusterList));
+    std::map<const CaloHit*, const Cluster*> hitToClusterMap;
+    std::map<const Cluster*, float> clusterToNuLikePercentage;
+    for (const Cluster *pCluster : *pClusterList)
+    {
+        int numHits = 0;
+        int numNuLikeHits = 0;
+
+        for (const auto &orderedList : pCluster->GetOrderedCaloHitList())
+        {
+            for (const CaloHit *pCaloHit : *(orderedList.second))
+            {
+                numHits++;
+
+                if (nuLikeHits.find(pCaloHit) != nuLikeHits.end())
+                    numNuLikeHits++;
+            }
+        }
+
+        float nuLikePercentage = (float) numNuLikeHits / numHits;
+
+        // Also need to correct the other way around: cluster is X% tagged as neutrino-like,
+        // so we should tag all hits in the cluster as neutrino-like.
+        if (nuLikePercentage > 0.75 && nuLikePercentage != 1.f)
+        {
+            for (const auto &orderedList : pCluster->GetOrderedCaloHitList())
+                for (const CaloHit *pCaloHit : *(orderedList.second))
+                    if (nuLikeHits.find(pCaloHit) == nuLikeHits.end())
+                        addToSlice(pCaloHit, neutrinoSlice);
+
+            nuLikePercentage = 1.f;
+        }
+
+        clusterToNuLikePercentage.insert({pCluster, nuLikePercentage});
+    }
+
+    const auto shouldRemove = [&](const CaloHit *hit) {
+        auto found = hitToClusterMap.find(hit);
+
+        if (found == hitToClusterMap.end())
+            return true;
+
+        const Cluster *pCluster = found->second;
+
+        if (clusterToNuLikePercentage[pCluster] > 0.5)
+            return true;
+
+        return false;
+    };
+
+    // Store a map of hits to remove from the neutrinoSlice
+    std::map<HitType, std::vector<const CaloHit*>> hitsToRemove;
+
     for (Slice &slice : sliceList)
     {
         for (const CaloHit *pCaloHit : neutrinoSlice.m_caloHitListU)
-            slice.m_caloHitListU.remove(pCaloHit);
+            if (shouldRemove(pCaloHit))
+                slice.m_caloHitListU.remove(pCaloHit);
+            else
+                hitsToRemove[TPC_VIEW_U].push_back(pCaloHit);
         for (const CaloHit *pCaloHit : neutrinoSlice.m_caloHitListV)
-            slice.m_caloHitListV.remove(pCaloHit);
+            if (shouldRemove(pCaloHit))
+                slice.m_caloHitListV.remove(pCaloHit);
+            else
+                hitsToRemove[TPC_VIEW_V].push_back(pCaloHit);
         for (const CaloHit *pCaloHit : neutrinoSlice.m_caloHitListW)
-            slice.m_caloHitListW.remove(pCaloHit);
+            if (shouldRemove(pCaloHit))
+                slice.m_caloHitListW.remove(pCaloHit);
+            else
+                hitsToRemove[TPC_VIEW_W].push_back(pCaloHit);
     }
+
+    // Tidy up the neutrino slice
+    for (const auto &hitTypeListPair : hitsToRemove)
+    {
+        const HitType hitType = hitTypeListPair.first;
+        const std::vector<const CaloHit*> &hits = hitTypeListPair.second;
+
+        for (const CaloHit *pCaloHit : hits)
+        {
+            if (hitType == TPC_VIEW_U)
+                neutrinoSlice.m_caloHitListU.remove(pCaloHit);
+            else if (hitType == TPC_VIEW_V)
+                neutrinoSlice.m_caloHitListV.remove(pCaloHit);
+            else if (hitType == TPC_VIEW_W)
+                neutrinoSlice.m_caloHitListW.remove(pCaloHit);
+        }
+    }
+
+    std::cout << "There was " << hitsToRemove[TPC_VIEW_U].size() << " / " << neutrinoSlice.m_caloHitListU.size() << " U hits removed from the neutrino slice!" << std::endl;
+    std::cout << "There was " << hitsToRemove[TPC_VIEW_V].size() << " / " << neutrinoSlice.m_caloHitListV.size() << " V hits removed from the neutrino slice!" << std::endl;
+    std::cout << "There was " << hitsToRemove[TPC_VIEW_W].size() << " / " << neutrinoSlice.m_caloHitListW.size() << " W hits removed from the neutrino slice!" << std::endl;
 
     // Add the neutrino slice to the slice list
     sliceList.push_back(neutrinoSlice);
