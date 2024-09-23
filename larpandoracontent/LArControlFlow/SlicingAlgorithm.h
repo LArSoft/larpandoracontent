@@ -49,7 +49,7 @@ private:
     pandora::StatusCode ReadSettings(const pandora::TiXmlHandle xmlHandle);
 
     EventSlicingBaseTool       *m_pEventSlicingTool;                ///< The address of the event slicing tool
-    SliceRearrangementBaseTool *m_pSliceRearrangementTool;          ///< The address of the slicing rearrangement tool
+    std::vector<SliceRearrangementBaseTool*> m_pSliceRearrangementTools;          ///< The address of the slicing rearrangement tools to use.
     std::string                 m_slicingListDeletionAlgorithm;     ///< The name of the slicing list deletion algorithm
 
     HitTypeToNameMap            m_caloHitListNames;                 ///< The hit type to calo hit list name map
