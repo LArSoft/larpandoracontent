@@ -90,7 +90,6 @@ if(PANDORA_LIBTORCH)
 endif()
 
 # --- Installation ---
-# (The modern installation logic from the previous answer goes here)
 include(CMakePackageConfigHelpers)
 include(GNUInstallDirs)
 
