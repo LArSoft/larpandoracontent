@@ -217,6 +217,7 @@ set(LAR_CONTENT_SRCS
 	larpandoracontent/LArTwoDReco/LArClusterAssociation/TransverseAssociationAlgorithm.cc
 	larpandoracontent/LArTwoDReco/LArClusterAssociation/TransverseExtensionAlgorithm.cc
 	larpandoracontent/LArTwoDReco/LArClusterCreation/ClusteringParentAlgorithm.cc
+	larpandoracontent/LArTwoDReco/LArClusterCreation/ProvisionalClusteringAlgorithm.cc
 	larpandoracontent/LArTwoDReco/LArClusterCreation/SimpleClusterCreationAlgorithm.cc
 	larpandoracontent/LArTwoDReco/LArClusterCreation/TrackClusterCreationAlgorithm.cc
 	larpandoracontent/LArTwoDReco/LArClusterMopUp/BoundedClusterMopUpAlgorithm.cc
@@ -256,6 +257,7 @@ set(LAR_CONTENT_SRCS
 	larpandoracontent/LArUtility/MopUpBaseAlgorithm.cc
 	larpandoracontent/LArUtility/PfoHitCleaningAlgorithm.cc
 	larpandoracontent/LArUtility/PfoMopUpBaseAlgorithm.cc
+	larpandoracontent/LArUtility/RecoTree.cc
 	larpandoracontent/LArVertex/AsymmetryFeatureBaseTool.cc
 	larpandoracontent/LArVertex/CandidateVertexCreationAlgorithm.cc
 	larpandoracontent/LArVertex/EnergyDepositionAsymmetryFeatureTool.cc
