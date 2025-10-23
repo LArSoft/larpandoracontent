@@ -11,7 +11,9 @@ endif()
 project(${LAR_PROJECT_NAME} VERSION 04.19.05 LANGUAGES CXX)
 
 if(cetmodules_FOUND)
-    message(STATUS "Configuring with cetmodules build system.")
+    # Deal with MRB changing top-level CMake invocation location
+    set(PANDORA_PROJECT_ROOT "${CMAKE_CURRENT_SOURCE_DIR}" CACHE PATH "Top-level Pandora project root")
+    message(STATUS "Configuring with cetmodules build system ${PANDORA_PROJECT_ROOT}.")
     include(cmake/cetmodules_build.cmake)
 else()
     message(STATUS "Configuring with standalone build system.")
