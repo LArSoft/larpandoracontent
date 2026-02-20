@@ -30,8 +30,8 @@ public:
     pandora::InputUInt m_larTPCVolumeId;   ///< The lar tpc volume id
     pandora::InputUInt m_daughterVolumeId; ///< The daughter volume id
 
-    pandora::FloatVector m_hitScores;        ///< Hit scores
-    pandora::StringVector m_hitScoreLabels;  ///< Labels for the hit scores
+    pandora::FloatVector m_hitScores;       ///< Hit scores
+    pandora::StringVector m_hitScoreLabels; ///< Labels for the hit scores
 };
 
 //------------------------------------------------------------------------------------------------------------------------------------------
@@ -75,14 +75,14 @@ public:
      *
      *  @return a vector of scores for each category
      */
-    const pandora::FloatVector & GetHitScores() const;
+    const pandora::FloatVector &GetHitScores() const;
 
     /**
      *  @brief  Get scores for each hit
      *
      *  @return a vector of score labels for each category
      */
-    const pandora::StringVector & GetHitScoreLabels() const;
+    const pandora::StringVector &GetHitScoreLabels() const;
 
     /**
      *  @brief  Get the probability that the hit is track-like
@@ -113,12 +113,12 @@ public:
     void SetShowerProbability(const float probability);
 
 private:
-    unsigned int m_larTPCVolumeId;              ///< The lar tpc volume id
-    unsigned int m_daughterVolumeId;            ///< The daughter volume id
-    pandora::FloatVector m_hitScores;           ///< Hit scores
-    pandora::StringVector m_hitScoreLabels;     ///< Labels for the hit scores    
-    pandora::InputFloat m_pTrack;               ///< The probability that the hit is track-like
-    pandora::InputFloat m_pShower;              ///< The probability that the hit is shower-like
+    unsigned int m_larTPCVolumeId;          ///< The lar tpc volume id
+    unsigned int m_daughterVolumeId;        ///< The daughter volume id
+    pandora::FloatVector m_hitScores;       ///< Hit scores
+    pandora::StringVector m_hitScoreLabels; ///< Labels for the hit scores
+    pandora::InputFloat m_pTrack;           ///< The probability that the hit is track-like
+    pandora::InputFloat m_pShower;          ///< The probability that the hit is shower-like
 };
 
 //------------------------------------------------------------------------------------------------------------------------------------------
@@ -199,14 +199,14 @@ inline unsigned int LArCaloHit::GetDaughterVolumeId() const
 
 //------------------------------------------------------------------------------------------------------------------------------------------
 
-inline const pandora::FloatVector & LArCaloHit::GetHitScores() const
+inline const pandora::FloatVector &LArCaloHit::GetHitScores() const
 {
     return m_hitScores;
 }
 
 //------------------------------------------------------------------------------------------------------------------------------------------
 
-inline const pandora::StringVector & LArCaloHit::GetHitScoreLabels() const
+inline const pandora::StringVector &LArCaloHit::GetHitScoreLabels() const
 {
     return m_hitScoreLabels;
 }
@@ -318,9 +318,11 @@ inline pandora::StatusCode LArCaloHitFactory::Read(Parameters &parameters, pando
         PANDORA_RETURN_RESULT_IF(pandora::STATUS_CODE_SUCCESS, !=, binaryFileReader.ReadVariable(larTPCVolumeId));
         if (m_version > 1)
             PANDORA_RETURN_RESULT_IF(pandora::STATUS_CODE_SUCCESS, !=, binaryFileReader.ReadVariable(daughterVolumeId));
-        if (m_version > 2) {
+        if (m_version > 2)
+        {
             PANDORA_RETURN_RESULT_IF(pandora::STATUS_CODE_SUCCESS, !=, binaryFileReader.ReadVariable(nLabels));
-            for (unsigned int i = 0; i < nLabels; ++i) {
+            for (unsigned int i = 0; i < nLabels; ++i)
+            {
                 float score;
                 PANDORA_RETURN_RESULT_IF(pandora::STATUS_CODE_SUCCESS, !=, binaryFileReader.ReadVariable(score));
                 hitScores.emplace_back(std::move(score));
@@ -329,7 +331,7 @@ inline pandora::StatusCode LArCaloHitFactory::Read(Parameters &parameters, pando
                 PANDORA_RETURN_RESULT_IF(pandora::STATUS_CODE_SUCCESS, !=, binaryFileReader.ReadVariable(label));
                 hitScoreLabels.emplace_back(std::move(label));
             }
-        }        
+        }
     }
     else if (pandora::XML == fileReader.GetFileType())
     {
@@ -337,9 +339,11 @@ inline pandora::StatusCode LArCaloHitFactory::Read(Parameters &parameters, pando
         PANDORA_RETURN_RESULT_IF(pandora::STATUS_CODE_SUCCESS, !=, xmlFileReader.ReadVariable("LArTPCVolumeId", larTPCVolumeId));
         if (m_version > 1)
             PANDORA_RETURN_RESULT_IF(pandora::STATUS_CODE_SUCCESS, !=, xmlFileReader.ReadVariable("DaughterVolumeId", daughterVolumeId));
-        if (m_version > 2) {
+        if (m_version > 2)
+        {
             PANDORA_RETURN_RESULT_IF(pandora::STATUS_CODE_SUCCESS, !=, xmlFileReader.ReadVariable("NHitLabels", nLabels));
-            for (unsigned int i = 0; i < nLabels; ++i) {
+            for (unsigned int i = 0; i < nLabels; ++i)
+            {
                 float score;
                 PANDORA_RETURN_RESULT_IF(pandora::STATUS_CODE_SUCCESS, !=, xmlFileReader.ReadVariable("HitScore", score));
                 hitScores.emplace_back(std::move(score));
