@@ -214,7 +214,7 @@ void VisualMonitoringAlgorithm::VisualizeCaloHitList(const std::string &listName
     for (const CaloHit *const pCaloHit : caloHitList)
     {
         const LArCaloHit *const pLArCaloHit{dynamic_cast<const LArCaloHit *>(pCaloHit)};
-        const std::pair<unsigned int, unsigned int> volId{ pLArCaloHit->GetLArTPCVolumeId(), pLArCaloHit->GetDaughterVolumeId() };
+        const std::pair<unsigned int, unsigned int> volId{pLArCaloHit->GetLArTPCVolumeId(), pLArCaloHit->GetDaughterVolumeId()};
         volIdToCaloHits[volId].push_back(pCaloHit);
     }
 
@@ -222,8 +222,8 @@ void VisualMonitoringAlgorithm::VisualizeCaloHitList(const std::string &listName
     Color colorIter{BLACK};
     for (const auto &[volId, caloHitListPartition] : volIdToCaloHits)
     {
-        const std::string label{(listName.empty() ? "CurrentCaloHits" : listName) +
-            ", volId ("  + std::to_string(volId.first) + ", " + std::to_string(volId.second) + ")"};
+        const std::string label{(listName.empty() ? "CurrentCaloHits" : listName) + ", volId (" + std::to_string(volId.first) + ", " +
+            std::to_string(volId.second) + ")"};
         PANDORA_MONITORING_API(VisualizeCaloHits(this->GetPandora(), &caloHitListPartition, label.c_str(), colorIter));
         colorIter = static_cast<Color>(static_cast<int>(colorIter) + 1);
         if (colorIter >= AUTO)
@@ -458,8 +458,8 @@ StatusCode VisualMonitoringAlgorithm::ReadSettings(const TiXmlHandle xmlHandle)
     PANDORA_RETURN_RESULT_IF_AND_IF(
         STATUS_CODE_SUCCESS, STATUS_CODE_NOT_FOUND, !=, XmlHelper::ReadValue(xmlHandle, "ShowPfoHierarchy", m_showPfoHierarchy));
 
-    PANDORA_RETURN_RESULT_IF_AND_IF(
-        STATUS_CODE_SUCCESS, STATUS_CODE_NOT_FOUND, !=, XmlHelper::ReadValue(xmlHandle, "PartitionCaloHitsByVolume", m_partitionCaloHitsByVolume));
+    PANDORA_RETURN_RESULT_IF_AND_IF(STATUS_CODE_SUCCESS, STATUS_CODE_NOT_FOUND, !=,
+        XmlHelper::ReadValue(xmlHandle, "PartitionCaloHitsByVolume", m_partitionCaloHitsByVolume));
 
     PANDORA_RETURN_RESULT_IF_AND_IF(STATUS_CODE_SUCCESS, STATUS_CODE_NOT_FOUND, !=,
         XmlHelper::ReadVectorOfValues(xmlHandle, "SuppressMCParticles", m_suppressMCParticles));
