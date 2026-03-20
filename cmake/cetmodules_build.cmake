@@ -1,8 +1,5 @@
 set(CET_EXPORT EXPORT)
 
-include(CetCMakeEnv)
-cet_cmake_env()
-
 cet_set_compiler_flags(
   DIAGS CAUTIOUS
   WERROR
