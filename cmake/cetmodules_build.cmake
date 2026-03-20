@@ -1,4 +1,3 @@
-set(CET_EXPORT EXPORT)
 
 cet_set_compiler_flags(
   DIAGS CAUTIOUS
@@ -8,16 +7,16 @@ cet_set_compiler_flags(
 )
 cet_report_compiler_flags(REPORT_THRESHOLD VERBOSE)
 
-find_package(PandoraSDK 03.04.00 REQUIRED ${CET_EXPORT})
+find_package(PandoraSDK 03.04.00 REQUIRED EXPORT)
 
 option(PANDORA_MONITORING "Enable Pandora Monitoring" TRUE)
 if(PANDORA_MONITORING)
-  find_package(PandoraMonitoring 03.05.00 REQUIRED ${CET_EXPORT})
+  find_package(PandoraMonitoring 03.05.00 REQUIRED EXPORT)
 endif()
 
-find_package(Eigen3 3.3 REQUIRED ${CET_EXPORT})
+find_package(Eigen3 3.3 REQUIRED EXPORT)
 
-find_package(Torch QUIET ${CET_EXPORT})
+find_package(Torch QUIET EXPORT)
 if(Torch_FOUND)
   set(PANDORA_LIBTORCH ON)
   message(STATUS "LibTorch found — building DL content (LArPandoraDLContent)")
@@ -40,7 +39,7 @@ cet_make_library(
   LIBRARIES
     PUBLIC
       PandoraPFA::PandoraSDK
-      $<$<BOOL:${PANDORA_MONITORING}>:PandoraPFA::PandoraMonitoring>
+      PandoraPFA::PandoraMonitoring
     PRIVATE
       Eigen3::Eigen
 )
