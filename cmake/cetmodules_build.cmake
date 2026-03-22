@@ -74,5 +74,9 @@ endif()
 
 install_source(SUBDIRS larpandoracontent)
 install_headers(SUBDIRS larpandoracontent)
+if(PANDORA_LIBTORCH)
+install_source(SUBDIRS larpandoradlcontent)
+install_headers(SUBDIRS larpandoradlcontent)
+endif()
 
 cet_cmake_config()
