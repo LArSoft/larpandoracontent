@@ -72,11 +72,62 @@ if(PANDORA_LIBTORCH)
   target_compile_definitions(LArPandoraDLContent PUBLIC PANDORA_LIBTORCH)
 endif()
 
-install_source(SUBDIRS larpandoracontent)
-install_headers(SUBDIRS larpandoracontent)
+set(LAR_CONTENT_DIRS
+  larpandoracontent
+  larpandoracontent/LArCheating
+  larpandoracontent/LArControlFlow
+  larpandoracontent/LArCustomParticles
+  larpandoracontent/LArHelpers
+  larpandoracontent/LArMonitoring
+  larpandoracontent/LArObjects
+  larpandoracontent/LArPersistency
+  larpandoracontent/LArPlugins
+  larpandoracontent/LArReclustering
+  larpandoracontent/LArReclustering/LArExample
+  larpandoracontent/LArShowerRefinement
+  larpandoracontent/LArThreeDReco
+  larpandoracontent/LArThreeDReco/LArCosmicRay
+  larpandoracontent/LArThreeDReco/LArEventBuilding
+  larpandoracontent/LArThreeDReco/LArHitCreation
+  larpandoracontent/LArThreeDReco/LArLongitudinalTrackMatching
+  larpandoracontent/LArThreeDReco/LArPfoMopUp
+  larpandoracontent/LArThreeDReco/LArPfoRecovery
+  larpandoracontent/LArThreeDReco/LArShowerFragments
+  larpandoracontent/LArThreeDReco/LArShowerMatching
+  larpandoracontent/LArThreeDReco/LArThreeDBase
+  larpandoracontent/LArThreeDReco/LArTrackFragments
+  larpandoracontent/LArThreeDReco/LArTransverseTrackMatching
+  larpandoracontent/LArThreeDReco/LArTwoViewMatching
+  larpandoracontent/LArTrackShowerId
+  larpandoracontent/LArTwoDReco
+  larpandoracontent/LArTwoDReco/LArClusterAssociation
+  larpandoracontent/LArTwoDReco/LArClusterCreation
+  larpandoracontent/LArTwoDReco/LArClusterMopUp
+  larpandoracontent/LArTwoDReco/LArClusterSplitting
+  larpandoracontent/LArTwoDReco/LArCosmicRay
+  larpandoracontent/LArUtility
+  larpandoracontent/LArVertex
+)
+install_source(SUBDIRS ${LAR_CONTENT_DIRS})
+install_headers(SUBDIRS ${LAR_CONTENT_DIRS})
+
 if(PANDORA_LIBTORCH)
-install_source(SUBDIRS larpandoradlcontent)
-install_headers(SUBDIRS larpandoradlcontent)
+  set(LAR_DL_DIRS
+    larpandoradlcontent
+    larpandoradlcontent/LArCheating
+    larpandoradlcontent/LArControlFlow
+    larpandoradlcontent/LArHelpers
+    larpandoradlcontent/LArMonitoring
+    larpandoradlcontent/LArObjects
+    larpandoradlcontent/LArSignalId
+    larpandoradlcontent/LArThreeDReco
+    larpandoradlcontent/LArThreeDReco/LArEventBuilding
+    larpandoradlcontent/LArTrackShowerId
+    larpandoradlcontent/LArTwoDReco
+    larpandoradlcontent/LArVertex
+  )
+  install_source(SUBDIRS ${LAR_DL_DIRS})
+  install_headers(SUBDIRS ${LAR_DL_DIRS})
 endif()
 
 cet_cmake_config()
