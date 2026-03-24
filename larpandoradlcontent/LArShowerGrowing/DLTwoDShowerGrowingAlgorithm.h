@@ -343,18 +343,18 @@ private:
 
     /* Start configurable via xml members */
 
-    bool m_trainingMode;                              ///< Training mode
-    std::string m_trainingTreeName;                   ///< Tree name for training data output
-    std::string m_trainingFileName;                   ///< File name for training data output
-    pandora::StringVector m_clusterListNames;         ///< Names of cluster lists
-    std::string m_vertexListName;                     ///< Name of vertex list
-    float m_similarityThreshold;                      ///< Threshold value on similarity for clusters to be connected
-    float m_similarityThresholdBeta;                  ///< Scaling factor for an optional second clustering pass
-    unsigned int m_accessoryClustersMaxHits;          ///< Clusters with this number of less hits are treated as accessory clusters during merging
-    unsigned int m_maxIterations;                     ///< Max iterative applications of the cluster merging
-    bool m_includeHitCardinalityFeatures;             ///< Option to include in hit feature vector the no. hits in cluster and no. clusters in event
-    bool m_includeHitNIterationNumFeature;            ///< Option to include in hit feature vector the inference iteration number
-    std::vector<unsigned int> m_encodeLArTPCVolIDs;   ///< LArTPC vol IDs for one-hot encoding of drift vols in hit feature vector, must be same size as m_encodeDaughterVolIDs
+    bool m_trainingMode;                      ///< Training mode
+    std::string m_trainingTreeName;           ///< Tree name for training data output
+    std::string m_trainingFileName;           ///< File name for training data output
+    pandora::StringVector m_clusterListNames; ///< Names of cluster lists
+    std::string m_vertexListName;             ///< Name of vertex list
+    float m_similarityThreshold;              ///< Threshold value on similarity for clusters to be connected
+    float m_similarityThresholdBeta;          ///< Scaling factor for an optional second clustering pass
+    unsigned int m_accessoryClustersMaxHits;  ///< Clusters with this number of less hits are treated as accessory clusters during merging
+    unsigned int m_maxIterations;             ///< Max iterative applications of the cluster merging
+    bool m_includeHitCardinalityFeatures;     ///< Option to include in hit feature vector the no. hits in cluster and no. clusters in event
+    bool m_includeHitNIterationNumFeature;    ///< Option to include in hit feature vector the inference iteration number
+    std::vector<unsigned int> m_encodeLArTPCVolIDs; ///< LArTPC vol IDs for one-hot encoding of drift vols in hit feature vector, must be same size as m_encodeDaughterVolIDs
     std::vector<unsigned int> m_encodeDaughterVolIDs; ///< Daughter vol IDs for one-hot encoding of drift vols in hit feature vector, must be sae size as m_encodeLArTPCVolIDs
 
     /* End configurable via xml members */
