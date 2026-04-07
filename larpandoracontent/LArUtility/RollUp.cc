@@ -1,7 +1,7 @@
 /**
  *  @file   larpandoracontent/LArUtility/RollUp.cc
  *
- *  @brief  Implementation file for classes related to roll-up of EM activity. 
+ *  @brief  Implementation file for classes related to roll-up of EM activity.
  *
  *  $Log: $
  */
@@ -94,8 +94,7 @@ const MCParticle *RollUpNullPolicy::GetRollUpTargetMC(const MCParticle *const pM
 
 //-----------------------------------------------------------------------------------------------------------------------------------------
 
-bool RollUpNullPolicy::ShouldFurtherRollUpCaloHit(
-    [[maybe_unused]] const CaloHit *const pCaloHit, [[maybe_unused]] const MCParticle *const pRolledUpMainMC) const
+bool RollUpNullPolicy::ShouldFurtherRollUpCaloHit([[maybe_unused]] const CaloHit *const pCaloHit, [[maybe_unused]] const MCParticle *const pRolledUpMainMC) const
 {
     return false;
 }
@@ -122,8 +121,7 @@ const MCParticle *RollUpEMPolicy::GetRollUpTargetMC(const MCParticle *const pMC)
 
 //-----------------------------------------------------------------------------------------------------------------------------------------
 
-bool RollUpEMPolicy::ShouldFurtherRollUpCaloHit(
-    [[maybe_unused]] const CaloHit *const pCaloHit, [[maybe_unused]] const MCParticle *const pRolledUpMainMC) const
+bool RollUpEMPolicy::ShouldFurtherRollUpCaloHit([[maybe_unused]] const CaloHit *const pCaloHit, [[maybe_unused]] const MCParticle *const pRolledUpMainMC) const
 {
     return false;
 }
@@ -167,8 +165,7 @@ RollUpEMAndAmbiguousDeltaRayHitsPolicy::RollUpEMAndAmbiguousDeltaRayHitsPolicy(
 
 //-----------------------------------------------------------------------------------------------------------------------------------------
 
-bool RollUpEMAndAmbiguousDeltaRayHitsPolicy::ShouldFurtherRollUpCaloHit(
-    const CaloHit *const pCaloHit, const MCParticle *const pRolledUpMainMC) const
+bool RollUpEMAndAmbiguousDeltaRayHitsPolicy::ShouldFurtherRollUpCaloHit(const CaloHit *const pCaloHit, const MCParticle *const pRolledUpMainMC) const
 {
     // Can't be a delta ray? -> don't roll-up this hit
     if (pRolledUpMainMC->IsRootParticle() || pRolledUpMainMC->GetParticleId() != E_MINUS)

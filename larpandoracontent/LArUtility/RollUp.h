@@ -1,7 +1,7 @@
 /**
  *  @file   larpandoracontent/LArUtility/RollUp.h
  *
- *  @brief  Header file for classes related to roll-up of EM activity. 
+ *  @brief  Header file for classes related to roll-up of EM activity.
  *
  *  $Log: $
  */
@@ -43,8 +43,7 @@ public:
      *
      *  @return  whether the hit should be further folded to the parent of hit's rolled-up MC particle
      */
-    virtual bool ShouldFurtherRollUpCaloHit(
-        const pandora::CaloHit *const pCaloHit, const pandora::MCParticle *const pRolledUpMainMC) const = 0;
+    virtual bool ShouldFurtherRollUpCaloHit(const pandora::CaloHit *const pCaloHit, const pandora::MCParticle *const pRolledUpMainMC) const = 0;
 };
 
 /**
@@ -56,8 +55,7 @@ class RollUpNullPolicy : public IRollUpPolicy
 {
 public:
     const pandora::MCParticle *GetRollUpTargetMC(const pandora::MCParticle *const pMC) const override;
-    bool ShouldFurtherRollUpCaloHit(
-        const pandora::CaloHit *const pCaloHit, const pandora::MCParticle *const pRolledUpMainMC) const override;
+    bool ShouldFurtherRollUpCaloHit(const pandora::CaloHit *const pCaloHit, const pandora::MCParticle *const pRolledUpMainMC) const override;
 };
 
 /**
@@ -69,8 +67,7 @@ class RollUpEMPolicy : public IRollUpPolicy
 {
 public:
     const pandora::MCParticle *GetRollUpTargetMC(const pandora::MCParticle *const pMC) const override;
-    bool ShouldFurtherRollUpCaloHit(
-        const pandora::CaloHit *const pCaloHit, const pandora::MCParticle *const pRolledUpMainMC) const override;
+    bool ShouldFurtherRollUpCaloHit(const pandora::CaloHit *const pCaloHit, const pandora::MCParticle *const pRolledUpMainMC) const override;
 };
 
 /**
@@ -100,14 +97,12 @@ public:
      *  @param[in]  deltaRayLengthThresholds       per-view length thresholds below which a non-showering delta ray is folded
      *                                             to its parent track
      */
-    RollUpEMAndAmbiguousDeltaRayHitsPolicy(
-        const float deltaRayParentWeightThreshold, const std::map<pandora::HitType, float> deltaRayLengthThresholds);
+    RollUpEMAndAmbiguousDeltaRayHitsPolicy(const float deltaRayParentWeightThreshold, const std::map<pandora::HitType, float> deltaRayLengthThresholds);
 
-    bool ShouldFurtherRollUpCaloHit(
-        const pandora::CaloHit *const pCaloHit, const pandora::MCParticle *const pRolledUpMainMC) const override;
+    bool ShouldFurtherRollUpCaloHit(const pandora::CaloHit *const pCaloHit, const pandora::MCParticle *const pRolledUpMainMC) const override;
 
 private:
-    float m_deltaRayParentWeightThreshold;                               ///< Minimum parent weight for a hit to be folded to the parent track
+    float m_deltaRayParentWeightThreshold; ///< Minimum parent weight for a hit to be folded to the parent track
     std::map<pandora::HitType, float> m_deltaRayLengthThresholdsSquared; ///< Squared per-view length thresholds for short delta ray folding
 };
 
@@ -174,8 +169,8 @@ public:
     const pandora::MCParticle *RollUpCaloHit(const pandora::CaloHit *const pCaloHit) const;
 
 private:
-    std::unique_ptr<IRollUpPolicy> m_policy;                                                          ///< The roll-up policy
-    mutable std::unordered_map<const pandora::MCParticle *, const pandora::MCParticle *> m_mcCache;   ///< Per-event cache of MC roll-up results
+    std::unique_ptr<IRollUpPolicy> m_policy;                                                        ///< The roll-up policy
+    mutable std::unordered_map<const pandora::MCParticle *, const pandora::MCParticle *> m_mcCache; ///< Per-event cache of MC roll-up results
     mutable std::unordered_map<const pandora::CaloHit *, const pandora::MCParticle *> m_caloHitCache; ///< Per-event cache of calo hit roll-up results
 };
 

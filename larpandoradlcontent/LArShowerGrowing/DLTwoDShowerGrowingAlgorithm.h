@@ -13,8 +13,8 @@
 #include "Pandora/Algorithm.h"
 #include "Pandora/AlgorithmHeaders.h"
 
-#include "larpandoradlcontent/LArHelpers/LArDLHelper.h"
 #include "larpandoracontent/LArUtility/RollUp.h"
+#include "larpandoradlcontent/LArHelpers/LArDLHelper.h"
 
 namespace lar_dl_content
 {
@@ -286,7 +286,7 @@ private:
     float m_cartesianXScaleFactor;          ///< Scale factor for cartesian x coordinate input features
     float m_cartesianZScaleFactor;          ///< Scale factor for cartesian z coordinate input features
     std::set<double> m_detectorXGaps;       ///< X coordinates where gaps in X direction start/end
-    lar_content::RollUpper m_rollUpper;                  ///< Class to perform rolling up of EM activity
+    lar_content::RollUpper m_rollUpper;     ///< Class to perform rolling up of EM activity
 
     /* End shared mutable members */
 

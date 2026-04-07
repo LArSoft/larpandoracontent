@@ -876,10 +876,9 @@ StatusCode EventClusterValidationAlgorithm::ReadSettings(const TiXmlHandle xmlHa
     }
     else if (m_handleDeltaRays)
     {
-        const std::map<HitType, float> lengthThresholds{
-            { TPC_VIEW_U, LArGeometryHelper::GetWirePitch(this->GetPandora(), TPC_VIEW_U) },
-            { TPC_VIEW_V, LArGeometryHelper::GetWirePitch(this->GetPandora(), TPC_VIEW_V) },
-            { TPC_VIEW_W, LArGeometryHelper::GetWirePitch(this->GetPandora(), TPC_VIEW_W) }};
+        const std::map<HitType, float> lengthThresholds{{TPC_VIEW_U, LArGeometryHelper::GetWirePitch(this->GetPandora(), TPC_VIEW_U)},
+            {TPC_VIEW_V, LArGeometryHelper::GetWirePitch(this->GetPandora(), TPC_VIEW_V)},
+            {TPC_VIEW_W, LArGeometryHelper::GetWirePitch(this->GetPandora(), TPC_VIEW_W)}};
         m_rollUpper = RollUpper(std::make_unique<RollUpEMWithComptonFilterAndAmbiguousDeltaRayHitsPolicy>(0.f, lengthThresholds));
     }
     else if (m_foldShowers)

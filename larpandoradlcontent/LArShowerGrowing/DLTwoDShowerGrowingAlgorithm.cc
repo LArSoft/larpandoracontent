@@ -125,7 +125,6 @@ StatusCode DLTwoDShowerGrowingAlgorithm::PrepareTrainingSample() const
     std::vector<int> hitMCID;
     std::vector<int> hitLArTPCVolID, hitDaughterVolID;
 
-
     for (const Cluster *const pCluster : clusterList)
     {
         const HitType view{LArClusterHelper::GetClusterHitType(pCluster)};
@@ -436,8 +435,7 @@ StatusCode DLTwoDShowerGrowingAlgorithm::MakeClusterTensor(const std::vector<Hit
         addFeat(view == TPC_VIEW_W ? 1.f : 0.f);
         for (size_t iVol = 0; iVol < m_encodeLArTPCVolIDs.size(); iVol++)
         {
-            if (hitFeatures.m_larTpcVolId == m_encodeLArTPCVolIDs.at(iVol) &&
-                hitFeatures.m_daughterVolId == m_encodeDaughterVolIDs.at(iVol))
+            if (hitFeatures.m_larTpcVolId == m_encodeLArTPCVolIDs.at(iVol) && hitFeatures.m_daughterVolId == m_encodeDaughterVolIDs.at(iVol))
                 addFeat(1.f);
             else
                 addFeat(0.f);
@@ -710,10 +708,9 @@ StatusCode DLTwoDShowerGrowingAlgorithm::ReadSettings(const TiXmlHandle xmlHandl
     {
         PANDORA_RETURN_RESULT_IF(STATUS_CODE_SUCCESS, !=, XmlHelper::ReadValue(xmlHandle, "TrainingTreeName", m_trainingTreeName));
         PANDORA_RETURN_RESULT_IF(STATUS_CODE_SUCCESS, !=, XmlHelper::ReadValue(xmlHandle, "TrainingFileName", m_trainingFileName));
-        const std::map<HitType, float> lengthThresholds{
-            { TPC_VIEW_U, LArGeometryHelper::GetWirePitch(this->GetPandora(), TPC_VIEW_U) },
-            { TPC_VIEW_V, LArGeometryHelper::GetWirePitch(this->GetPandora(), TPC_VIEW_V) },
-            { TPC_VIEW_W, LArGeometryHelper::GetWirePitch(this->GetPandora(), TPC_VIEW_W) }};
+        const std::map<HitType, float> lengthThresholds{{TPC_VIEW_U, LArGeometryHelper::GetWirePitch(this->GetPandora(), TPC_VIEW_U)},
+            {TPC_VIEW_V, LArGeometryHelper::GetWirePitch(this->GetPandora(), TPC_VIEW_V)},
+            {TPC_VIEW_W, LArGeometryHelper::GetWirePitch(this->GetPandora(), TPC_VIEW_W)}};
         m_rollUpper = RollUpper(std::make_unique<RollUpEMAndAmbiguousDeltaRayHitsPolicy>(0.f, lengthThresholds));
     }
     else
@@ -752,7 +749,8 @@ StatusCode DLTwoDShowerGrowingAlgorithm::ReadSettings(const TiXmlHandle xmlHandl
     if (!m_encodeLArTPCVolIDs.empty())
         m_hitFeatureDim += m_encodeLArTPCVolIDs.size();
 
-    PANDORA_RETURN_RESULT_IF_AND_IF(STATUS_CODE_SUCCESS, STATUS_CODE_NOT_FOUND, !=, XmlHelper::ReadValue(xmlHandle, "IncludeDistToXGapFeature", m_includeDistToXGapFeature));
+    PANDORA_RETURN_RESULT_IF_AND_IF(STATUS_CODE_SUCCESS, STATUS_CODE_NOT_FOUND, !=,
+        XmlHelper::ReadValue(xmlHandle, "IncludeDistToXGapFeature", m_includeDistToXGapFeature));
     if (m_includeDistToXGapFeature)
         ++m_hitFeatureDim;
     PANDORA_RETURN_RESULT_IF_AND_IF(STATUS_CODE_SUCCESS, STATUS_CODE_NOT_FOUND, !=,
