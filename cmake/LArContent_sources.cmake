@@ -260,6 +260,7 @@ set(LAR_CONTENT_SRCS
     larpandoracontent/LArUtility/PfoHitCleaningAlgorithm.cc
     larpandoracontent/LArUtility/PfoMopUpBaseAlgorithm.cc
     larpandoracontent/LArUtility/RecoTree.cc
+    larpandoracontent/LArUtility/RollUp.cc
     larpandoracontent/LArVertex/AsymmetryFeatureBaseTool.cc
     larpandoracontent/LArVertex/CandidateVertexCreationAlgorithm.cc
     larpandoracontent/LArVertex/EnergyDepositionAsymmetryFeatureTool.cc

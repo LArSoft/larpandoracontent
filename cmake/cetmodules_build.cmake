@@ -116,9 +116,11 @@ if(PANDORA_LIBTORCH)
     larpandoradlcontent
     larpandoradlcontent/LArCheating
     larpandoradlcontent/LArControlFlow
+    larpandoradlcontent/LArEventClassification
     larpandoradlcontent/LArHelpers
     larpandoradlcontent/LArMonitoring
     larpandoradlcontent/LArObjects
+    larpandoradlcontent/LArShowerGrowing
     larpandoradlcontent/LArSignalId
     larpandoradlcontent/LArThreeDReco
     larpandoradlcontent/LArThreeDReco/LArEventBuilding
