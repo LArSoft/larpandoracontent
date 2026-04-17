@@ -13,12 +13,12 @@ option(LArContent_BUILD_DOCS "Build documentation for ${PROJECT_NAME}" OFF)
 
 # Find Dependencies
 if (NOT TARGET PandoraPFA::PandoraSDK)
-    find_package(PandoraSDK 04.00.00 REQUIRED)
+    find_package(PandoraSDK 05.00.00 REQUIRED)
 endif()
 option(PANDORA_MONITORING "Enable Pandora Monitoring" ON)
 if(PANDORA_MONITORING)
     if (NOT TARGET PandoraPFA::PandoraMonitoring)
-        find_package(PandoraMonitoring 03.05.00 REQUIRED)
+        find_package(PandoraMonitoring 05.00.00 REQUIRED)
     endif()
 endif()
 find_package(Eigen3 3.3 REQUIRED)
@@ -51,7 +51,7 @@ target_link_libraries(${PROJECT_NAME} PUBLIC
 
 if(PandoraMonitoring_FOUND)
     target_link_libraries(${PROJECT_NAME} PUBLIC PandoraPFA::PandoraMonitoring)
-    target_compile_definitions(${PROJECT_NAME} PRIVATE -DMONITORING)
+    target_compile_definitions(${PROJECT_NAME} PUBLIC MONITORING)
 endif()
 
 set_target_properties(${PROJECT_NAME} PROPERTIES CXX_STANDARD 17 CXX_STANDARD_REQUIRED ON)
