@@ -67,6 +67,8 @@ if(PANDORA_LIBTORCH)
         LArPandoraContent
         PandoraPFA::PandoraSDK
         torch
+      PRIVATE
+        Eigen3::Eigen
   )
 
   target_compile_definitions(LArPandoraDLContent PUBLIC PANDORA_LIBTORCH)
