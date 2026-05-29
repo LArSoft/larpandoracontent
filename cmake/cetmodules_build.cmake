@@ -4,6 +4,7 @@ cet_set_compiler_flags(
   WERROR
   NO_UNDEFINED
   EXTRA_FLAGS -pedantic
+  $<$<COMPILE_LANGUAGE:CXX>:-Wno-deprecated-enum-float-conversion>
 )
 cet_report_compiler_flags(REPORT_THRESHOLD VERBOSE)
 
