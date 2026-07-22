@@ -164,6 +164,7 @@
 #include "larpandoracontent/LArThreeDReco/LArTwoViewMatching/TwoViewTransverseTracksAlgorithm.h"
 
 #include "larpandoracontent/LArThreeDReco/LArPfoStitching/StitchingCosmicRayMergingTool.h"
+#include "larpandoracontent/LArThreeDReco/LArPfoStitching/TrackPfoStitchingAlgorithm.h"
 
 #include "larpandoracontent/LArVertex/EnergyDepositionAsymmetryFeatureTool.h"
 #include "larpandoracontent/LArVertex/EnergyKickFeatureTool.h"
@@ -347,6 +348,7 @@
     d("LArListDeletion",                        ListDeletionAlgorithm)                                                          \
     d("LArListMerging",                         ListMergingAlgorithm)                                                           \
     d("LArPfoHitCleaning",                      PfoHitCleaningAlgorithm)                                                        \
+    d("LArTrackPfoStitching",                   TrackPfoStitchingAlgorithm)                                                     \
     d("LArListPruning",                         ListPruningAlgorithm)                                                           \
     d("LArThreeDReclustering",                  ThreeDReclusteringAlgorithm)                                                    \
     d("LArThreeDMultiReclustering",             ThreeDMultiReclusteringAlgorithm)                                               \
