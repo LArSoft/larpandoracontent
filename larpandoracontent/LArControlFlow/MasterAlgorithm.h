@@ -17,7 +17,9 @@
 #include "larpandoracontent/LArControlFlow/CosmicRayTaggingBaseTool.h"
 #include "larpandoracontent/LArControlFlow/SliceIdBaseTool.h"
 #include "larpandoracontent/LArControlFlow/SliceSelectionBaseTool.h"
-#include "larpandoracontent/LArControlFlow/StitchingBaseTool.h"
+
+#include "larpandoracontent/LArThreeDReco/LArPfoStitching/StitchingBaseTool.h"
+#include "larpandoracontent/LArThreeDReco/LArPfoStitching/StitchingPfoOperations.h"
 
 #include <unordered_map>
 
@@ -28,15 +30,13 @@ class LArMCParticleFactory;
 
 typedef std::vector<pandora::CaloHitList> SliceVector;
 typedef std::vector<pandora::PfoList> SliceHypotheses;
-typedef std::unordered_map<const pandora::ParticleFlowObject *, const pandora::LArTPC *> PfoToLArTPCMap;
-typedef std::unordered_map<const pandora::ParticleFlowObject *, float> PfoToFloatMap;
 
 //------------------------------------------------------------------------------------------------------------------------------------------
 
 /**
  *  @brief  MasterAlgorithm class
  */
-class MasterAlgorithm : public pandora::ExternallyConfiguredAlgorithm
+class MasterAlgorithm : public pandora::ExternallyConfiguredAlgorithm, public StitchingPfoOperations
 {
 public:
     /**
@@ -60,26 +60,25 @@ public:
         pandora::InputBool m_printOverallRecoStatus;      ///< Whether to print current operation status messages
     };
 
-    typedef std::unordered_map<const pandora::ParticleFlowObject *, const pandora::LArTPC *> PfoToLArTPCMap;
-
     /**
      *  @brief  Shift a Pfo hierarchy by a specified x0 value
      *
-     *  @param  pPfo the address of the parent pfo
-     *  @param  stitchingInfo  the source for additional, local, stitching information
+     *  @param  pParentPfo the address of the parent pfo
+     *  @param  pfoToLArTPCMap the pfo to lar tpc map
      *  @param  x0 the x0 correction relative to the input pfo
      */
-    void ShiftPfoHierarchy(const pandora::ParticleFlowObject *const pParentPfo, const PfoToLArTPCMap &pfoToLArTPCMap, const float x0) const;
+    void ShiftPfoHierarchy(const pandora::ParticleFlowObject *const pParentPfo, const PfoToLArTPCMap &pfoToLArTPCMap,
+        const float x0) const override;
 
     /**
      *  @brief  Stitch together a pair of pfos
      *
      *  @param  pPfoToEnlarge the address of the pfo to enlarge
      *  @param  pPfoToDelete the address of the pfo to delete (will become a dangling pointer)
-     *  @param  stitchingInfo the source for additional, local, stitching information
+     *  @param  pfoToLArTPCMap the pfo to lar tpc map
      */
     void StitchPfos(const pandora::ParticleFlowObject *const pPfoToEnlarge, const pandora::ParticleFlowObject *const pPfoToDelete,
-        PfoToLArTPCMap &pfoToLArTPCMap) const;
+        PfoToLArTPCMap &pfoToLArTPCMap) const override;
 
 protected:
     /**
