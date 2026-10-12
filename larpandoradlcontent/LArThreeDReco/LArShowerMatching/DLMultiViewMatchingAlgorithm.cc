@@ -122,7 +122,7 @@ StatusCode DLMultiViewMatchingAlgorithm::GetList(const std::string listName, con
     return STATUS_CODE_SUCCESS;
 }
 
-// //------------------------------------------------------------------------------------------------------------------------------------------    
+//------------------------------------------------------------------------------------------------------------------------------------------    
 
 void DLMultiViewMatchingAlgorithm::PrepareClusters(const ClusterList *const pClusterListU, const ClusterList *const pClusterListV,
     const ClusterList *const pClusterListW, ClusterExtentMap &clusterExtentMap)
@@ -154,7 +154,7 @@ void DLMultiViewMatchingAlgorithm::PrepareClusters(const ClusterList *const pClu
     }    
 }
 
-// //------------------------------------------------------------------------------------------------------------------------------------------    
+//------------------------------------------------------------------------------------------------------------------------------------------    
 
 void DLMultiViewMatchingAlgorithm::FillNavigationMaps(const ClusterExtentMap &clusterExtentMap)
 {
@@ -180,7 +180,7 @@ void DLMultiViewMatchingAlgorithm::FillNavigationMaps(const ClusterExtentMap &cl
     }
 }
 
-// //------------------------------------------------------------------------------------------------------------------------------------------  
+//------------------------------------------------------------------------------------------------------------------------------------------  
     
 bool DLMultiViewMatchingAlgorithm::DoClustersOverlap(const Cluster *const pCluster1, const Cluster *const pCluster2, const ClusterExtentMap &clusterExtentMap)
 {
@@ -196,7 +196,7 @@ bool DLMultiViewMatchingAlgorithm::DoClustersOverlap(const Cluster *const pClust
     return this->DoClustersOverlapInWire(pCluster1, pCluster2, minX, maxX);
 }
 
-// //------------------------------------------------------------------------------------------------------------------------------------------      
+//------------------------------------------------------------------------------------------------------------------------------------------      
 
 bool DLMultiViewMatchingAlgorithm::DoClustersOverlapInWire(const Cluster *const pCluster1, const Cluster *const pCluster2, const float minX, const float maxX)
 {
@@ -257,9 +257,7 @@ bool DLMultiViewMatchingAlgorithm::DoClustersOverlapInWire(const Cluster *const 
     }
 
     const float overlapFraction1(nSamplingPoints1 == 0 ? 0.f : float(overlapCount) / float(nSamplingPoints1));
-    const float overlapFraction2(nSamplingPoints2 == 0 ? 0.f : float(overlapCount) / float(nSamplingPoints2));
-    std::cout << "overlapFraction1: " << overlapFraction1 << std::endl;
-    std::cout << "overlapFraction2: " << overlapFraction2 << std::endl;    
+    const float overlapFraction2(nSamplingPoints2 == 0 ? 0.f : float(overlapCount) / float(nSamplingPoints2)); 
     
     return ((overlapFraction1 > m_minWireOverlapFraction) && (overlapFraction2 > m_minWireOverlapFraction));
 }
@@ -502,7 +500,7 @@ void DLMultiViewMatchingAlgorithm::CreatePfo(const ClusterList &clusters)
     }
 }
 
-// //------------------------------------------------------------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------------------------------------------------
 
 void DLMultiViewMatchingAlgorithm::DeleteCluster(const Cluster *const pClusterToRemove)
 {
@@ -737,7 +735,7 @@ StatusCode DLMultiViewMatchingAlgorithm::ReadSettings([[maybe_unused]] const TiX
     return STATUS_CODE_SUCCESS;
 }   
 
-// //------------------------------------------------------------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------------------------------------------------
 
 template StatusCode DLMultiViewMatchingAlgorithm::GetList(const std::string, const ClusterList *&);
 template StatusCode DLMultiViewMatchingAlgorithm::GetList(const std::string, const VertexList *&);
