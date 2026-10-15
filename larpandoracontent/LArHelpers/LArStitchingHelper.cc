@@ -175,6 +175,34 @@ float LArStitchingHelper::GetTPCDisplacement(const LArTPC &firstTPC, const LArTP
 
 //------------------------------------------------------------------------------------------------------------------------------------------
 
+// Pair of vertices of two pointing clusters that are closest in the y-z plane (no x information used)
+static void GetClosestVerticesInYZ(const LArPointingCluster &pointingCluster1, const LArPointingCluster &pointingCluster2,
+    LArPointingCluster::Vertex &closestVertex1, LArPointingCluster::Vertex &closestVertex2)
+{
+    const LArPointingCluster::Vertex *const vertices1[2] = {&pointingCluster1.GetInnerVertex(), &pointingCluster1.GetOuterVertex()};
+    const LArPointingCluster::Vertex *const vertices2[2] = {&pointingCluster2.GetInnerVertex(), &pointingCluster2.GetOuterVertex()};
+    float bestDrSquared(std::numeric_limits<float>::max());
+
+    for (const LArPointingCluster::Vertex *const pVertex1 : vertices1)
+    {
+        for (const LArPointingCluster::Vertex *const pVertex2 : vertices2)
+        {
+            const float dy(pVertex1->GetPosition().GetY() - pVertex2->GetPosition().GetY());
+            const float dz(pVertex1->GetPosition().GetZ() - pVertex2->GetPosition().GetZ());
+            const float drSquared(dy * dy + dz * dz);
+
+            if (drSquared < bestDrSquared)
+            {
+                bestDrSquared = drSquared;
+                closestVertex1 = *pVertex1;
+                closestVertex2 = *pVertex2;
+            }
+        }
+    }
+}
+
+//------------------------------------------------------------------------------------------------------------------------------------------
+
 void LArStitchingHelper::GetClosestVertices(const LArTPC &larTPC1, const LArTPC &larTPC2, const LArPointingCluster &pointingCluster1,
     const LArPointingCluster &pointingCluster2, LArPointingCluster::Vertex &closestVertex1, LArPointingCluster::Vertex &closestVertex2)
 {
@@ -186,8 +214,10 @@ void LArStitchingHelper::GetClosestVertices(const LArTPC &larTPC1, const LArTPC 
     const float dx1(pointingCluster1.GetOuterVertex().GetPosition().GetX() - pointingCluster1.GetInnerVertex().GetPosition().GetX());
     const float dx2(pointingCluster2.GetOuterVertex().GetPosition().GetX() - pointingCluster2.GetInnerVertex().GetPosition().GetX());
 
+    // ATTN: the near vertices below come from the sign of each cluster's x extent, which is unreliable for clusters nearly
+    // parallel to the boundary; where that choice fails, fall back to the pair of vertices closest in the y-z plane
     if (std::fabs(dx1) < std::numeric_limits<float>::epsilon() || std::fabs(dx2) < std::numeric_limits<float>::epsilon())
-        throw StatusCodeException(STATUS_CODE_NOT_FOUND);
+        return GetClosestVerticesInYZ(pointingCluster1, pointingCluster2, closestVertex1, closestVertex2);
 
     const bool useInner1((dxVolume > 0.f) == (dx1 < 0.f)); // xVol1 - OUTER - INNER - | - xVol2  [xVol2-xVol1>0; xOuter1-xInner1<0]
     const bool useInner2((dxVolume > 0.f) == (dx2 > 0.f)); // xVol1 - | - INNER - OUTER - xVol2  [xVol2-xVol1>0; xOuter2-xInner2>0]
@@ -220,7 +250,7 @@ void LArStitchingHelper::GetClosestVertices(const LArTPC &larTPC1, const LArTPC 
     const float drFarFarSquared(dxFarFar * dxFarFar + dyFarFar * dyFarFar + dzFarFar * dzFarFar);
 
     if (drNearNearSquared > std::min(drFarFarSquared, std::min(drNearFarSquared, drFarNearSquared)))
-        throw StatusCodeException(STATUS_CODE_NOT_FOUND);
+        return GetClosestVerticesInYZ(pointingCluster1, pointingCluster2, closestVertex1, closestVertex2);
 
     closestVertex1 = nearVertex1;
     closestVertex2 = nearVertex2;
