@@ -27,7 +27,7 @@ bool DLTwoViewClearShowersTool::Run(DLMultiViewMatchingAlgorithm *const pAlgorit
         std::cout << "----> Running Algorithm Tool: " << this->GetInstanceName() << ", " << this->GetType() << std::endl;
 
     DLMultiViewMatchingAlgorithm::ClusterGroupVector clusterGroupVector;
-    pAlgorithm->GetConnectedGroups(clusterGroupVector);    
+    pAlgorithm->GetConnectedGroups(clusterGroupVector);
 
     bool madeParticles(false);
     for (const DLMultiViewMatchingAlgorithm::ClusterGroup &clusterGroup : clusterGroupVector)
@@ -72,4 +72,3 @@ StatusCode DLTwoViewClearShowersTool::ReadSettings([[maybe_unused]] const TiXmlH
 }
 
 } // namespace lar_dl_content
-

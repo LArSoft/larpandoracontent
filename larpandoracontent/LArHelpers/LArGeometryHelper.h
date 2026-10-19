@@ -307,7 +307,7 @@ public:
      *
      *  @param  pandora the pandora instance
      *  @param[out] detXGaps the set of x positions of the detector gaps
-     */    
+     */
     static void GetDetectorXGaps(const pandora::Pandora &pandora, std::set<float> &detXGaps);
 
     /**

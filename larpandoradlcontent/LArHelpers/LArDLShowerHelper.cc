@@ -34,7 +34,8 @@ LArDLShowerHelper::HitFeatures::HitFeatures() :
 
 //-----------------------------------------------------------------------------------------------------------------------------------------
 
-void LArDLShowerHelper::CalculateHitFeatures(const CaloHit *const pCaloHit, const std::set<float> &detXGaps, const CartesianVector &vtxPos, HitFeatures &hitFeatures)
+void LArDLShowerHelper::CalculateHitFeatures(
+    const CaloHit *const pCaloHit, const std::set<float> &detXGaps, const CartesianVector &vtxPos, HitFeatures &hitFeatures)
 {
     const double x(pCaloHit->GetPositionVector().GetX());
     const double xRel(x - vtxPos.GetX());

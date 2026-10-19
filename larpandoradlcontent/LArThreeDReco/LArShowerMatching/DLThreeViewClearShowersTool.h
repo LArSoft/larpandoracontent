@@ -31,7 +31,7 @@ public:
      *  @param globalSimMatrix the output cluster->cluster->score mapping
      *
      *  @return whether shower-like pfos have been created
-     */    
+     */
     bool Run(DLMultiViewMatchingAlgorithm *const pAlgorithm, const DLMultiViewMatchingAlgorithm::SimilarityMatrix &globalSimMatrix);
 
 private:
@@ -42,11 +42,10 @@ private:
      *
      *  @param pAlgorithm the calling algorithm
      *  @param clusterGroup the input connected cluster group
-     */     
+     */
     void CreateShowers(DLMultiViewMatchingAlgorithm *const pAlgorithm, const DLMultiViewMatchingAlgorithm::ClusterGroup &clusterGroup);
 };
 
 } // namespace lar_dl_content
 
 #endif // #ifndef DL_THREE_VIEW_CLEAR_SHOWERS_TOOL_H
-

@@ -27,17 +27,17 @@ bool DLThreeViewClearShowersTool::Run(DLMultiViewMatchingAlgorithm *const pAlgor
         std::cout << "----> Running Algorithm Tool: " << this->GetInstanceName() << ", " << this->GetType() << std::endl;
 
     DLMultiViewMatchingAlgorithm::ClusterGroupVector clusterGroupVector;
-    pAlgorithm->GetConnectedGroups(clusterGroupVector);    
+    pAlgorithm->GetConnectedGroups(clusterGroupVector);
 
     bool madeParticles(false);
     for (const DLMultiViewMatchingAlgorithm::ClusterGroup &clusterGroup : clusterGroupVector)
     {
-        int nU(clusterGroup.m_clustersU.size()), nV(clusterGroup.m_clustersV.size()), nW(clusterGroup.m_clustersW.size());                
-        
+        int nU(clusterGroup.m_clustersU.size()), nV(clusterGroup.m_clustersV.size()), nW(clusterGroup.m_clustersW.size());
+
         // Look for 1:1:1 unambiguous match
         if ((nU * nV * nW) != 1)
             continue;
-            
+
         this->CreateShowers(pAlgorithm, clusterGroup);
         madeParticles = true;
     }
@@ -60,4 +60,3 @@ StatusCode DLThreeViewClearShowersTool::ReadSettings([[maybe_unused]] const TiXm
 }
 
 } // namespace lar_dl_content
-

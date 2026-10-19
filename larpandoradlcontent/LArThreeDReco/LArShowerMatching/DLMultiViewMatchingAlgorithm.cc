@@ -10,10 +10,10 @@
 
 #include "Geometry/LArReadoutChannel.h"
 
-#include "larpandoracontent/LArObjects/LArCaloHit.h"
 #include "larpandoracontent/LArHelpers/LArClusterHelper.h"
 #include "larpandoracontent/LArHelpers/LArFileHelper.h"
 #include "larpandoracontent/LArHelpers/LArGeometryHelper.h"
+#include "larpandoracontent/LArObjects/LArCaloHit.h"
 
 #include "larpandoradlcontent/LArHelpers/LArDLHelper.h"
 #include "larpandoradlcontent/LArHelpers/LArDLShowerHelper.h"
@@ -29,14 +29,14 @@ DLMultiViewMatchingAlgorithm::DLMultiViewMatchingAlgorithm() :
     m_trainingMode(false),
     m_trainingFileName("ShowerMatchingTraining.root"),
     m_trainingTreeName("trainingTree"),
-    m_minNClusterHits(5),    
+    m_minNClusterHits(5),
     m_nMaxRepeats(2),
     m_minWireOverlapFraction(0.8f),
     m_hitFeatureDim(14),
     m_polarRScaleFactor{1.f},
     m_cartesianXScaleFactor{1.f},
     m_cartesianZScaleFactor{1.f},
-    m_matchThreshold(0.5f)    
+    m_matchThreshold(0.5f)
 {
 }
 
@@ -51,15 +51,15 @@ DLMultiViewMatchingAlgorithm::~DLMultiViewMatchingAlgorithm()
         for ([[maybe_unused]] const HitType &view : {TPC_VIEW_U, TPC_VIEW_V, TPC_VIEW_W})
         {
             PANDORA_MONITORING_API(SetTreeVariable(this->GetPandora(), m_trainingTreeName + "_view_data", "view", static_cast<int>(view)));
-            PANDORA_MONITORING_API(SetTreeVariable(this->GetPandora(),
-                m_trainingTreeName + "_view_data", "pitch", lar_content::LArGeometryHelper::GetWirePitch(this->GetPandora(), view)));
+            PANDORA_MONITORING_API(SetTreeVariable(this->GetPandora(), m_trainingTreeName + "_view_data", "pitch",
+                lar_content::LArGeometryHelper::GetWirePitch(this->GetPandora(), view)));
             PANDORA_MONITORING_API(FillTree(this->GetPandora(), m_trainingTreeName + "_view_data"));
         }
         PANDORA_MONITORING_API(SaveTree(this->GetPandora(), m_trainingTreeName + "_view_data", m_trainingFileName, "UPDATE"));
     }
 }
-    
-//------------------------------------------------------------------------------------------------------------------------------------------    
+
+//------------------------------------------------------------------------------------------------------------------------------------------
 
 StatusCode DLMultiViewMatchingAlgorithm::Run()
 {
@@ -67,7 +67,7 @@ StatusCode DLMultiViewMatchingAlgorithm::Run()
     PANDORA_RETURN_RESULT_IF(STATUS_CODE_SUCCESS, !=, this->GetList(m_clusterListNameU, pClusterListU));
     PANDORA_RETURN_RESULT_IF(STATUS_CODE_SUCCESS, !=, this->GetList(m_clusterListNameV, pClusterListV));
     PANDORA_RETURN_RESULT_IF(STATUS_CODE_SUCCESS, !=, this->GetList(m_clusterListNameW, pClusterListW));
-    
+
     ClusterExtentMap clusterExtentMap;
     this->PrepareClusters(pClusterListU, pClusterListV, pClusterListW, clusterExtentMap);
 
@@ -84,15 +84,15 @@ StatusCode DLMultiViewMatchingAlgorithm::Run()
     {
         SimilarityMatrix globalSimMatrix;
         this->FillGlobalSimMatrix(clusterGroupVector, globalSimMatrix);
-        
+
         this->UpdateNavigationMaps(globalSimMatrix);
-    
-        bool repeat(true);        
+
+        bool repeat(true);
         unsigned int repeatCounter(0);
         while (repeat && (repeatCounter < m_nMaxRepeats))
         {
             repeat = false;
-            ++repeatCounter;            
+            ++repeatCounter;
             for (const auto &matchingTool : m_matchingToolVector)
             {
                 const bool particlesMade(matchingTool->Run(this, globalSimMatrix));
@@ -106,7 +106,7 @@ StatusCode DLMultiViewMatchingAlgorithm::Run()
     return STATUS_CODE_SUCCESS;
 }
 
-//------------------------------------------------------------------------------------------------------------------------------------------  
+//------------------------------------------------------------------------------------------------------------------------------------------
 
 template <typename T>
 StatusCode DLMultiViewMatchingAlgorithm::GetList(const std::string listName, const T *&pList)
@@ -122,7 +122,7 @@ StatusCode DLMultiViewMatchingAlgorithm::GetList(const std::string listName, con
     return STATUS_CODE_SUCCESS;
 }
 
-//------------------------------------------------------------------------------------------------------------------------------------------    
+//------------------------------------------------------------------------------------------------------------------------------------------
 
 void DLMultiViewMatchingAlgorithm::PrepareClusters(const ClusterList *const pClusterListU, const ClusterList *const pClusterListV,
     const ClusterList *const pClusterListW, ClusterExtentMap &clusterExtentMap)
@@ -134,12 +134,12 @@ void DLMultiViewMatchingAlgorithm::PrepareClusters(const ClusterList *const pClu
 
         const HitType hitType(LArClusterHelper::GetClusterHitType(pClusterList->front()));
         ClusterList &filteredClusters((hitType == TPC_VIEW_U) ? m_filteredU : (hitType == TPC_VIEW_V) ? m_filteredV : m_filteredW);
-        
+
         for (const Cluster *const pCluster : *pClusterList)
         {
             if (!pCluster->IsAvailable())
                 continue;
-            
+
             if (pCluster->GetNCaloHits() < m_minNClusterHits)
                 continue;
 
@@ -149,22 +149,26 @@ void DLMultiViewMatchingAlgorithm::PrepareClusters(const ClusterList *const pClu
             CartesianVector minCoord(0.f, 0.f, 0.f), maxCoord(0.f, 0.f, 0.f);
             LArClusterHelper::GetClusterBoundingBox(pCluster, minCoord, maxCoord, true);
 
-            clusterExtentMap[pCluster] = std::pair(minCoord.GetX(), maxCoord.GetX());           
+            clusterExtentMap[pCluster] = std::pair(minCoord.GetX(), maxCoord.GetX());
         }
-    }    
+    }
 }
 
-//------------------------------------------------------------------------------------------------------------------------------------------    
+//------------------------------------------------------------------------------------------------------------------------------------------
 
 void DLMultiViewMatchingAlgorithm::FillNavigationMaps(const ClusterExtentMap &clusterExtentMap)
 {
     std::vector<std::pair<HitType, HitType>> viewCombinations({{TPC_VIEW_U, TPC_VIEW_V}, {TPC_VIEW_U, TPC_VIEW_W}, {TPC_VIEW_V, TPC_VIEW_W}});
-    for (const auto& [hitType, projHitType] : viewCombinations)
+    for (const auto &[hitType, projHitType] : viewCombinations)
     {
         const ClusterList &clusters((hitType == TPC_VIEW_U) ? m_filteredU : (hitType == TPC_VIEW_V) ? m_filteredV : m_filteredW);
-        const ClusterList &projClusters((projHitType == TPC_VIEW_U) ? m_filteredU : (projHitType == TPC_VIEW_V) ? m_filteredV : m_filteredW);        
+        const ClusterList &projClusters((projHitType == TPC_VIEW_U) ? m_filteredU
+                : (projHitType == TPC_VIEW_V)                       ? m_filteredV
+                                                                    : m_filteredW);
         NavigationMap &navigationMap((hitType == TPC_VIEW_U) ? m_navigationU : (hitType == TPC_VIEW_V) ? m_navigationV : m_navigationW);
-        NavigationMap &projNavigationMap((projHitType == TPC_VIEW_U) ? m_navigationU : (projHitType == TPC_VIEW_V) ? m_navigationV : m_navigationW);
+        NavigationMap &projNavigationMap((projHitType == TPC_VIEW_U) ? m_navigationU
+                : (projHitType == TPC_VIEW_V)                        ? m_navigationV
+                                                                     : m_navigationW);
 
         for (const Cluster *const pCluster : clusters)
         {
@@ -180,30 +184,30 @@ void DLMultiViewMatchingAlgorithm::FillNavigationMaps(const ClusterExtentMap &cl
     }
 }
 
-//------------------------------------------------------------------------------------------------------------------------------------------  
-    
+//------------------------------------------------------------------------------------------------------------------------------------------
+
 bool DLMultiViewMatchingAlgorithm::DoClustersOverlap(const Cluster *const pCluster1, const Cluster *const pCluster2, const ClusterExtentMap &clusterExtentMap)
 {
     const std::pair<float, float> &driftExtent1(clusterExtentMap.at(pCluster1));
     const std::pair<float, float> &driftExtent2(clusterExtentMap.at(pCluster2));
     const float minX(std::max(driftExtent1.first, driftExtent2.first));
-    const float maxX(std::min(driftExtent1.second, driftExtent2.second));            
+    const float maxX(std::min(driftExtent1.second, driftExtent2.second));
     const float driftSpan(maxX - minX);
-            
+
     if (driftSpan < std::numeric_limits<float>::epsilon())
         return false;
 
     return this->DoClustersOverlapInWire(pCluster1, pCluster2, minX, maxX);
 }
 
-//------------------------------------------------------------------------------------------------------------------------------------------      
+//------------------------------------------------------------------------------------------------------------------------------------------
 
 bool DLMultiViewMatchingAlgorithm::DoClustersOverlapInWire(const Cluster *const pCluster1, const Cluster *const pCluster2, const float minX, const float maxX)
 {
     CaloHitList caloHitList1, caloHitList2, filteredCaloHitList1, filteredCaloHitList2;
     LArClusterHelper::GetAllHits(pCluster1, caloHitList1);
     LArClusterHelper::GetAllHits(pCluster2, caloHitList2);
-    
+
     for (unsigned int iList : {0, 1})
     {
         CaloHitList &caloHitList((iList == 0) ? caloHitList1 : caloHitList2);
@@ -220,22 +224,22 @@ bool DLMultiViewMatchingAlgorithm::DoClustersOverlapInWire(const Cluster *const 
 
     // Search for overlap
     int overlapCount(0);
-    const int nSamplingPoints1(filteredCaloHitList1.size());        
-    const int nSamplingPoints2(filteredCaloHitList2.size());    
+    const int nSamplingPoints1(filteredCaloHitList1.size());
+    const int nSamplingPoints2(filteredCaloHitList2.size());
     for (const CaloHit *const pCaloHit1 : filteredCaloHitList1)
     {
         const LArCaloHit *const pLArHit1(dynamic_cast<const LArCaloHit *>(pCaloHit1));
 
         if (!pLArHit1)
             continue;
-        
+
         for (const CaloHit *const pCaloHit2 : filteredCaloHitList2)
         {
             const LArCaloHit *const pLArHit2(dynamic_cast<const LArCaloHit *>(pCaloHit2));
 
             if (!pLArHit2)
                 continue;
-            
+
             // Readout volume should be the same
             if (LArGeometryHelper::GetReadoutVolume(this->GetPandora(), *pLArHit1).GetId() !=
                 LArGeometryHelper::GetReadoutVolume(this->GetPandora(), *pLArHit2).GetId())
@@ -245,9 +249,9 @@ bool DLMultiViewMatchingAlgorithm::DoClustersOverlapInWire(const Cluster *const 
 
             // pLAr1 get overlap in pLAr2 hit type...
             const LArReadoutChannel &readoutChannel1(LArGeometryHelper::GetReadoutChannel(this->GetPandora(), *pLArHit1));
-            const LArReadoutChannel &readoutChannel2(LArGeometryHelper::GetReadoutChannel(this->GetPandora(), *pLArHit2));         
+            const LArReadoutChannel &readoutChannel2(LArGeometryHelper::GetReadoutChannel(this->GetPandora(), *pLArHit2));
             const LArReadoutChannel::ChannelInterval &channelIntervalIn2(readoutChannel1.GetChannelInterval(pLArHit2->GetHitType()));
-            
+
             if ((readoutChannel2.GetId() < channelIntervalIn2.first) || (readoutChannel2.GetId() > channelIntervalIn2.second))
                 continue;
 
@@ -257,17 +261,17 @@ bool DLMultiViewMatchingAlgorithm::DoClustersOverlapInWire(const Cluster *const 
     }
 
     const float overlapFraction1(nSamplingPoints1 == 0 ? 0.f : float(overlapCount) / float(nSamplingPoints1));
-    const float overlapFraction2(nSamplingPoints2 == 0 ? 0.f : float(overlapCount) / float(nSamplingPoints2)); 
-    
+    const float overlapFraction2(nSamplingPoints2 == 0 ? 0.f : float(overlapCount) / float(nSamplingPoints2));
+
     return ((overlapFraction1 > m_minWireOverlapFraction) && (overlapFraction2 > m_minWireOverlapFraction));
 }
 
-//------------------------------------------------------------------------------------------------------------------------------------------    
+//------------------------------------------------------------------------------------------------------------------------------------------
 
 void DLMultiViewMatchingAlgorithm::GetConnectedGroups(ClusterGroupVector &clusterGroupVector)
 {
     ClusterList usedU, usedV, usedW;
-    
+
     for (const ClusterList &clusterList : {m_filteredU, m_filteredV, m_filteredW})
     {
         for (const Cluster *const pCluster : clusterList)
@@ -276,46 +280,49 @@ void DLMultiViewMatchingAlgorithm::GetConnectedGroups(ClusterGroupVector &cluste
             this->GetConnectedGroup(pCluster, clusterGroup, usedU, usedV, usedW);
 
             int nU(clusterGroup.m_clustersU.size()), nV(clusterGroup.m_clustersV.size()), nW(clusterGroup.m_clustersW.size());
-            
+
             if ((nU + nV + nW) <= 1)
                 continue;
 
-            clusterGroupVector.push_back(clusterGroup);  
+            clusterGroupVector.push_back(clusterGroup);
         }
     }
 }
 
-//------------------------------------------------------------------------------------------------------------------------------------------    
+//------------------------------------------------------------------------------------------------------------------------------------------
 
-void DLMultiViewMatchingAlgorithm::GetConnectedGroup(const Cluster *const pCluster, ClusterGroup &clusterGroup, ClusterList &usedU, ClusterList &usedV, ClusterList &usedW)
+void DLMultiViewMatchingAlgorithm::GetConnectedGroup(
+    const Cluster *const pCluster, ClusterGroup &clusterGroup, ClusterList &usedU, ClusterList &usedV, ClusterList &usedW)
 {
     if (!pCluster->IsAvailable())
         return;
-    
+
     const HitType hitType(LArClusterHelper::GetClusterHitType(pCluster));
     ClusterList &used((hitType == TPC_VIEW_U) ? usedU : (hitType == TPC_VIEW_V) ? usedV : usedW);
-        
+
     if (std::find(used.begin(), used.end(), pCluster) != used.end())
         return;
 
     // Add cluster
-    ClusterList &clusterGroupList((hitType == TPC_VIEW_U) ? clusterGroup.m_clustersU : (hitType == TPC_VIEW_V) ? clusterGroup.m_clustersV : clusterGroup.m_clustersW);
+    ClusterList &clusterGroupList((hitType == TPC_VIEW_U) ? clusterGroup.m_clustersU
+            : (hitType == TPC_VIEW_V)                     ? clusterGroup.m_clustersV
+                                                          : clusterGroup.m_clustersW);
     clusterGroupList.emplace_back(pCluster);
     used.emplace_back(pCluster);
-    
+
     // Now find its connections and add those
     const NavigationMap &navigation((hitType == TPC_VIEW_U) ? m_navigationU : (hitType == TPC_VIEW_V) ? m_navigationV : m_navigationW);
     const auto navIter(navigation.find(pCluster));
 
     if (navIter == navigation.end())
         return;
-    
+
     for (const Cluster *const pNavCluster : navIter->second)
         this->GetConnectedGroup(pNavCluster, clusterGroup, usedU, usedV, usedW);
 }
 
-//------------------------------------------------------------------------------------------------------------------------------------------     
-    
+//------------------------------------------------------------------------------------------------------------------------------------------
+
 void DLMultiViewMatchingAlgorithm::FillGlobalSimMatrix(const ClusterGroupVector &clusterGroupVector, SimilarityMatrix &globalSimMatrix)
 {
     // Get nu vertex projections
@@ -325,7 +332,7 @@ void DLMultiViewMatchingAlgorithm::FillGlobalSimMatrix(const ClusterGroupVector 
     const Vertex *const pVertex(pVertexList->front());
     PANDORA_THROW_IF(STATUS_CODE_INVALID_PARAMETER, pVertex->GetVertexType() != VERTEX_3D);
     const std::map<HitType, CartesianVector> viewToVtxPos(
-           {{TPC_VIEW_U, LArGeometryHelper::ProjectPosition(this->GetPandora(), pVertex->GetPosition(), TPC_VIEW_U)},
+        {{TPC_VIEW_U, LArGeometryHelper::ProjectPosition(this->GetPandora(), pVertex->GetPosition(), TPC_VIEW_U)},
             {TPC_VIEW_V, LArGeometryHelper::ProjectPosition(this->GetPandora(), pVertex->GetPosition(), TPC_VIEW_V)},
             {TPC_VIEW_W, LArGeometryHelper::ProjectPosition(this->GetPandora(), pVertex->GetPosition(), TPC_VIEW_W)}});
 
@@ -335,15 +342,15 @@ void DLMultiViewMatchingAlgorithm::FillGlobalSimMatrix(const ClusterGroupVector 
     // Add scores to the global similarity matrix
     for (const ClusterGroup &clusterGroup : clusterGroupVector)
     {
-        this->PredictClusterSimilarityMatrix(clusterGroup.m_clustersU, clusterGroup.m_clustersV, clusterGroup.m_clustersW,
-            viewToVtxPos, detXGaps, globalSimMatrix);
+        this->PredictClusterSimilarityMatrix(
+            clusterGroup.m_clustersU, clusterGroup.m_clustersV, clusterGroup.m_clustersW, viewToVtxPos, detXGaps, globalSimMatrix);
     }
 }
 
 //------------------------------------------------------------------------------------------------------------------------------------------
 
-StatusCode DLMultiViewMatchingAlgorithm::PredictClusterSimilarityMatrix(const ClusterList &clusterListU, const ClusterList &clusterListV, const ClusterList &clusterListW, 
-    const std::map<HitType, CartesianVector> &viewToVtxPos, const std::set<float> &detXGaps, SimilarityMatrix &clusterSimMat)
+StatusCode DLMultiViewMatchingAlgorithm::PredictClusterSimilarityMatrix(const ClusterList &clusterListU, const ClusterList &clusterListV,
+    const ClusterList &clusterListW, const std::map<HitType, CartesianVector> &viewToVtxPos, const std::set<float> &detXGaps, SimilarityMatrix &clusterSimMat)
 {
     ClusterVector clusterVecU(clusterListU.begin(), clusterListU.end());
     std::sort(clusterVecU.begin(), clusterVecU.end(), LArClusterHelper::SortByNHits);
@@ -430,12 +437,12 @@ void DLMultiViewMatchingAlgorithm::MakeClusterTensor(const std::vector<LArDLShow
 
 //------------------------------------------------------------------------------------------------------------------------------------------
 
-StatusCode DLMultiViewMatchingAlgorithm::PopulateClusterSimilarityMatrix(const torch::Tensor &tensorSimMat, const ClusterVector &clusterVector,
-    SimilarityMatrix &clusterSimMat) const
+StatusCode DLMultiViewMatchingAlgorithm::PopulateClusterSimilarityMatrix(
+    const torch::Tensor &tensorSimMat, const ClusterVector &clusterVector, SimilarityMatrix &clusterSimMat) const
 {
     const int64_t nClusters{static_cast<int64_t>(clusterVector.size())};
     PANDORA_RETURN_IF(STATUS_CODE_NOT_ALLOWED, tensorSimMat.dim() != 3 || nClusters != tensorSimMat.size(-1) || nClusters != tensorSimMat.size(-2));
-    
+
     auto accessor = tensorSimMat.accessor<float, 3>();
     auto iterI{clusterVector.begin()};
     for (int i = 0; i < nClusters; i++, iterI++)
@@ -448,7 +455,7 @@ StatusCode DLMultiViewMatchingAlgorithm::PopulateClusterSimilarityMatrix(const t
     return STATUS_CODE_SUCCESS;
 }
 
-//------------------------------------------------------------------------------------------------------------------------------------------    
+//------------------------------------------------------------------------------------------------------------------------------------------
 
 void DLMultiViewMatchingAlgorithm::UpdateNavigationMaps(const SimilarityMatrix &globalSimMatrix)
 {
@@ -458,12 +465,20 @@ void DLMultiViewMatchingAlgorithm::UpdateNavigationMaps(const SimilarityMatrix &
 
         for (auto &[pCluster, clusterList] : navigationMap)
         {
-            for (auto iter = clusterList.begin(); iter != clusterList.end(); )
+            for (auto iter = clusterList.begin(); iter != clusterList.end();)
             {
                 auto simIter1(globalSimMatrix.find(pCluster));
-                if (simIter1 == globalSimMatrix.end()) {++iter; continue;}
+                if (simIter1 == globalSimMatrix.end())
+                {
+                    ++iter;
+                    continue;
+                }
                 auto simIter2(simIter1->second.find(*iter));
-                if (simIter2 == simIter1->second.end()) {++iter; continue;}                
+                if (simIter2 == simIter1->second.end())
+                {
+                    ++iter;
+                    continue;
+                }
 
                 if (simIter2->second < m_matchThreshold)
                     iter = clusterList.erase(iter);
@@ -489,7 +504,7 @@ void DLMultiViewMatchingAlgorithm::CreatePfo(const ClusterList &clusters)
     pfoParameters.m_energy = 0.f;
     pfoParameters.m_momentum = CartesianVector(0.f, 0.f, 0.f);
     pfoParameters.m_clusterList = clusters;
-    
+
     const ParticleFlowObject *pPfo(nullptr);
     PANDORA_THROW_RESULT_IF(STATUS_CODE_SUCCESS, !=, PandoraContentApi::ParticleFlowObject::Create(*this, pfoParameters, pPfo));
 
@@ -509,7 +524,10 @@ void DLMultiViewMatchingAlgorithm::DeleteCluster(const Cluster *const pClusterTo
     ClusterList &filteredClusters((hitType == TPC_VIEW_U) ? m_filteredU : (hitType == TPC_VIEW_V) ? m_filteredV : m_filteredW);
 
     auto iter(std::find(filteredClusters.begin(), filteredClusters.end(), pClusterToRemove));
-    if (iter != filteredClusters.end()) { filteredClusters.erase(iter); }
+    if (iter != filteredClusters.end())
+    {
+        filteredClusters.erase(iter);
+    }
 
     // Remove from navigation maps
     NavigationMap &navigation((hitType == TPC_VIEW_U) ? m_navigationU : (hitType == TPC_VIEW_V) ? m_navigationV : m_navigationW);
@@ -520,13 +538,21 @@ void DLMultiViewMatchingAlgorithm::DeleteCluster(const Cluster *const pClusterTo
         for (const Cluster *const pAssocCluster : iterNav->second)
         {
             const HitType assocHitType(LArClusterHelper::GetClusterHitType(pAssocCluster));
-            NavigationMap &assocNavigation((assocHitType == TPC_VIEW_U) ? m_navigationU : (assocHitType == TPC_VIEW_V) ? m_navigationV : m_navigationW);
+            NavigationMap &assocNavigation((assocHitType == TPC_VIEW_U) ? m_navigationU
+                    : (assocHitType == TPC_VIEW_V)                      ? m_navigationV
+                                                                        : m_navigationW);
 
             auto iterAssoc(assocNavigation.find(pAssocCluster));
-            if (iterAssoc == assocNavigation.end()) { continue; }
+            if (iterAssoc == assocNavigation.end())
+            {
+                continue;
+            }
 
             auto iterRemove(std::find(iterAssoc->second.begin(), iterAssoc->second.end(), pClusterToRemove));
-            if (iterRemove != iterAssoc->second.end()) { iterAssoc->second.erase(iterRemove); }
+            if (iterRemove != iterAssoc->second.end())
+            {
+                iterAssoc->second.erase(iterRemove);
+            }
         }
 
         navigation.erase(iterNav);
@@ -543,7 +569,7 @@ void DLMultiViewMatchingAlgorithm::PrepareTrainingSample(const ClusterGroupVecto
     const Vertex *const pVertex{pVertexList->front()};
     PANDORA_THROW_IF(STATUS_CODE_INVALID_PARAMETER, pVertex->GetVertexType() != VERTEX_3D);
     const std::map<HitType, CartesianVector> viewToVtxPos(
-           {{TPC_VIEW_U, LArGeometryHelper::ProjectPosition(this->GetPandora(), pVertex->GetPosition(), TPC_VIEW_U)},
+        {{TPC_VIEW_U, LArGeometryHelper::ProjectPosition(this->GetPandora(), pVertex->GetPosition(), TPC_VIEW_U)},
             {TPC_VIEW_V, LArGeometryHelper::ProjectPosition(this->GetPandora(), pVertex->GetPosition(), TPC_VIEW_V)},
             {TPC_VIEW_W, LArGeometryHelper::ProjectPosition(this->GetPandora(), pVertex->GetPosition(), TPC_VIEW_W)}});
 
@@ -602,7 +628,10 @@ void DLMultiViewMatchingAlgorithm::PrepareTrainingSample(const ClusterGroupVecto
                         hitEnergy.emplace_back(hitFeatures.m_energy);
                         hitMCID.emplace_back(mcToID.at(pMainMC));
                     }
-                    catch(...) { continue; }
+                    catch (...)
+                    {
+                        continue;
+                    }
                 }
 
                 if (filled)
@@ -633,7 +662,7 @@ void DLMultiViewMatchingAlgorithm::PrepareTrainingSample(const ClusterGroupVecto
     }
 }
 
-//------------------------------------------------------------------------------------------------------------------------------------------    
+//------------------------------------------------------------------------------------------------------------------------------------------
 
 void DLMultiViewMatchingAlgorithm::CleanUp()
 {
@@ -646,12 +675,11 @@ void DLMultiViewMatchingAlgorithm::CleanUp()
 }
 
 //------------------------------------------------------------------------------------------------------------------------------------------
-    
+
 StatusCode DLMultiViewMatchingAlgorithm::ReadSettings([[maybe_unused]] const TiXmlHandle xmlHandle)
 {
     AlgorithmToolVector algorithmToolVector;
-    PANDORA_RETURN_RESULT_IF(STATUS_CODE_SUCCESS, !=, 
-        XmlHelper::ProcessAlgorithmToolList(*this, xmlHandle, "MatchingTools", algorithmToolVector));
+    PANDORA_RETURN_RESULT_IF(STATUS_CODE_SUCCESS, !=, XmlHelper::ProcessAlgorithmToolList(*this, xmlHandle, "MatchingTools", algorithmToolVector));
 
     for (AlgorithmToolVector::const_iterator iter = algorithmToolVector.begin(), iterEnd = algorithmToolVector.end(); iter != iterEnd; ++iter)
     {
@@ -662,7 +690,7 @@ StatusCode DLMultiViewMatchingAlgorithm::ReadSettings([[maybe_unused]] const TiX
 
         m_matchingToolVector.push_back(pMatchingTool);
     }
-    
+
     PANDORA_RETURN_RESULT_IF_AND_IF(
         STATUS_CODE_SUCCESS, STATUS_CODE_NOT_FOUND, !=, XmlHelper::ReadValue(xmlHandle, "NuVertexListName", m_nuVertexListName));
     if (m_nuVertexListName.empty())
@@ -684,16 +712,15 @@ StatusCode DLMultiViewMatchingAlgorithm::ReadSettings([[maybe_unused]] const TiX
     if (m_outputPfoListName.empty())
         m_outputPfoListName = "ShowerParticles3D";
 
-    PANDORA_RETURN_RESULT_IF_AND_IF(STATUS_CODE_SUCCESS, STATUS_CODE_NOT_FOUND, !=,
-        XmlHelper::ReadValue(xmlHandle, "TrainingMode", m_trainingMode));
+    PANDORA_RETURN_RESULT_IF_AND_IF(STATUS_CODE_SUCCESS, STATUS_CODE_NOT_FOUND, !=, XmlHelper::ReadValue(xmlHandle, "TrainingMode", m_trainingMode));
 
     if (m_trainingMode)
     {
-        PANDORA_RETURN_RESULT_IF_AND_IF(STATUS_CODE_SUCCESS, STATUS_CODE_NOT_FOUND, !=, 
-            XmlHelper::ReadValue(xmlHandle, "TrainingFileName", m_trainingFileName));
+        PANDORA_RETURN_RESULT_IF_AND_IF(
+            STATUS_CODE_SUCCESS, STATUS_CODE_NOT_FOUND, !=, XmlHelper::ReadValue(xmlHandle, "TrainingFileName", m_trainingFileName));
 
-        PANDORA_RETURN_RESULT_IF_AND_IF(STATUS_CODE_SUCCESS, STATUS_CODE_NOT_FOUND, !=, 
-            XmlHelper::ReadValue(xmlHandle, "TrainingTreeName", m_trainingTreeName));
+        PANDORA_RETURN_RESULT_IF_AND_IF(
+            STATUS_CODE_SUCCESS, STATUS_CODE_NOT_FOUND, !=, XmlHelper::ReadValue(xmlHandle, "TrainingTreeName", m_trainingTreeName));
     }
     else
     {
@@ -706,21 +733,18 @@ StatusCode DLMultiViewMatchingAlgorithm::ReadSettings([[maybe_unused]] const TiX
         LArDLHelper::LoadModel(modelAttnName, m_modelAttn);
         PANDORA_RETURN_RESULT_IF(STATUS_CODE_SUCCESS, !=, XmlHelper::ReadValue(xmlHandle, "ModelSimFileName", modelSimName));
         modelSimName = LArFileHelper::FindFileInPath(modelSimName, "FW_SEARCH_PATH");
-        LArDLHelper::LoadModel(modelSimName, m_modelSim);                
-        
-        PANDORA_RETURN_RESULT_IF_AND_IF(STATUS_CODE_SUCCESS, STATUS_CODE_NOT_FOUND, !=, 
-            XmlHelper::ReadValue(xmlHandle, "NMaxRepeats", m_nMaxRepeats));
-               
-        PANDORA_RETURN_RESULT_IF_AND_IF(STATUS_CODE_SUCCESS, STATUS_CODE_NOT_FOUND, !=, 
-            XmlHelper::ReadValue(xmlHandle, "HitFeatureDim", m_hitFeatureDim));
+        LArDLHelper::LoadModel(modelSimName, m_modelSim);
+
+        PANDORA_RETURN_RESULT_IF_AND_IF(STATUS_CODE_SUCCESS, STATUS_CODE_NOT_FOUND, !=, XmlHelper::ReadValue(xmlHandle, "NMaxRepeats", m_nMaxRepeats));
+
+        PANDORA_RETURN_RESULT_IF_AND_IF(STATUS_CODE_SUCCESS, STATUS_CODE_NOT_FOUND, !=, XmlHelper::ReadValue(xmlHandle, "HitFeatureDim", m_hitFeatureDim));
     }
 
-    PANDORA_RETURN_RESULT_IF_AND_IF(STATUS_CODE_SUCCESS, STATUS_CODE_NOT_FOUND, !=,
-        XmlHelper::ReadValue(xmlHandle, "MinNClusterHits", m_minNClusterHits));
+    PANDORA_RETURN_RESULT_IF_AND_IF(STATUS_CODE_SUCCESS, STATUS_CODE_NOT_FOUND, !=, XmlHelper::ReadValue(xmlHandle, "MinNClusterHits", m_minNClusterHits));
 
-     PANDORA_RETURN_RESULT_IF_AND_IF(STATUS_CODE_SUCCESS, STATUS_CODE_NOT_FOUND, !=, 
-        XmlHelper::ReadValue(xmlHandle, "MinWireOverlapFraction", m_minWireOverlapFraction));
-    
+    PANDORA_RETURN_RESULT_IF_AND_IF(
+        STATUS_CODE_SUCCESS, STATUS_CODE_NOT_FOUND, !=, XmlHelper::ReadValue(xmlHandle, "MinWireOverlapFraction", m_minWireOverlapFraction));
+
     const LArGeometryHelper::DetectorBoundaries detBounds{LArGeometryHelper::GetDetectorBoundaries(this->GetPandora())};
     double xLow{static_cast<double>(detBounds.m_xBoundaries.first)}, xHigh{static_cast<double>(detBounds.m_xBoundaries.second)};
     double yLow{static_cast<double>(detBounds.m_yBoundaries.first)}, yHigh{static_cast<double>(detBounds.m_yBoundaries.second)};
@@ -729,11 +753,10 @@ StatusCode DLMultiViewMatchingAlgorithm::ReadSettings([[maybe_unused]] const TiX
     m_cartesianXScaleFactor = static_cast<float>(1. / (xHigh - xLow));
     m_cartesianZScaleFactor = static_cast<float>(1. / (zHigh - zLow));
 
-    PANDORA_RETURN_RESULT_IF_AND_IF(STATUS_CODE_SUCCESS, STATUS_CODE_NOT_FOUND, !=,
-        XmlHelper::ReadValue(xmlHandle, "MatchThreshold", m_matchThreshold));
-    
+    PANDORA_RETURN_RESULT_IF_AND_IF(STATUS_CODE_SUCCESS, STATUS_CODE_NOT_FOUND, !=, XmlHelper::ReadValue(xmlHandle, "MatchThreshold", m_matchThreshold));
+
     return STATUS_CODE_SUCCESS;
-}   
+}
 
 //------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -742,4 +765,3 @@ template StatusCode DLMultiViewMatchingAlgorithm::GetList(const std::string, con
 template StatusCode DLMultiViewMatchingAlgorithm::GetList(const std::string, const MCParticleList *&);
 
 } // namespace lar_dl_content
-

@@ -162,7 +162,7 @@ void TrackValidationTool::GetRecoVertexAndEndpointVars(const MCParticle *const p
     const bool doesMCHaveStartDir(pMCParticle->GetMomentum().GetMagnitudeSquared() > std::numeric_limits<float>::epsilon());
     const bool doesRecoHaveStartDir(recoVertexDir.GetMagnitudeSquared() > std::numeric_limits<float>::epsilon());
     const bool doesMCHaveEndDir(pLArMC->GetEndDirection().GetMagnitudeSquared() > std::numeric_limits<float>::epsilon());
-    const bool doesRecoHaveEndDir(recoEndpointDir.GetMagnitudeSquared() > std::numeric_limits<float>::epsilon());    
+    const bool doesRecoHaveEndDir(recoEndpointDir.GetMagnitudeSquared() > std::numeric_limits<float>::epsilon());
     const CartesianVector trueEndpoint(pLArMC->GetEndpoint());
 
     // Endpoint accuracy
@@ -170,9 +170,9 @@ void TrackValidationTool::GetRecoVertexAndEndpointVars(const MCParticle *const p
     if (doesMCHaveEndDir)
     {
         const float endpointAccSq((recoEndpoint - trueEndpoint).GetMagnitudeSquared());
-        const float sign((endpointAcc < std::numeric_limits<float>::epsilon()) ? 1.f
-            : (recoEndpoint - trueEndpoint).GetOpeningAngle(pLArMC->GetEndDirection()) < (M_PI * 0.5) ? 1.f
-            : -1.f);
+        const float sign((endpointAcc < std::numeric_limits<float>::epsilon())                            ? 1.f
+                : (recoEndpoint - trueEndpoint).GetOpeningAngle(pLArMC->GetEndDirection()) < (M_PI * 0.5) ? 1.f
+                                                                                                          : -1.f);
         endpointAcc = std::sqrt(endpointAccSq) * sign;
     }
 

@@ -42,11 +42,10 @@ private:
      *
      *  @param pAlgorithm the calling algorithm
      *  @param clusterGroup the input connected cluster group
-     */  
+     */
     void CreateShowers(DLMultiViewMatchingAlgorithm *const pAlgorithm, const DLMultiViewMatchingAlgorithm::ClusterGroup &clusterGroup);
 };
 
 } // namespace lar_dl_content
 
 #endif // #ifndef DL_TWO_VIEW_CLEAR_SHOWERS_TOOL_H
-

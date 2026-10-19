@@ -363,8 +363,8 @@ void LArClusterHelper::GetClosestPositions(
 
 //------------------------------------------------------------------------------------------------------------------------------------------
 
-void LArClusterHelper::GetClusterBoundingBox(const Cluster *const pCluster, CartesianVector &minimumCoordinate, CartesianVector &maximumCoordinate,
-    bool useHitWidth)
+void LArClusterHelper::GetClusterBoundingBox(
+    const Cluster *const pCluster, CartesianVector &minimumCoordinate, CartesianVector &maximumCoordinate, bool useHitWidth)
 {
     const OrderedCaloHitList &orderedCaloHitList(pCluster->GetOrderedCaloHitList());
 

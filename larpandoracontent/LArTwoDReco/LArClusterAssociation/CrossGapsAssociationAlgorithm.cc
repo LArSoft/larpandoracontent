@@ -54,7 +54,7 @@ void CrossGapsAssociationAlgorithm::GetListOfCleanClusters(const ClusterList *co
         if (pCluster->GetNCaloHits() < m_minClusterHits)
             continue;
 
-        if (1 + pCluster->GetOuterPseudoLayer() - pCluster->GetInnerPseudoLayer() < m_minClusterLayers)   
+        if (1 + pCluster->GetOuterPseudoLayer() - pCluster->GetInnerPseudoLayer() < m_minClusterLayers)
             continue;
 
         clusterVector.push_back(pCluster);
@@ -137,34 +137,33 @@ bool CrossGapsAssociationAlgorithm::AreClustersAssociated(const TwoDSlidingFitRe
 
     if (outerFitResult.GetCluster()->GetInnerPseudoLayer() < innerFitResult.GetCluster()->GetOuterPseudoLayer())
         return false;
-        
+
     bool isCrossingTPCCandidate = false;
-    if (m_crossTPCOnClusterDistanceModifier != 0.0f || m_crossTPCStepModifier != 0.0f) {
-        
+    if (m_crossTPCOnClusterDistanceModifier != 0.0f || m_crossTPCStepModifier != 0.0f)
+    {
+
         std::set<unsigned int> innerVolIDs;
         PANDORA_THROW_RESULT_IF(STATUS_CODE_SUCCESS, !=, this->FindLArTPCVolumeIds(innerFitResult, innerVolIDs));
         std::set<unsigned int> outerVolIDs;
         PANDORA_THROW_RESULT_IF(STATUS_CODE_SUCCESS, !=, this->FindLArTPCVolumeIds(outerFitResult, outerVolIDs));
 
         std::vector<unsigned int> sharedClusterVolIDs;
-    
-        std::set_intersection(innerVolIDs.begin(), innerVolIDs.end(),
-                          outerVolIDs.begin(), outerVolIDs.end(),
-                          std::back_inserter(sharedClusterVolIDs));
-    
-        if (sharedClusterVolIDs.empty()) 
-            isCrossingTPCCandidate = true;     
-        
+
+        std::set_intersection(innerVolIDs.begin(), innerVolIDs.end(), outerVolIDs.begin(), outerVolIDs.end(), std::back_inserter(sharedClusterVolIDs));
+
+        if (sharedClusterVolIDs.empty())
+            isCrossingTPCCandidate = true;
     }
 
     return (this->IsAssociated(innerFitResult.GetGlobalMaxLayerPosition(), innerFitResult.GetGlobalMaxLayerDirection(), outerFitResult, isCrossingTPCCandidate) &&
-        this->IsAssociated(outerFitResult.GetGlobalMinLayerPosition(), outerFitResult.GetGlobalMinLayerDirection() * -1.f, innerFitResult, isCrossingTPCCandidate));
+        this->IsAssociated(outerFitResult.GetGlobalMinLayerPosition(), outerFitResult.GetGlobalMinLayerDirection() * -1.f, innerFitResult,
+            isCrossingTPCCandidate));
 }
 
 //------------------------------------------------------------------------------------------------------------------------------------------
 
-bool CrossGapsAssociationAlgorithm::IsAssociated(
-    const CartesianVector &startPosition, const CartesianVector &startDirection, const TwoDSlidingFitResult &targetFitResult, const bool isCrossingTPCCandidate) const
+bool CrossGapsAssociationAlgorithm::IsAssociated(const CartesianVector &startPosition, const CartesianVector &startDirection,
+    const TwoDSlidingFitResult &targetFitResult, const bool isCrossingTPCCandidate) const
 {
     const HitType hitType(LArClusterHelper::GetClusterHitType(targetFitResult.GetCluster()));
     const float ratio{LArGeometryHelper::GetWirePitchRatio(this->GetPandora(), hitType)};
@@ -185,15 +184,20 @@ bool CrossGapsAssociationAlgorithm::IsAssociated(
             }
         }
     }
-    
+
     unsigned int crossTPCGapAdditionalSteps = 0;
-    if(isCrossingTPCCandidate && m_crossTPCStepModifier != 0.0f) {
-        if (startDirection.GetX() > 0.f) {
-            crossTPCGapAdditionalSteps = static_cast<unsigned int>(std::round( m_crossTPCStepModifier / std::max(startDirection.GetCosOpeningAngle(CartesianVector(1.f, 0.f, 0.f)), m_crossTPCStartDirectionCosMin)));
+    if (isCrossingTPCCandidate && m_crossTPCStepModifier != 0.0f)
+    {
+        if (startDirection.GetX() > 0.f)
+        {
+            crossTPCGapAdditionalSteps = static_cast<unsigned int>(std::round(m_crossTPCStepModifier /
+                std::max(startDirection.GetCosOpeningAngle(CartesianVector(1.f, 0.f, 0.f)), m_crossTPCStartDirectionCosMin)));
         }
-        
-        else {
-            crossTPCGapAdditionalSteps = static_cast<unsigned int>(std::round( m_crossTPCStepModifier / std::max(startDirection.GetCosOpeningAngle(CartesianVector(1.f, 0.f, 0.f)), m_crossTPCStartDirectionCosMin)));
+
+        else
+        {
+            crossTPCGapAdditionalSteps = static_cast<unsigned int>(std::round(m_crossTPCStepModifier /
+                std::max(startDirection.GetCosOpeningAngle(CartesianVector(1.f, 0.f, 0.f)), m_crossTPCStartDirectionCosMin)));
         }
         // ATTN hard limit on factor from angle, prevents very large number of steps from angles close to 90 degrees. .001 is appx the cos using width of gap and length of full geometry detector module
     }
@@ -231,12 +235,12 @@ bool CrossGapsAssociationAlgorithm::IsAssociated(
             PANDORA_MONITORING_API(AddMarkerToVisualization(this->GetPandora(), &samplingPoint, "", RED, 1));
         }
     }
-    
+
     if (shouldVisualize)
     {
         PANDORA_MONITORING_API(ViewEvent(this->GetPandora()));
     }
-        
+
     const float expectation(
         (targetFitResult.GetGlobalMaxLayerPosition() - targetFitResult.GetGlobalMinLayerPosition()).GetMagnitude() / sampleStepSizeAdjusted);
     const float matchedSamplingFraction(expectation > 0.f ? static_cast<float>(nMatchedSamplingPoints) / expectation : 0.f);
@@ -249,7 +253,8 @@ bool CrossGapsAssociationAlgorithm::IsAssociated(
 
 //------------------------------------------------------------------------------------------------------------------------------------------
 
-bool CrossGapsAssociationAlgorithm::IsNearCluster(const CartesianVector &samplingPoint, const TwoDSlidingFitResult &targetFitResult, const int numGapSteps, const bool isCrossingTPCCandidate) const
+bool CrossGapsAssociationAlgorithm::IsNearCluster(const CartesianVector &samplingPoint, const TwoDSlidingFitResult &targetFitResult,
+    const int numGapSteps, const bool isCrossingTPCCandidate) const
 {
     const HitType hitType(LArClusterHelper::GetClusterHitType(targetFitResult.GetCluster()));
     const float ratio{LArGeometryHelper::GetWirePitchRatio(this->GetPandora(), hitType)};
@@ -259,12 +264,15 @@ bool CrossGapsAssociationAlgorithm::IsNearCluster(const CartesianVector &samplin
     targetFitResult.GetLocalPosition(samplingPoint, rL, rT);
 
     CartesianVector fitPosition(0.f, 0.f, 0.f);
-    
-    float additionalMaxOnClusterDistance = isCrossingTPCCandidate ? m_crossTPCOnClusterDistanceModifier * sqrt(std::max(static_cast<float>(numGapSteps) - m_crossTPCBoostStartStep, 0.f)) : 0.f;
-    
+
+    float additionalMaxOnClusterDistance = isCrossingTPCCandidate
+        ? m_crossTPCOnClusterDistanceModifier * sqrt(std::max(static_cast<float>(numGapSteps) - m_crossTPCBoostStartStep, 0.f))
+        : 0.f;
+
     if (STATUS_CODE_SUCCESS == targetFitResult.GetGlobalFitPosition(rL, fitPosition))
     {
-        if ((fitPosition - samplingPoint).GetMagnitudeSquared() < (maxOnClusterDistanceAdjusted + additionalMaxOnClusterDistance) * (maxOnClusterDistanceAdjusted + additionalMaxOnClusterDistance))
+        if ((fitPosition - samplingPoint).GetMagnitudeSquared() <
+            (maxOnClusterDistanceAdjusted + additionalMaxOnClusterDistance) * (maxOnClusterDistanceAdjusted + additionalMaxOnClusterDistance))
             return true;
     }
 
@@ -272,7 +280,8 @@ bool CrossGapsAssociationAlgorithm::IsNearCluster(const CartesianVector &samplin
 
     if (STATUS_CODE_SUCCESS == targetFitResult.GetGlobalFitPositionAtX(samplingPoint.GetX(), fitPositionAtX))
     {
-        if ((fitPositionAtX - samplingPoint).GetMagnitudeSquared() < (maxOnClusterDistanceAdjusted + additionalMaxOnClusterDistance) * (maxOnClusterDistanceAdjusted + additionalMaxOnClusterDistance))
+        if ((fitPositionAtX - samplingPoint).GetMagnitudeSquared() <
+            (maxOnClusterDistanceAdjusted + additionalMaxOnClusterDistance) * (maxOnClusterDistanceAdjusted + additionalMaxOnClusterDistance))
             return true;
     }
 
@@ -286,16 +295,17 @@ StatusCode CrossGapsAssociationAlgorithm::FindLArTPCVolumeIds(const TwoDSlidingF
     const Cluster *const pCluster{fitResult.GetCluster()};
     CaloHitList caloHits;
     LArClusterHelper::GetAllHits(pCluster, caloHits);
-    
+
     for (const CaloHit *const pCaloHit : caloHits)
     {
         const LArCaloHit *const pLArCaloHit{dynamic_cast<const LArCaloHit *>(pCaloHit)};
-        if (pLArCaloHit == nullptr) {
+        if (pLArCaloHit == nullptr)
+        {
             return STATUS_CODE_NOT_INITIALIZED;
         }
         volIds.insert(pLArCaloHit->GetLArTPCVolumeId());
     }
-    
+
     return STATUS_CODE_SUCCESS;
 }
 //------------------------------------------------------------------------------------------------------------------------------------------
@@ -332,21 +342,21 @@ StatusCode CrossGapsAssociationAlgorithm::ReadSettings(const TiXmlHandle xmlHand
 
     PANDORA_RETURN_RESULT_IF_AND_IF(STATUS_CODE_SUCCESS, STATUS_CODE_NOT_FOUND, !=,
         XmlHelper::ReadValue(xmlHandle, "MinMatchedSamplingFraction", m_minMatchedSamplingFraction));
-        
+
     PANDORA_RETURN_RESULT_IF_AND_IF(
         STATUS_CODE_SUCCESS, STATUS_CODE_NOT_FOUND, !=, XmlHelper::ReadValue(xmlHandle, "CrossTPCStepModifier", m_crossTPCStepModifier));
-        
-    PANDORA_RETURN_RESULT_IF_AND_IF(
-        STATUS_CODE_SUCCESS, STATUS_CODE_NOT_FOUND, !=, XmlHelper::ReadValue(xmlHandle, "CrossTPCOnClusterDistanceModifier", m_crossTPCOnClusterDistanceModifier));
-        
+
+    PANDORA_RETURN_RESULT_IF_AND_IF(STATUS_CODE_SUCCESS, STATUS_CODE_NOT_FOUND, !=,
+        XmlHelper::ReadValue(xmlHandle, "CrossTPCOnClusterDistanceModifier", m_crossTPCOnClusterDistanceModifier));
+
     PANDORA_RETURN_RESULT_IF_AND_IF(
         STATUS_CODE_SUCCESS, STATUS_CODE_NOT_FOUND, !=, XmlHelper::ReadValue(xmlHandle, "CrossTPCBoostStartStep", m_crossTPCBoostStartStep));
-        
-    PANDORA_RETURN_RESULT_IF_AND_IF(
-        STATUS_CODE_SUCCESS, STATUS_CODE_NOT_FOUND, !=, XmlHelper::ReadValue(xmlHandle, "CrossTPCStartDirectionCosMin", m_crossTPCStartDirectionCosMin));
+
+    PANDORA_RETURN_RESULT_IF_AND_IF(STATUS_CODE_SUCCESS, STATUS_CODE_NOT_FOUND, !=,
+        XmlHelper::ReadValue(xmlHandle, "CrossTPCStartDirectionCosMin", m_crossTPCStartDirectionCosMin));
 
     PANDORA_RETURN_RESULT_IF_AND_IF(STATUS_CODE_SUCCESS, STATUS_CODE_NOT_FOUND, !=, XmlHelper::ReadValue(xmlHandle, "GapTolerance", m_gapTolerance));
-    
+
     PANDORA_RETURN_RESULT_IF_AND_IF(STATUS_CODE_SUCCESS, STATUS_CODE_NOT_FOUND, !=, XmlHelper::ReadValue(xmlHandle, "Visualize", m_visualize));
 
     return ClusterAssociationAlgorithm::ReadSettings(xmlHandle);

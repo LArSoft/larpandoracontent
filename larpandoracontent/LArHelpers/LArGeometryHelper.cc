@@ -628,7 +628,7 @@ void LArGeometryHelper::GetDetectorXGaps(const Pandora &pandora, std::set<float>
 
         if (!pLineGap)
             throw StatusCodeException(STATUS_CODE_INVALID_PARAMETER);
-        
+
         if (pLineGap->GetLineGapType() == TPC_DRIFT_GAP)
         {
             detXGaps.insert(pLineGap->GetLineStartX());
