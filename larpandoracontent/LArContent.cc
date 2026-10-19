@@ -41,7 +41,6 @@
 #include "larpandoracontent/LArControlFlow/PreProcessingAlgorithm.h"
 #include "larpandoracontent/LArControlFlow/SimpleNeutrinoIdTool.h"
 #include "larpandoracontent/LArControlFlow/SlicingAlgorithm.h"
-#include "larpandoracontent/LArControlFlow/StitchingCosmicRayMergingTool.h"
 #include "larpandoracontent/LArControlFlow/StreamingAlgorithm.h"
 #include "larpandoracontent/LArControlFlow/TestBeamCosmicRayTaggingTool.h"
 
@@ -163,6 +162,9 @@
 #include "larpandoracontent/LArThreeDReco/LArTwoViewMatching/TwoViewSimpleTracksTool.h"
 #include "larpandoracontent/LArThreeDReco/LArTwoViewMatching/TwoViewThreeDKinkTool.h"
 #include "larpandoracontent/LArThreeDReco/LArTwoViewMatching/TwoViewTransverseTracksAlgorithm.h"
+
+#include "larpandoracontent/LArThreeDReco/LArPfoStitching/StitchingCosmicRayMergingTool.h"
+#include "larpandoracontent/LArThreeDReco/LArPfoStitching/PfoStitchingAlgorithm.h"
 
 #include "larpandoracontent/LArVertex/EnergyDepositionAsymmetryFeatureTool.h"
 #include "larpandoracontent/LArVertex/EnergyKickFeatureTool.h"
@@ -346,6 +348,7 @@
     d("LArListDeletion",                        ListDeletionAlgorithm)                                                          \
     d("LArListMerging",                         ListMergingAlgorithm)                                                           \
     d("LArPfoHitCleaning",                      PfoHitCleaningAlgorithm)                                                        \
+    d("LArPfoStitching",                        PfoStitchingAlgorithm)                                                          \
     d("LArListPruning",                         ListPruningAlgorithm)                                                           \
     d("LArThreeDReclustering",                  ThreeDReclusteringAlgorithm)                                                    \
     d("LArThreeDMultiReclustering",             ThreeDMultiReclusteringAlgorithm)                                               \
