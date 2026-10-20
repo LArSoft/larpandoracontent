@@ -66,8 +66,9 @@ private:
      *
      *  @return boolean
      */
-    bool IsNearCluster(const pandora::CartesianVector &samplingPoint, const TwoDSlidingFitResult &targetFitResult, const int numGapSteps, const bool isCrossingTPCCandidate) const;
-    
+    bool IsNearCluster(const pandora::CartesianVector &samplingPoint, const TwoDSlidingFitResult &targetFitResult, const int numGapSteps,
+        const bool isCrossingTPCCandidate) const;
+
     /**
      *  @brief  Finds the volume id values for every lar calo hit in the given fitresult
      *
@@ -89,12 +90,12 @@ private:
     float m_maxOnClusterDistance;            ///< The maximum distance between a sampling point and sliding fit to target cluster
     unsigned int m_minMatchedSamplingPoints; ///< Minimum number of matched sampling points to declare association
     float m_minMatchedSamplingFraction;      ///< Minimum ratio between matched sampling points and expectation to declare association
-    float m_crossTPCStepModifier;            ///< Modifier to scale how much the angle between the startdirection of the sample points and the x-axis of the detector affects the m_maxUnmatchedSampleRun if crossing the APA
+    float m_crossTPCStepModifier; ///< Modifier to scale how much the angle between the startdirection of the sample points and the x-axis of the detector affects the m_maxUnmatchedSampleRun if crossing the APA
     float m_crossTPCOnClusterDistanceModifier; ///< Modifier to scale how much the number of sample steps that are in the TPC gap affects the m_maxOnClusterDistance
-    float m_crossTPCBoostStartStep;          ///< Minimum number of sample steps to cross the TPC gap
-    float m_crossTPCStartDirectionCosMin;    ///< Hard limit on the minimum value of the cos of the start direction and x axis where the start direction is the sample stepping direction for crossing the center TPC gap
-    float m_gapTolerance;                    ///< The tolerance to use when querying whether a sampling point is in a gap, units cm
-    bool m_visualize;                        ///< Whether to visualize sampling points/association diagnostics when enabled in settings
+    float m_crossTPCBoostStartStep;       ///< Minimum number of sample steps to cross the TPC gap
+    float m_crossTPCStartDirectionCosMin; ///< Hard limit on the minimum value of the cos of the start direction and x axis where the start direction is the sample stepping direction for crossing the center TPC gap
+    float m_gapTolerance;                 ///< The tolerance to use when querying whether a sampling point is in a gap, units cm
+    bool m_visualize;                     ///< Whether to visualize sampling points/association diagnostics when enabled in settings
 };
 
 } // namespace lar_content
