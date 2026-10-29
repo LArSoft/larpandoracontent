@@ -21,7 +21,7 @@ void StitchingBaseTool::Run(const Algorithm *const pAlgorithm, const PfoList *co
     if (!pStitchingOperations)
     {
         std::cout << "StitchingBaseTool: Calling algorithm must implement StitchingPfoOperations" << std::endl;
-        PANDORA_THROW(STATUS_CODE_INVALID_PARAMETER);
+        throw StatusCodeException(STATUS_CODE_INVALID_PARAMETER);
     }
 
     this->RunStitching(pAlgorithm, pStitchingOperations, pMultiPfoList, pfoToLArTPCMap, stitchedPfosToX0Map);

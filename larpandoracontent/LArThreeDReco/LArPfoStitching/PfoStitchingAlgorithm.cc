@@ -39,7 +39,8 @@ PfoStitchingAlgorithm::PfoStitchingAlgorithm() :
 
 StatusCode PfoStitchingAlgorithm::Run()
 {
-    PANDORA_RETURN_IF(STATUS_CODE_SUCCESS, m_stitchingToolVector.empty());
+    if (m_stitchingToolVector.empty())
+        return STATUS_CODE_SUCCESS;
 
     PfoList sortedPfos;
     for (const std::string &listName : m_inputPfoListNames)
@@ -84,7 +85,8 @@ StatusCode PfoStitchingAlgorithm::InferLArTPCs(InferredLArTPCVector &inferredTPC
         if (!pLineGap || (pLineGap->GetLineGapType() != TPC_DRIFT_GAP))
             continue;
 
-        PANDORA_RETURN_IF(STATUS_CODE_INVALID_PARAMETER, pLineGap->GetLineStartX() > pLineGap->GetLineEndX());
+        if (pLineGap->GetLineStartX() > pLineGap->GetLineEndX())
+            return STATUS_CODE_INVALID_PARAMETER;
 
         if (pLineGap->GetLineStartX() < parentMinX || pLineGap->GetLineEndX() > parentMaxX)
             continue;
@@ -129,7 +131,8 @@ StatusCode PfoStitchingAlgorithm::InferLArTPCs(InferredLArTPCVector &inferredTPC
         inferredTPCs.push_back(std::unique_ptr<InferredLArTPC>(new InferredLArTPC(parameters)));
     }
 
-    PANDORA_RETURN_IF(STATUS_CODE_FAILURE, inferredTPCs.empty());
+    if (inferredTPCs.empty())
+        return STATUS_CODE_FAILURE;
 
     return STATUS_CODE_SUCCESS;
 }
@@ -216,7 +219,7 @@ const std::string PfoStitchingAlgorithm::GetListName(const TObject *const pObjec
             return listName;
         }
     }
-    PANDORA_THROW(STATUS_CODE_NOT_FOUND);
+    throw StatusCodeException(STATUS_CODE_NOT_FOUND);
 }
 
 //------------------------------------------------------------------------------------------------------------------------------------------
@@ -225,7 +228,7 @@ void PfoStitchingAlgorithm::ShiftPfoHierarchy([[maybe_unused]]const ParticleFlow
     [[maybe_unused]]const PfoToLArTPCMap &pfoToLArTPCMap, [[maybe_unused]]const float x0) const
 {
     std::cout << "PfoStitchingAlgorithm: Stitching tools must not be configured to apply an x0 correction" << std::endl;
-    PANDORA_THROW(STATUS_CODE_NOT_ALLOWED);
+    throw StatusCodeException(STATUS_CODE_NOT_ALLOWED);
 }
 
 //------------------------------------------------------------------------------------------------------------------------------------------
@@ -233,7 +236,8 @@ void PfoStitchingAlgorithm::ShiftPfoHierarchy([[maybe_unused]]const ParticleFlow
 void PfoStitchingAlgorithm::StitchPfos(
     const ParticleFlowObject *const pPfoToEnlarge, const ParticleFlowObject *const pPfoToDelete, PfoToLArTPCMap &pfoToLArTPCMap) const
 {
-    PANDORA_THROW_IF(STATUS_CODE_NOT_ALLOWED, pPfoToEnlarge == pPfoToDelete);
+    if (pPfoToEnlarge == pPfoToDelete)
+        throw StatusCodeException(STATUS_CODE_NOT_ALLOWED);
 
     if (m_visualise)
     {
@@ -302,7 +306,8 @@ StatusCode PfoStitchingAlgorithm::ReadSettings(const TiXmlHandle xmlHandle)
     {
         StitchingBaseTool *const pStitchingTool(dynamic_cast<StitchingBaseTool *>(pAlgorithmTool));
 
-        PANDORA_THROW_IF(STATUS_CODE_INVALID_PARAMETER, !pStitchingTool);
+        if (!pStitchingTool)
+            throw StatusCodeException(STATUS_CODE_INVALID_PARAMETER);
 
         m_stitchingToolVector.push_back(pStitchingTool);
     }
