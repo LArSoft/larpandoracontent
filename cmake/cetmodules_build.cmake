@@ -42,13 +42,13 @@ cet_make_library(
   LIBRARIES
     PUBLIC
       PandoraPFA::PandoraSDK
-      PandoraPFA::PandoraMonitoring
     PRIVATE
       Eigen3::Eigen
 )
 
 if(PANDORA_MONITORING)
   target_compile_definitions(LArPandoraContent PUBLIC MONITORING)
+  target_link_libraries(LArPandoraContent PUBLIC PandoraPFA::PandoraMonitoring)
 endif()
 
 if(PANDORA_LIBTORCH)
